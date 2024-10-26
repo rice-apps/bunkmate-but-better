@@ -1,6 +1,11 @@
+"use client";
+
 import ListingCard from "@/components/ListingCard";
 import Navbar from "@/components/Navbar";
+import { Button } from "@/components/ui/button";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 
 type Listing = {
@@ -38,9 +43,20 @@ const listings: Listing[] = [
   // Add more listings as needed
 ];
 
-export default async function Index() {
+export default function Index() {
+
+  const supabase = createClient();
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    // Redirect to Sign-in page
+    router.push('/sign-in')
+  }
+  
   return (
     <>
+    <Button onClick={handleLogout}>Logout</Button>
     <Navbar />
     <ListingCard />
     </>

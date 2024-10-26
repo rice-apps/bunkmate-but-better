@@ -1,8 +1,6 @@
-import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "next-themes";
 import { DM_Sans } from "next/font/google";
-import Link from "next/link";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -17,11 +15,12 @@ export const metadata = {
 
 const dmsans = DM_Sans({ subsets: ["latin"] });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
       <body className={`${dmsans.className} bg-background text-foreground`}>
