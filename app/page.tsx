@@ -17,6 +17,8 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
+
 
 interface Todo {
   name: string;
@@ -95,6 +97,8 @@ const AddTodoForm = ({ refetchTodos }: { refetchTodos: ()=>void }) => {
     },
   });
 
+  const {toast} = useToast();
+
   const onSubmit = async ({name, description}: { name: string; description: string }) => {
     const supabase = createClient();
     const { data: all, error } = await supabase
@@ -105,6 +109,10 @@ const AddTodoForm = ({ refetchTodos }: { refetchTodos: ()=>void }) => {
 		if (error) {
 			console.log(error);
 		} else {
+      toast({
+        title: "Todo Added",
+        description: "Todo was added successfully",
+      })
       form.reset();
 			refetchTodos();
 		};
