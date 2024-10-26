@@ -29,7 +29,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <main className="min-h-screen flex flex-col items-center">
-            
+            {children}
           </main>
         </ThemeProvider>
       </body>
