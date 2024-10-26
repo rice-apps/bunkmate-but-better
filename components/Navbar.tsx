@@ -17,6 +17,7 @@ import {
 
 import { useState } from 'react';
 
+import Link from 'next/link';
 
 //dm sans, 30px , FF7439, font weight is 600
 //      <i class="fa-solid fa-magnifying-glass"></i>
@@ -34,10 +35,10 @@ const Navbar = () => {
   return (
     <div className='my-10 mx-10 flex flex-row place-items-center gap-[100px]'>
       <button className='hover:scale-110 transition-transform duration:100'>
-        <div className='flex flex-row gap-[8.33] place-items-center'>
+        <Link href='/' className='flex flex-row gap-[8.33] place-items-center'>
           <Image src="/bunkmate_logo.png" alt="Bunkmate Logo" width={35.48} height={35.48} className='h-[35.48px] w-[35.48px]' />
           <p className="ml-4 text-[30px] text-[#FF7439] font-semibold">bunkmate</p>
-        </div>
+        </Link>
       </button>
 
       <div className="w-[700px] h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex place-items-center justify-center">
