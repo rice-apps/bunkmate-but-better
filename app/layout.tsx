@@ -1,6 +1,7 @@
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "next-themes";
+import { DM_Sans } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
@@ -14,6 +15,8 @@ export const metadata = {
   description: "The fastest way to build apps with Next.js and Supabase",
 };
 
+const dmsans = DM_Sans({ subsets: ["latin"] });
+
 export default function RootLayout({
   children,
 }: {
@@ -21,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
-      <body className="bg-background text-foreground">
+      <body className={`${dmsans.className} bg-background text-foreground`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
