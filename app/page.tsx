@@ -1,4 +1,4 @@
-import ListingCard from "@/components/ListingCard";
+import CardContainer from "@/components/ListingCard";
 import Navbar from "@/components/Navbar";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 
@@ -12,6 +12,7 @@ type Listing = {
   location: string;
   imageUrl: string;
   renterType: 'Rice Student' | string;
+  isFavorite: boolean;
 }
 
 const listings: Listing[] = [
@@ -20,10 +21,11 @@ const listings: Listing[] = [
     title: 'Life Tower',
     distance: '1.2 miles away',
     dates: 'August - May',
-    price: 1300,
+    price: 1350,
     location: 'Houston, TX',
-    imageUrl: '/path-to-your-image.jpg',
-    renterType: 'Rice Student'
+    imageUrl: '/cherry_house.jpeg',
+    renterType: 'Rice Student',
+    isFavorite: true
   },
   {
     id: '2',
@@ -32,8 +34,42 @@ const listings: Listing[] = [
     dates: 'August - May',
     price: 1400,
     location: 'Houston, TX',
-    imageUrl: '/path-to-your-image.jpg',
-    renterType: 'Rice Student'
+    imageUrl: '/hobbit_house.jpeg',
+    renterType: 'Not Rice Student',
+    isFavorite: true
+  },
+  {
+    id: '3',
+    title: 'The Nest on Dryden',
+    distance: '0.7 miles away',
+    dates: 'August - May',
+    price: 1400,
+    location: 'Houston, TX',
+    imageUrl: '/hobbit_house.jpeg',
+    renterType: 'Rice Student',
+    isFavorite: false
+  },
+  {
+    id: '4',
+    title: 'The Nest on Dryden',
+    distance: '0.7 miles away',
+    dates: 'August - May',
+    price: 1400,
+    location: 'Houston, TX',
+    imageUrl: '/hobbit_house.jpeg',
+    renterType: 'Rice Student',
+    isFavorite: false
+  },
+  {
+    id: '5',
+    title: 'The Nest on Dryden',
+    distance: '0.7 miles away',
+    dates: 'August - May',
+    price: 1400,
+    location: 'Houston, TX',
+    imageUrl: '/hobbit_house.jpeg',
+    renterType: 'Not Rice Student',
+    isFavorite: true
   },
   // Add more listings as needed
 ];
@@ -42,7 +78,24 @@ export default async function Index() {
   return (
     <>
     <Navbar />
-    <ListingCard />
+    <main className="container mx-auto px-4 py-8">
+      <div className="flex flex-wrap justify-center gap-6">
+      {listings.map((listing) => (
+        <div className="flex-none w-1/4">
+              <CardContainer
+                key={listing.id}
+                name={listing.title}
+                imagePath={listing.imageUrl}
+                distance={listing.distance}
+                duration={listing.dates}
+                price={`$${listing.price} / month`}
+                isRiceStudent={listing.renterType === 'Rice Student'}
+                isFavorited={listing.isFavorite}
+              />
+        </div>
+            ))}
+      </div>
+    </main>
     </>
     // <div className="min-h-screen">
     //   <Navbar />
