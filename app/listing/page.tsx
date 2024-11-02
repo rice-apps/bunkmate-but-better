@@ -9,11 +9,11 @@ const ListingPage = () => {
     <>
     <Navbar />
     <Listing />
-    <div className='flex flex-row w-full mt-4 justify-between mb-10 px-14 gap-10'>
-      <div className='w-2/3'>
+    <div className='flex flex-col lg:flex-row w-full mt-4 justify-between mb-10 px-14 gap-10'>
+      <div className='lg:w-1/2 xl:w-2/3'>
         <ListingDescription />
       </div>
-      <div className='w-1/3'>
+      <div className='lg:w-1/2 xl:w-1/3'>
         <MeetSubleaser />
       </div>
     </div>

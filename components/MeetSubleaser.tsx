@@ -6,10 +6,10 @@ import { IoMail } from 'react-icons/io5'
 const MeetSubleaser = () => {
   return (
     <main className='flex flex-col gap-[20px] w-full h-full justify-center items-center'>
-        <h1 className='text-2xl font-semibold'>Meet the subleaser.</h1>
+        <h1 className='text-xl sm:text-2xl font-semibold'>Meet the subleaser.</h1>
         <div className='rounded-lg p-5 py-6 pb-14 flex flex-col gap-[19px] border shadow-lg'>
-            <div className='p-5 flex flex-row gap-[42.7px]'>
-                <div className='relative w-32 h-32 overflow-hidden rounded-full'>
+            <div className='p-5 flex flex-col sm:flex-row gap-[42.7px]'>
+                <div className='relative w-32 h-32 overflow-hidden mx-auto sm:mx-0 rounded-full'>
                     <Image 
                         src={'/profile_pic.jpeg'} 
                         fill={true}
@@ -19,7 +19,7 @@ const MeetSubleaser = () => {
                 </div>
                 <div className='flex flex-col'>
                     <div className='flex flex-col pb-4 border-b mb-4'>
-                        <h1 className='text-lg font-semibold mb-[2.27px] mr-20'>Lucy Han</h1>
+                        <h1 className='text-lg font-semibold mb-[2.27px] mr-14 sm:mr-20'>Lucy Han</h1>
                         <div className='flex flex-row gap-[5.1px]'>
                             <Image 
                                 src={'/owl.png'} 

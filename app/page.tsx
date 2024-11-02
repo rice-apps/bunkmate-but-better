@@ -95,9 +95,9 @@ export default function Index() {
       <Button onClick={handleLogout}>Logout</Button>
       <Navbar />
       <main className="container mx-auto px-4 py-8">
-        <div className="flex flex-wrap justify-center gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {listings.map((listing) => (
-            <div key={listing.id} className="flex-none w-1/4">
+            <div key={listing.id} className="w-full">
               <CardContainer
                 postId={listing.id}
                 name={listing.title}

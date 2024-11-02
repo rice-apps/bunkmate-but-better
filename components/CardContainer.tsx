@@ -85,53 +85,61 @@ const ListingCard: React.FC<ListingCardProps> = ({
   onAddFavorite,
 }) => {
   return (
-    <Card className="w-full max-w-[362px] h-[475px] relative border-none m-2 hover:scale-105 transition-transform duration:100">
-      <Button
-        className="w-[36px] h-[36px] absolute top-5 right-1 hover:bg-transparent ml-3 cursor-pointer hover:scale-110 duration-300"
-        variant="ghost"
-        onClick={() => {
-          onAddFavorite({
-            postId,
-            name,
-            imagePath,
-            distance,
-            duration,
-            price,
-            isRiceStudent,
-            isFavorited
-          });
-        }}
-      >
-        <IconContext.Provider value={{ color: "white", size: "10em" }}>
-          <div className="w-[30.03px] h-[26.66px]">
-            {isFavorited ? <FaHeart fill={"#FF7439"}/> : <FaRegHeart fill={"white"}/>}
-          </div>
-        </IconContext.Provider>
-      </Button>
-      <div className="rounded-lg overflow-hidden w-[362px] h-[362px] mx-auto border border-[#D9D9D9D1] border-[2.41px]">
-        <Image
-          src={imagePath || "/house1.jpeg"}
-          alt="boujee house"
-          width={362}
-          height={362}
-          className="object-cover w-full h-full"
-        />
-      </div>
-      <CardHeader className="-mt-2 p-0 mt-[20px] space-y-[2px] w-[362px]">
-        <div className="flex justify-between items-center">
-          <CardTitle>{name}</CardTitle>
-          {isRiceStudent && (
-            <div className="flex items-center space-x-2 ml-2 text-[#FF7439]">
-              <Image src="/owl.png" width={24} height={24} alt="owl"></Image>
-              <span className="h-[21px] w-[100px]">Rice Student</span>
-            </div>
-          )}
+    <div className="w-full">
+      <div className="relative rounded-2xl overflow-hidden bg-white shadow-md">
+        {/* Image Container */}
+        <div className="relative w-full aspect-square">
+          <Image
+            src={imagePath || "/house1.jpeg"}
+            alt={name}
+            fill
+            className="object-cover"
+          />
+          <Button
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/80 hover:bg-white p-0 border-none"
+            variant="ghost"
+            onClick={() => {
+              onAddFavorite({
+                postId,
+                name,
+                imagePath,
+                distance,
+                duration,
+                price,
+                isRiceStudent,
+                isFavorited
+              });
+            }}
+          >
+            <IconContext.Provider value={{ size: "1.5em" }}>
+              {isFavorited ? (
+                <FaHeart className="text-[#FF7439]" />
+              ) : (
+                <FaRegHeart className="text-gray-600" />
+              )}
+            </IconContext.Provider>
+          </Button>
         </div>
-        <CardDescription>{distance}</CardDescription>
-        <CardDescription>{duration}</CardDescription>
-        <CardDescription>{price}</CardDescription>
-      </CardHeader>
-    </Card>
+
+        {/* Content */}
+        <div className="p-4 space-y-2">
+          <div className="flex justify-between items-start">
+            <h3 className="font-semibold text-lg">{name}</h3>
+            {isRiceStudent && (
+              <div className="flex items-center gap-1 text-[#FF7439] text-sm">
+                <Image src="/owl.png" width={16} height={16} alt="owl" />
+                <span>Rice Student</span>
+              </div>
+            )}
+          </div>
+          <div className="space-y-1 text-gray-500 text-sm">
+            <p>{distance}</p>
+            <p>{duration}</p>
+            <p className="font-medium">{price}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
