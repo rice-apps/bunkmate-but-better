@@ -90,9 +90,11 @@ const Navbar = () => {
       </div>
 
       <div className='flex flex-row gap-[20px]'>
+        <Link href='/post-a-listing'>
         <button className="w-[158px] h-[43px] bg-[#FF7439] hover:bg-[#BB5529] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-105">
           <p className="text-[15px] text-white font-semibold">Post a Listing</p>
         </button>
+        </Link>
         <button>
           <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[35px] h-[31px]" />
         </button>
