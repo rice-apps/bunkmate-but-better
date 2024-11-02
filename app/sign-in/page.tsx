@@ -54,6 +54,7 @@ export default function SignIn() {
               <FcGoogle className="w-6 h-6" />
               <span>Continue with Google</span>
             </Button>
+
           </div>
 
           {/* Footer */}

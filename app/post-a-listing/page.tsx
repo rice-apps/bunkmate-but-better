@@ -111,7 +111,6 @@ const PostListing = () => {
           </div>
           </Link>
           <div className="flex items-center space-x-4">
-            <Button className="bg-[#FF7439] hover:bg-[#FF7439]/90">Post a Listing</Button>
             <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 hover:cursor-pointer transition-transform duration-150 w-[35px] h-[31px]" />
             <CgProfile className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 hover:cursor-pointer transition-transform duration-150 w-[35px] h-[31px]" />
           </div>
@@ -123,7 +122,7 @@ const PostListing = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-2xl font-bold">Listing Editor</h1>
-            <Button variant="ghost" className="text-gray-500 flex flex-row items-center">
+            <Button variant="preview" className="text-gray-500 flex flex-row items-center">
                 <FaEye />
               <p>PREVIEW LISTING</p>
             </Button>
