@@ -53,12 +53,12 @@ const Listing = () => {
         <p className="text-gray-600">1.2 miles away • August - May • $1,300 / month</p>
       </div>
 
-      {/* Image Grid */}
-      <div className="w-full h-[500px] grid grid-cols-8 gap-2 mb-8">
+      {/* Image Gallery */}
+      <div className="w-full h-[500px] grid grid-cols-1 lg:grid-cols-8 gap-2 mb-8">
         {images.map((image, index) => (
           <div
             key={index}
-            className={`relative overflow-hidden rounded-lg cursor-pointer ${image.span}`}
+            className={`relative overflow-hidden rounded-lg cursor-pointer ${image.span} ${index === 0 ? '' : 'hidden lg:block sm:hidden md:hidden'}`}
             onClick={() => openDialog(index)}
           >
             <Image 
@@ -70,6 +70,7 @@ const Listing = () => {
           </div>
         ))}
       </div>
+
 
       {/* Image Dialog */}
       {isDialogOpen && (
@@ -97,7 +98,7 @@ const Listing = () => {
             />
           </div>
 
-          <div className='text-white absolute bottom-10'>
+          <div className='text-white absolute bottom-1'>
           <p className="text-center font-semibold">Lifetower</p>
           <p className ="flex-center">1.2 miles away • August - May • $1,300 / month</p>
           </div>
