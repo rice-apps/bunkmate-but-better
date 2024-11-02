@@ -86,7 +86,9 @@ const Listing = () => {
           >
             <span className="text-5xl">&lt;</span>
           </button>
-          <div className="w-1/2 h-3/4 relative">
+
+          
+          <div className="w-1/2 h-3/4 relative mb-17.5">
             <Image 
               src={images[currentImageIndex].src} 
               fill={true} 
@@ -94,6 +96,12 @@ const Listing = () => {
               className="object-cover rounded-lg" 
             />
           </div>
+
+          <div className='text-white absolute bottom-10'>
+          <p className="text-center font-semibold">Lifetower</p>
+          <p className ="flex-center">1.2 miles away • August - May • $1,300 / month</p>
+          </div>
+
           <button 
             onClick={handleNext} 
             className="absolute right-12 text-white hover:text-gray-300 transition-colors"
