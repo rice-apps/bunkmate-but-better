@@ -1,5 +1,4 @@
 'use client'
-
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { FaHeart } from 'react-icons/fa6';
@@ -17,7 +16,7 @@ const Listing = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
 
-  const openDialog = (index: number) => {
+  const openDialog = (index: number = 0) => {
     setCurrentImageIndex(index);
     setDialogOpen(true);
   };
@@ -53,12 +52,12 @@ const Listing = () => {
         <p className="text-gray-600">1.2 miles away • August - May • $1,300 / month</p>
       </div>
 
-      {/* Image Grid */}
-      <div className="w-full h-[500px] grid grid-cols-8 gap-2 mb-8">
+      {/* Image Gallery */}
+      <div className="relative w-full h-[500px] grid grid-cols-1 lg:grid-cols-8 gap-2 mb-8">
         {images.map((image, index) => (
           <div
             key={index}
-            className={`relative overflow-hidden rounded-lg cursor-pointer ${image.span}`}
+            className={`relative overflow-hidden rounded-lg cursor-pointer ${image.span} ${index === 0 ? '' : 'hidden lg:block sm:hidden md:hidden'}`}
             onClick={() => openDialog(index)}
           >
             <Image 
@@ -69,6 +68,14 @@ const Listing = () => {
             />
           </div>
         ))}
+
+        {/* View All Button */}
+          <button 
+            onClick={() => openDialog(0)}
+            className="absolute bottom-4 right-4 py-2 px-4 bg-transparent text-white border border-white rounded-lg hover:bg-white hover:text-black transition-colors"
+          >
+            View All
+          </button>
       </div>
 
       {/* Image Dialog */}
@@ -86,7 +93,8 @@ const Listing = () => {
           >
             <span className="text-5xl">&lt;</span>
           </button>
-          <div className="w-1/2 h-3/4 relative">
+
+          <div className="w-1/2 h-3/4 relative mb-17.5">
             <Image 
               src={images[currentImageIndex].src} 
               fill={true} 
@@ -94,6 +102,12 @@ const Listing = () => {
               className="object-cover rounded-lg" 
             />
           </div>
+
+          <div className='text-white absolute bottom-8'>
+            <p className="text-center font-semibold">Life Tower</p>
+            <p className="text-center">1.2 miles away • August - May • $1,300 / month</p>
+          </div>
+
           <button 
             onClick={handleNext} 
             className="absolute right-12 text-white hover:text-gray-300 transition-colors"

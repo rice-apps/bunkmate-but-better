@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 
-
 export default function dummyRoute() {
     const router = useRouter();
     const goToHome = () => {
