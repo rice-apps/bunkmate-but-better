@@ -107,7 +107,7 @@ const ListingCard: React.FC<CardProps> = ({
             <h3 className="font-semibold text-lg max-w-[60%] truncate">
               {name}
             </h3> :
-            <h3 className="font-semibold text-lg">
+            <h3 className="font-semibold text-lg truncate">
               {name}
             </h3>
             }
