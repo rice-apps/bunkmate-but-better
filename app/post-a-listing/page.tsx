@@ -12,7 +12,7 @@ import TitleDescription from './TitleDescription';
 import Pricing from './Pricing';
 import Location from './Location';
 import Photos from './Photos';
-import Contact from './Contact';
+import Profile from './Profile';
 
 import { createClient } from '@/utils/supabase/client';
 import { v4 } from 'uuid';
@@ -44,7 +44,9 @@ const PostListing = () => {
     photos: [],
     photoLabels: {},
     affiliation: 'rice',
-    name: '',
+    profilePicture: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: ''
   });
@@ -102,8 +104,8 @@ const PostListing = () => {
         return <Location formData={formData} setFormData={setFormData} />;
       case 'photos':
         return <Photos formData={formData} setFormData={setFormData} />;
-      case 'contact':
-        return <Contact formData={formData} setFormData={setFormData} />;
+      case 'profile':
+        return <Profile formData={formData} setFormData={setFormData} />;
       default:
         return <TitleDescription formData={formData} setFormData={setFormData} />;
     }
@@ -114,7 +116,7 @@ const PostListing = () => {
     { id: 'pricing', name: 'Pricing', completed: false },
     { id: 'location', name: 'Location', completed: false },
     { id: 'photos', name: 'Photos', completed: false },
-    { id: 'contact', name: 'Contact', completed: false }
+    { id: 'profile', name: 'Profile', completed: false }
   ];
 
   return (
@@ -146,6 +148,7 @@ const PostListing = () => {
             </Button>
           </div>
 
+
           <div className="flex gap-16">
             {/* Sidebar */}
             <div className="w-64">
@@ -165,6 +168,8 @@ const PostListing = () => {
                 ))}
               </div>
             </div>
+
+            <div className="w-px bg-[#777777]"></div>
 
             {/* Form Content */}
             <div className="flex-1">

@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 // Contact Component
-const Contact = ({ formData, setFormData }: { formData: any; setFormData: any }) => (
+const Profile = ({ formData, setFormData }: { formData: any; setFormData: any }) => (
   <div className="space-y-8 w-full">
     <div>
-      <h2 className="text-2xl font-medium mb-4">Affiliation</h2>
+      <h2 className="text-2xl font-medium mb-4">Rice Affiliation</h2>
       <div className="space-y-2">
         <label className="flex items-center space-x-2">
           <input
@@ -41,7 +41,7 @@ const Contact = ({ formData, setFormData }: { formData: any; setFormData: any })
     </div>
     
     <div>
-      <h2 className="text-2xl font-medium mb-4">Contact Information</h2>
+      <h2 className="text-2xl font-medium mb-4">Name</h2>
       <div className="space-y-4">
         <Input
           placeholder="Name (First & Last)"
@@ -49,6 +49,10 @@ const Contact = ({ formData, setFormData }: { formData: any; setFormData: any })
           onChange={(e) => setFormData({...formData, name: e.target.value})}
           className="w-full rounded-xl border border-gray-200"
         />
+      </div>
+      <h2 className="text-2xl font-medium mb-4">Email Address</h2>
+      <h2 className="text-2xl font-medium mb-4">Phone Number</h2>
+      <div className="space-y-4">
         <Input
           type="email"
           placeholder="Email address"
@@ -74,4 +78,4 @@ const Contact = ({ formData, setFormData }: { formData: any; setFormData: any })
   </div>
 );
 
-export default Contact;
+export default Profile;
