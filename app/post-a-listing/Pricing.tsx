@@ -1,3 +1,7 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+
 // Pricing Component
 const Pricing = ({ formData, setFormData }: { formData: any; setFormData: any }) => (
   <div className="space-y-8 w-full">

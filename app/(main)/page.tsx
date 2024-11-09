@@ -59,7 +59,7 @@ const listings: Listing[] = [
     dates: "August - May",
     price: 1400,
     location: "Houston, TX",
-    imageUrl: "/housepng.png",
+    imageUrl: "/house1.jpeg",
     renterType: "Rice Student",
     isFavorite: false,
   },

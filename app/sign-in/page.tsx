@@ -33,7 +33,7 @@ export default function SignIn() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-[calc(100vh-88px)]">
-        <div className="w-full max-w-md space-y-8">
+        <div className="w-full max-w-lg space-y-8">
           {/* Header */}
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold tracking-tight">
@@ -68,16 +68,6 @@ export default function SignIn() {
               Privacy Policy
             </Link>
             .
-          </p>
-        </div>
-
-        {/* Create account link */}
-        <div className="mt-8 text-center">
-          <p className="text-gray-500">
-            Don't have an account?{' '}
-            <Link href="/sign-up" className="text-[#FF7439] hover:underline font-medium">
-              Create one
-            </Link>
           </p>
         </div>
       </div>
