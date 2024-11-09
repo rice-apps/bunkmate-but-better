@@ -68,7 +68,7 @@ const ModularDropDown: React.FC<ModularDropDownProps> = ({ allOptions, title }) 
   );
 }
 
-const ModularCalendarSelect: React.FC<{ title: string, defaultVal: string, border: boolean}> = ({title, defaultVal, border}) => {
+const ModularCalendarSelect: React.FC<{ title: string, defaultVal: string, border: boolean }> = ({ title, defaultVal, border }) => {
   const [date, setDate] = useState<Date | undefined>(undefined);
 
   return (
@@ -110,8 +110,8 @@ const Navbar = () => {
           <p className='text-[14px] font-semibold text-[#777777]'>Distance from Rice</p>
           <ModularDropDown allOptions={["< 1 mile", "< 3 miles", "< 5 miles", "> 5 miles"]} title={"Search Properties"} />
         </div>
-        <ModularCalendarSelect title={"Start Date"} defaultVal={"Select Start Date"} border={true}/>
-        <ModularCalendarSelect title={"Start Date"} defaultVal={"Select End Date"} border={false}/>
+        <ModularCalendarSelect title={"Start Date"} defaultVal={"Select Start Date"} border={true} />
+        <ModularCalendarSelect title={"Start Date"} defaultVal={"Select End Date"} border={false} />
         <button className='pr-8'>
           <FaMagnifyingGlass
             className='hover:cursor-pointer h-[29px] w-[25px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105'
@@ -121,17 +121,20 @@ const Navbar = () => {
 
       <div className='flex flex-row gap-[20px]'>
         <Link href='/post-a-listing'>
-        <button className="w-[158px] h-[43px] bg-[#FF7439] hover:bg-[#BB5529] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-105">
-          <p className="text-[15px] text-white font-semibold">Post a Listing</p>
-        </button>
+          <button className="w-[158px] h-[43px] bg-[#FF7439] hover:bg-[#BB5529] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-105">
+            <p className="text-[15px] text-white font-semibold">Post a Listing</p>
+          </button>
         </Link>
-        <button>
-          <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[35px] h-[31px]" />
-        </button>
-
-        <button>
-          <CgProfile className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[35px] h-[31px]" />
-        </button>
+        <Link href='/favorites'>
+          <button>
+            <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[35px] h-[31px]" />
+          </button>
+        </Link>
+        <Link href='/profile-section'>
+          <button>
+            <CgProfile className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[35px] h-[31px]" />
+          </button>
+        </Link>
       </div>
 
     </div>
