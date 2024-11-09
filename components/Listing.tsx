@@ -72,7 +72,7 @@ const Listing = () => {
         {/* View All Button */}
           <button 
             onClick={() => openDialog(0)}
-            className="absolute bottom-4 right-4 py-2 px-4 bg-transparent text-white border border-white rounded-lg hover:bg-white hover:text-black transition-colors"
+            className="absolute bottom-4 right-4 py-2 px-4 bg-white text-black border border-white rounded-lg hover:bg-transparent hover:text-white transition-colors"
           >
             View All
           </button>
@@ -94,7 +94,7 @@ const Listing = () => {
             <span className="text-5xl">&lt;</span>
           </button>
 
-          <div className="w-1/2 h-3/4 relative mb-17.5">
+          <div className="w-3/4 md:w-3/4 lg:w-1/2 h-3/4 relative mb-17.5">
             <Image 
               src={images[currentImageIndex].src} 
               fill={true} 
@@ -102,6 +102,7 @@ const Listing = () => {
               className="object-cover rounded-lg" 
             />
           </div>
+
 
           <div className='text-white absolute bottom-8'>
             <p className="text-center font-semibold">Life Tower</p>
