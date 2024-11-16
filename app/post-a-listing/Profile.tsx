@@ -49,12 +49,12 @@ function UploadButton({ formData, setFormData }: { formData: any; setFormData: a
 
 const Profile = ({ formData, setFormData }: { formData: any; setFormData: any }) => (
   <div className="space-y-8 w-full">
-    <div className="space-y-8">
+    <div>
       <h1 className="text-3xl font-medium mb-4 text-[#222222]">Profile</h1>
       <p className="mb-4 text-sm text-[#222222] font-bold">Add your profile information!</p>
       <p className="mb-4 text-sm text-[#222222] font-bold">The information you share here will be used to help people interested in your listing to connect with you.</p>
     </div>
-    <div className="space-y-8">
+    <div>
       <h2 className="text-2xl font-medium mb-4">Rice Affiliation</h2>
       <p className="mb-2 text-sm text-gray-400">Below, select the option that applies to you:</p>
       <div className="space-y-8">
@@ -102,23 +102,24 @@ const Profile = ({ formData, setFormData }: { formData: any; setFormData: any })
       </div>
     </div>
     
-    <div className="space-y-8">
+    <div>
       <h2 className="text-2xl font-medium mb-4">Name</h2>
       <p className="mb-2 text-sm text-gray-400">If Rice student: Make sure this matches the name on your Rice Student ID.<br/>If not Rice-affiliated: Make sure this matches the name on your government ID.</p>
-      <div className="flex space-x-4 mb-6">
+      <div className="flex space-x-2 mb-4 w-full">
         <Input
           placeholder="First name on ID"
           value={formData.firstName}
           onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-          className="w-[26rem] h-[3.75rem] p-4 rounded-xl border border-[#B5B5B5]"
+          className="w-[415px] p-4 rounded-xl border border-[#B5B5B5]"
         />
         <Input
           placeholder="Last name on ID"
           value={formData.lastName}
           onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-          className="w-[26rem] h-[3.75rem] p-4 rounded-xl border border-[#B5B5B5]"
+          className="w-[415px] p-4 rounded-xl border border-[#B5B5B5]"
         />
       </div>
+    </div>
       
       {/* <h2 className="text-2xl font-medium mb-2">Profile Picture</h2>
       <p className="mb-4 text-sm text-gray-400">
@@ -128,12 +129,14 @@ const Profile = ({ formData, setFormData }: { formData: any; setFormData: any })
         <UploadButton formData={formData} setFormData={setFormData} />
       </div> */}
       
+    <div>
       <h2 className="text-2xl font-medium mb-2">Profile Picture</h2>
       <p className="mb-4 text-sm text-gray-400">
         Upload your profile picture. Please make sure your face is recognizable!
       </p>
       <div className="mb-6">
-        <ProfilePictureModal>
+      <ProfilePictureModal formData={formData} setFormData={setFormData} />
+        {/* <ProfilePictureModal>
           <button
             type="button"
             className="flex flex-col items-center justify-center w-32 h-32 bg-gray-100 border border-gray-300 rounded-full text-gray-600 hover:bg-gray-200"
@@ -141,26 +144,28 @@ const Profile = ({ formData, setFormData }: { formData: any; setFormData: any })
             <FiUpload className="mr-1 align-center text-gray-500 text-4xl" />
             <span className="text-sm font-medium text-gray-500">Upload File</span>
           </button>
-        </ProfilePictureModal>
+        </ProfilePictureModal> */}
       </div>
+    </div>
       
-      <div className="space-y-8">
-        <h2 className="text-2xl font-medium mb-4">Email Address</h2>
-        <p className="mb-4 text-sm text-gray-400">
-          Use the address that you’d like to be contacted with.
-        </p>
-        <div className="mb-6">
-        <Input
-            type="email"
-            placeholder="Email address"
-            value={formData.email}
-            onChange={(e) => setFormData({...formData, email: e.target.value})}
-            className="w-[53.125rem] h-[3.75rem] p-4 rounded-xl border border-[#B5B5B5]"
-          />
-        </div>
+    <div>
+      <h2 className="text-2xl font-medium mb-4">Email Address</h2>
+      <p className="mb-4 text-sm text-gray-400">
+        Use the address that you’d like to be contacted with.
+      </p>
+      <div className="mb-6">
+      <Input
+          type="email"
+          placeholder="Email address"
+          value={formData.email}
+          onChange={(e) => setFormData({...formData, email: e.target.value})}
+          className="w-[53.125rem] p-4 rounded-xl border border-[#B5B5B5]"
+        />
       </div>
-      
-      <div className="space-y-8">
+    </div>
+    
+    <div>
+      <div>
         <h2 className="text-2xl font-medium mb-4">Phone Number</h2>
         <p className="mb-4 text-sm text-gray-400">
           Use the number you’d like to be contacted with.
@@ -177,7 +182,7 @@ const Profile = ({ formData, setFormData }: { formData: any; setFormData: any })
               }
             }}
             maxLength={15}
-            className="w-[53.125rem] h-[3.75rem] p-4 rounded-xl border border-[#B5B5B5]"
+            className="w-[53.125rem] p-4 rounded-xl border border-[#B5B5B5]"
           />
         </div>
       </div>
