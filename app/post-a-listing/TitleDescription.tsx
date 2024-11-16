@@ -22,7 +22,8 @@ const TitleDescription = ({ formData, setFormData, onNext }: {
   return (
     <div className="space-y-8 w-full">
       <div>
-        <h2 className="text-2xl font-medium mb-4">Title</h2>
+        <h2 className="text-2xl font-medium mb-1">Title</h2>
+        <p className="text-gray-400 text-sm mb-4">Please write a short descriptive title for your listing. Do not include the address here.</p>
         <div className="relative">
           <Input
             placeholder="Life Tower"
@@ -38,10 +39,11 @@ const TitleDescription = ({ formData, setFormData, onNext }: {
       </div>
       
       <div>
-        <h2 className="text-2xl font-medium mb-4">Description</h2>
+        <h2 className="text-2xl font-medium mb-1">Description</h2>
+        <p className="text-gray-400 text-sm mb-4">Share a general description of the property so potential subleasers/roommates know what to expect.</p>
         <div className="relative">
           <Textarea
-            placeholder="Share a general description of the property so potential subleasers/roommates know what to expect."
+            placeholder="Life Tower is a modern high-rise apartment complex near Rice University, offering student-friendly housing with various amenities like a fitness center, study lounges, and a rooftop pool. It provides convenient access to campus and nearby attractions, making it a popular choice for Rice students seeking off-campus living with a community vibe."
             value={formData.description}
             onChange={handleDescriptionChange}
             className="min-h-[200px] rounded-xl border border-gray-200 resize-none"

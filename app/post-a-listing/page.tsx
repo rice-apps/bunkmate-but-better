@@ -41,10 +41,10 @@ const PostListing = () => {
     description: '',
     monthlyRent: '',
     distance: '',
-    utilities: '',
     specialNotes: '',
     address: '',
     locationNotes: '',
+    durationNotes: '',
     photos: [],
     photoLabels: {},
     affiliation: 'rice',
@@ -167,7 +167,7 @@ const PostListing = () => {
     { 
       id: 'pricing', 
       name: 'Pricing', 
-      completed: Boolean(formData.monthlyRent && formData.utilities)
+      completed: Boolean(formData.monthlyRent)
     },
     { 
       id: 'location', 
