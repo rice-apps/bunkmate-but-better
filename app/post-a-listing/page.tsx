@@ -20,11 +20,11 @@ import { v4 } from 'uuid';
 import Duration from './Duration';
 import CategoryStatusIndicator from './CategoryStatusIndicator';
 
-type ImagePromiseType  = Promise<{
+type ImagePromiseType = Promise<{
   data: {
-      id: string;
-      path: string;
-      fullPath: string;
+    id: string;
+    path: string;
+    fullPath: string;
   };
   error: null;
 } | {
@@ -60,7 +60,7 @@ const PostListing = () => {
 
     const supabase = createClient();
     const userId = (await supabase.auth.getUser()).data.user?.id;
-    const insertions: ImagePromiseType[]  = [];
+    const insertions: ImagePromiseType[] = [];
 
     // Cache the name of our file paths.
     const filePaths = [];
@@ -78,13 +78,14 @@ const PostListing = () => {
       const { data, error } = await supabase
         .from('listings')
         .insert([
-          { price: formData.monthlyRent, 
+          {
+            price: formData.monthlyRent,
             description: formData.description,
             address: formData.address,
             userId,
             title: formData.title,
-           },
-          
+          },
+
         ])
         .select()
         .single();
@@ -98,95 +99,78 @@ const PostListing = () => {
 
   }
 
-  const handlePreviewClick = () => {
-    // Convert File objects to URLs for storage
-    const photoURLs = formData.photos.map((photo: File) => URL.createObjectURL(photo));
-    
-    // Prepare data for storage
-    const previewData = {
-      ...formData,
-      photos: photoURLs // Store URLs instead of File objects
-    };
-
-    // Save to localStorage
-    localStorage.setItem('listingFormData', JSON.stringify(previewData));
-    
-    // Navigate to preview
-    router.push('/post-a-listing/preview');
-  };
-
   const renderComponent = () => {
     switch (selectedCategory) {
       case 'title':
-        return <TitleDescription 
-          formData={formData} 
-          setFormData={setFormData} 
+        return <TitleDescription
+          formData={formData}
+          setFormData={setFormData}
           onNext={handleNextCategory}
         />;
       case 'pricing':
-        return <Pricing 
-          formData={formData} 
-          setFormData={setFormData} 
+        return <Pricing
+          formData={formData}
+          setFormData={setFormData}
           onNext={handleNextCategory}
         />;
       case 'location':
-        return <Location 
-          formData={formData} 
-          setFormData={setFormData} 
+        return <Location
+          formData={formData}
+          setFormData={setFormData}
           onNext={handleNextCategory}
         />;
-        case 'duration':
-          return <Duration 
-            formData={formData} 
-            setFormData={setFormData} 
-            onNext={handleNextCategory}
-          />;
-          case 'photos':
-            return <Photos 
-              formData={formData} 
-              setFormData={setFormData} 
-              onNext={handleNextCategory}
-            />;
+      case 'duration':
+        return <Duration
+          formData={formData}
+          setFormData={setFormData}
+          onNext={handleNextCategory}
+        />;
+      case 'photos':
+        return <Photos
+          formData={formData}
+          setFormData={setFormData}
+          onNext={handleNextCategory}
+        />;
       case 'contact':
         return <Contact formData={formData} setFormData={setFormData} />;
       default:
-        return <TitleDescription 
-        formData={formData} 
-        setFormData={setFormData} 
-        onNext={handleNextCategory}
-      />;
+        return <TitleDescription
+          formData={formData}
+          setFormData={setFormData}
+          onNext={handleNextCategory}
+        />;
     }
   };
 
   const categories = useMemo(() => [
-    { 
-      id: 'title', 
-      name: 'Title & Description', 
+    {
+      id: 'title',
+      name: 'Title & Description',
       completed: formData.title.length >= 1 && formData.description.length >= 100
     },
-    { 
-      id: 'pricing', 
-      name: 'Pricing', 
+    {
+      id: 'pricing',
+      name: 'Pricing',
       completed: Boolean(formData.monthlyRent)
     },
-    { 
-      id: 'location', 
-      name: 'Location', 
+    {
+      id: 'location',
+      name: 'Location',
       completed: Boolean(formData.address)
     },
-    { 
-      id: 'duration', 
-      name: 'Duration', 
+    {
+      id: 'duration',
+      name: 'Duration',
       completed: Boolean(formData.startDate && formData.endDate)
     },
-    { 
-      id: 'photos', 
-      name: 'Photos', 
+    {
+      id: 'photos',
+      name: 'Photos',
       completed: formData.photos.length >= 1
     },
-    { 
-      id: 'contact', 
-      name: 'Contact', 
+    {
+      id: 'contact',
+      name: 'Contact',
       completed: Boolean(formData.name && formData.email && formData.phone)
     }
   ], [formData]);
@@ -201,7 +185,7 @@ const PostListing = () => {
   return (
     <div className="min-h-screen w-full bg-white">
       {/* Navbar */}
-      <nav className=" bg-white">
+      <nav className="bg-white top-0 z-10 h-16 fixed w-full">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link href='/'>
             <div className="flex items-center space-x-2">
@@ -217,50 +201,35 @@ const PostListing = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mt-16">
         <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Listing Editor</h1>
-          <h1 className="text-2xl font-bold">
-            {categories.find((category) => category.id === selectedCategory)?.name}
-          </h1>
-          <Button 
-            variant="preview" 
-            className="text-gray-500 flex flex-row items-center gap-2"
-            onClick={handlePreviewClick}
-            // Optionally disable preview if required fields aren't filled
-            disabled={!formData.title || !formData.description || formData.photos.length === 0}
-          >
-            <FaEye />
-            <span>PREVIEW LISTING</span>
-          </Button>
-        </div>
-
           <div className="flex gap-16">
             {/* Sidebar */}
-            <div className="w-64">
-              <div className="space-y-2">
-              {categories.map((category) => (
-                  <div
-                    key={category.id}
-                    className={`flex items-center p-3 rounded-xl cursor-pointer ${
-                      selectedCategory === category.id
+            <div className='fixed'>
+              <div className="w-64 border-r border-gray-500 pr-16 h-svh">
+                <h1 className="text-2xl font-bold mb-10">Listing Editor</h1>
+                <div className="space-y-2">
+                  {categories.map((category) => (
+                    <div
+                      key={category.id}
+                      className={`flex items-center p-3 rounded-xl cursor-pointer ${selectedCategory === category.id
                         ? 'text-[#FF7439] border-[#FF7439] border bg-orange-50'
                         : 'text-gray-500'
-                    }`}
-                    onClick={() => setSelectedCategory(category.id)}
-                  >
-                    <div className="mr-2">
-                      <CategoryStatusIndicator selected={selectedCategory === category.id} completed={category.completed} />
+                        }`}
+                      onClick={() => setSelectedCategory(category.id)}
+                    >
+                      <div className="mr-2">
+                        <CategoryStatusIndicator selected={selectedCategory === category.id} completed={category.completed} />
+                      </div>
+                      {category.name}
                     </div>
-                    {category.name}
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* Form Content */}
-            <div className="flex-1">
+            <div className="flex-1 ml-64 pl-16">
               {renderComponent()}
             </div>
           </div>

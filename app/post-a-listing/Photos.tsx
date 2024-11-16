@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from 'next/image';
+import PreviewButton from "./PreviewButton";
 
 const Photos = ({ formData, setFormData, onNext }: {
   formData: any;
@@ -35,10 +36,20 @@ const Photos = ({ formData, setFormData, onNext }: {
 
   return (
     <div className="space-y-8 w-full">
+      <div className="flex flex-row justify-between mb-12">
+        <div>
+          <h1 className="text-2xl font-semibold mb-3">
+            Pricing
+          </h1>
+          <h2 className="text-sm font-[500] text-gray-800 mb-3">Add photos and optional descriptions to your lease! </h2>
+          <p className="mb-6 text-gray-500 text-sm">You are required to upload at least 5 relevant photos to post your listing. Captions are optional but highly encouraged!</p>
+
+        </div>
+
+        <PreviewButton formData={formData} />
+      </div>
+
       <div>
-        <h2 className="text-2xl font-medium mb-4">Photos</h2>
-        <p className="text-gray-500 mb-2">Manage photos and add details (optional).</p>
-        <p className="mb-6 text-gray-500">You are required to upload at least 5 relevant photos to post your listing. Captions are optional but highly encouraged!</p>
         <p className={`mb-6 text-sm ${isComplete ? 'text-green-500' : 'text-red-500'}`}>
           {isComplete
             ? '✓ Required photos uploaded'
