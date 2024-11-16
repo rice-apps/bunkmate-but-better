@@ -149,8 +149,8 @@ const PostListing = () => {
               setFormData={setFormData} 
               onNext={handleNextCategory}
             />;
-      case 'contact':
-        return <Contact formData={formData} setFormData={setFormData} />;
+      case 'profile':
+        return <Profile formData={formData} setFormData={setFormData} />;
       default:
         return <TitleDescription 
         formData={formData} 
@@ -187,8 +187,8 @@ const PostListing = () => {
       completed: formData.photos.length >= 1
     },
     { 
-      id: 'contact', 
-      name: 'Contact', 
+      id: 'profile', 
+      name: 'Profile', 
       completed: Boolean(formData.name && formData.email && formData.phone)
     }
   ], [formData]);
@@ -264,7 +264,7 @@ const PostListing = () => {
             <div className="w-px bg-[#777777]"></div>
 
             {/* Form Content */}
-            <div className="flex-1">
+            <div className="flex-1 w-[37.5rem]">
               {renderComponent()}
             </div>
           </div>
