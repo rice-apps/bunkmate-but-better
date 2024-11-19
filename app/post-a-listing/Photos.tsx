@@ -25,7 +25,7 @@ const Photos = ({ formData, setFormData, onNext }: {
     // Reindex the remaining labels
     const reindexedLabels: { [key: number]: string } = {};
     Object.values(newLabels).forEach((label, index) => {
-      reindexedLabels[index] = label;
+      reindexedLabels[index] = label as string;
     });
     setFormData({
       ...formData,

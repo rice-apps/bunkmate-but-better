@@ -20,39 +20,59 @@ import { v4 } from 'uuid';
 import Duration from './Duration';
 import CategoryStatusIndicator from './CategoryStatusIndicator';
 
-type ImagePromiseType = Promise<{
+interface FormData {
+  title: string;
+  description: string;
+  price: number;
+  priceNotes: string;
+  startDate: string;
+  endDate: string;
+  durationNotes: string;
+  address: string;
+  locationNotes: string;
+  photos: File[];
+  photoLabels: string[];
+  affiliation: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+type ImageResponse = {
   data: {
     id: string;
     path: string;
     fullPath: string;
   };
   error: null;
-} | {
+  } | {
   data: null;
   error: any;
-}>
+}
+
+type ImagePromiseType  = Promise<ImageResponse>
 
 // Main PostListing component
 const PostListing = () => {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('title');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     title: '',
     description: '',
-    monthlyRent: '',
-    distance: '',
-    specialNotes: '',
+    price: 0,
+    priceNotes: '',
+    startDate: '',
+    endDate: '',
+    durationNotes: '',
     address: '',
     locationNotes: '',
-    durationNotes: '',
     photos: [],
-    photoLabels: {},
+    photoLabels: [],
     affiliation: 'rice',
     name: '',
     email: '',
     phone: '',
-    startDate: '',
-    endDate: '',
+    
   });
 
   const handleSubmit = async (e: MouseEvent) => {
@@ -63,38 +83,74 @@ const PostListing = () => {
     const insertions: ImagePromiseType[] = [];
 
     // Cache the name of our file paths.
-    const filePaths = [];
+    const filePaths: string[] = [];
 
-    formData.photos.forEach(photo => {
-      const filePath = v4();
+    formData.photos.forEach((photo) => {
+      const filePath = `${userId}/${v4()}`;
       const insertion = supabase.storage.from('listing_images').upload(filePath, photo);
       insertions.push(insertion);
       filePaths.push(filePath);
-    })
+    });
 
     try {
-      const results = await Promise.all(insertions);
+      const imageUploads = await Promise.all(insertions);
+      const successfulUploads = imageUploads.filter((imageUploads) => imageUploads.data);
+      if (successfulUploads.length != filePaths.length) {
+        const successfulFilePaths = successfulUploads.map((imgResp: ImageResponse) => imgResp.data?.path);
+        throw new Error('Some image(s) failed to upload', { cause: successfulFilePaths });
+      }
 
       const { data, error } = await supabase
         .from('listings')
         .insert([
-          {
-            price: formData.monthlyRent,
-            description: formData.description,
-            address: formData.address,
-            userId,
+          { 
+            user_id: userId,
+            phone_number: formData.phone,
             title: formData.title,
-          },
-
+            description: formData.description,
+            price: formData.price, 
+            price_notes: formData.priceNotes,
+            start_date: formData.startDate,
+            end_date: formData.endDate,
+            duration_notes: formData.durationNotes,
+            address: formData.address,
+            image_paths: filePaths,
+           },
+          
         ])
         .select()
         .single();
-      if (error) throw error;
 
-      // const { data, error } = await supabase.storage.from("listing_images").upload()
+      if (error) {
+        throw new Error(error.message, { cause: successfulUploads.map((imgResp: ImageResponse) => imgResp.data?.path) });
+      }
+
+      const imageCaptions = filePaths.map((path, index) => ({
+        user_id: userId,
+        image_path: path, 
+        caption: formData.photoLabels[index] || '',
+      }))
+
+      const { error: captionError } = await supabase
+        .from('images_captions')
+        .insert(imageCaptions)
+        .select();
+      if (captionError) {
+        throw new Error(captionError.message, { cause: filePaths });
+      }
+      
+      router.push('/listing');
     }
-    catch (error) {
-      console.error('Error inserting new listing:', error);
+    catch (error: any) {
+      //revert all uploads
+      console.error(error.message);
+      await cleanupUploads(error.cause);
+    }
+
+    async function cleanupUploads(paths: string[]) {
+      const supabase = createClient();
+      await supabase.storage.from('listing_images').remove(paths);
+      await supabase.from('images_captions').delete().in('image_path', paths);
     }
 
   }
@@ -132,7 +188,7 @@ const PostListing = () => {
           onNext={handleNextCategory}
         />;
       case 'contact':
-        return <Contact formData={formData} setFormData={setFormData} />;
+        return <Contact handleSubmit={handleSubmit} formData={formData} setFormData={setFormData}/>;
       default:
         return <TitleDescription
           formData={formData}
@@ -148,10 +204,10 @@ const PostListing = () => {
       name: 'Title & Description',
       completed: formData.title.length >= 1 && formData.description.length >= 100
     },
-    {
-      id: 'pricing',
-      name: 'Pricing',
-      completed: Boolean(formData.monthlyRent)
+    { 
+      id: 'pricing', 
+      name: 'Pricing', 
+      completed: Boolean(formData.price)
     },
     {
       id: 'location',

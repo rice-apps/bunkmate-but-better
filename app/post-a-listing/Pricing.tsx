@@ -9,18 +9,18 @@ const Pricing = ({ formData, setFormData, onNext }: {
   setFormData: any;
   onNext: () => void;
 }) => {
-  const isComplete = Boolean(formData.monthlyRent);
+  const isComplete = Boolean(formData.price);
 
-  const handleMonthlyRentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Ensure the rent is a positive number
     if (Number(value) >= 0 || value === '') {
-      setFormData({ ...formData, monthlyRent: value });
+      setFormData({ ...formData, price: value });
     }
   };
 
-  const handleSpecialNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData({ ...formData, specialNotes: e.target.value });
+  const handlePriceNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData({ ...formData, priceNotes: e.target.value });
   };
 
   return (
@@ -45,11 +45,16 @@ const Pricing = ({ formData, setFormData, onNext }: {
           <span className="absolute left-3 top-[13px]">$</span>
           <Input
             type="number"
-            placeholder="1350"
-            value={formData.monthlyRent}
-            onChange={handleMonthlyRentChange}
-            className={`w-full rounded-xl border border-gray-200 py-6 placeholder:text-gray-400 pl-8`}
+            placeholder="$ 1350"
+            value={formData.price}
+            onChange={handlePriceChange}
+            className={`w-full rounded-xl border border-gray-200`}
           />
+          {!formData.price && (
+            <span className="text-sm text-gray-400 mt-1 block">
+              Required: Please enter the monthly rent
+            </span>
+          )}
         </div>
       </div>
 
@@ -60,12 +65,12 @@ const Pricing = ({ formData, setFormData, onNext }: {
           <Textarea
             placeholder="Ex: Parking spot prices, willing to negotiate rent..."
             value={formData.specialNotes}
-            onChange={handleSpecialNotesChange}
+            onChange={handlePriceNotesChange}
             maxLength={500}
             className="min-h-[150px] rounded-xl border border-gray-200 resize-none placeholder:text-gray-400 py-3"
           />
           <div className="flex justify-end mt-2 text-sm text-gray-400">
-            <span><span className="text-gray-500 font-semibold">{formData.specialNotes.length}</span>/500 characters</span>
+            <span>{formData.priceNotes.length}/500 characters</span>
           </div>
         </div>
       </div>
@@ -78,11 +83,21 @@ const Pricing = ({ formData, setFormData, onNext }: {
             className={`rounded-lg px-6 ${isComplete
               ? 'bg-[#FF7439] hover:bg-[#FF7439]/90'
               : 'bg-gray-300'
-              }`}
-          >
-            Next
-          </Button>
+            }`}
+        >
+          Next
+        </Button>
+      </div>
+
+      {/* Optional: Show completion status */}
+      {!isComplete && (
+        <div className="text-sm text-gray-500 text-right mt-2">
+          To continue, please fill in:
+          <ul>
+            {!formData.price && <li>• Monthly rent</li>}
+          </ul>
         </div>
+      )}
 
         {/* Optional: Show completion status */}
         {!isComplete && (
