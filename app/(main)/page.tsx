@@ -144,7 +144,7 @@ export default function Index() {
                 name={listing.title}
                 imagePath={getImagePublicUrl("listing_images", (listing.image_paths[0]))}
                 distance={"2 miles away"}
-                duration={`${listing.start_date} - ${listing.end_date}`}
+                duration={`${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`}
                 price={`$${listing.price} / month`}
                 isRiceStudent={true}
                 isFavorited={true}
