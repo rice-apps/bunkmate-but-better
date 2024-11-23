@@ -94,6 +94,56 @@ const PostListing = () => {
       filePaths.push(filePath);
     });
 
+    const geocodeAddress = async (address: string) => {
+      try {
+        const API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
+        const response = await fetch(`https://geocode.maps.co/search?q=${address}$api_key=${API_KEY}`
+        );
+        if(!response.ok) {
+          throw new Error('Failed to geocode address')   
+        }
+        const data = await response.json();
+        if (data && data.length >0) {
+          return {
+            lat: data[0].lat,
+            lon: data[0].lon,
+          };
+        }
+        else {
+          throw new Error('No results found');
+        }
+      }
+      catch (error) {
+        console.error('Error geocoding address:', error);
+        throw error;
+      }
+    };
+
+    const calculateDistance = async (address: string) => {
+      try {
+        const RICE_ADDRESS = '6100 Main St, Houston, TX 77005';
+        const [riceCoords, listingCoords] = await Promise.all([
+          geocodeAddress(RICE_ADDRESS),
+          geocodeAddress(address),
+        ]);
+        const osrmResponse = await fetch(
+          `https://router.project-osrm.org/route/v1/driving/${riceCoords.lon},${riceCoords.lat};${listingCoords.lon},${listingCoords.lat}?overview=false`,
+        );
+        if(!osrmResponse.ok) {
+          throw new Error('Failed to calculate distance');
+        }
+        const osrmData = await osrmResponse.json();
+        const distanceMeters = osrmData.routes[0].distance;
+        const distanceMiles = (distanceMeters * 0.000621371).toFixed(1);
+        return distanceMiles;
+      }
+      catch (error) {
+        console.error('Error calculating distance:', error);
+        throw error;
+      }
+    };
+
+
     try {
       const imageUploads = await Promise.all(insertions);
       const successfulUploads = imageUploads.filter((imageUploads) => imageUploads.data);
@@ -101,6 +151,9 @@ const PostListing = () => {
         const successfulFilePaths = successfulUploads.map((imgResp: ImageResponse) => imgResp.data?.path);
         throw new Error('Some image(s) failed to upload', { cause: successfulFilePaths });
       }
+      const results = await Promise.all(insertions);
+      //calculate distance from address
+      const distance = await calculateDistance(formData.address);
 
       const { data, error } = await supabase
         .from('listings')
@@ -108,6 +161,11 @@ const PostListing = () => {
           { 
             user_id: userId,
             phone_number: formData.phone,
+            price: formData.monthlyRent, 
+            description: formData.description,
+            address: formData.address,
+            userId,
+            distance: distance,
             title: formData.title,
             description: formData.description,
             price: formData.price, 
