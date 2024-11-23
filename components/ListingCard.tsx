@@ -4,14 +4,8 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { IconContext } from "react-icons";
+import { createClient } from "@/utils/supabase/client";
 
 interface CardProps {
   postId: string;
@@ -36,9 +30,26 @@ const ListingCard: React.FC<CardProps> = ({
 }) => {
   const [favorite, setFavorite] = useState(isFavorited); // proxy for isFavorited attribute
 
-  const handleAddOrRemoveFavorite = (card: CardProps) => {
-    setFavorite(!favorite);
+  const handleAddOrRemoveFavorite = async (card: CardProps) => {
     // Add API call to modify isFavorited (actual attribute in table)
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    try {
+      if (favorite) {
+        await supabase.from('users_favorites').delete().eq('user_id', user?.id).eq('listing_id', postId);
+      } else {
+        await supabase.from('users_favorites').insert({
+          user_id: user?.id,
+          listing_id: postId
+        });
+      }
+  
+      setFavorite(!favorite);
+    } catch (error) {
+      alert("Failed to favorite/unfavorite a listing");
+    }
+    
   };
 
   // here for debugging, can be deleted

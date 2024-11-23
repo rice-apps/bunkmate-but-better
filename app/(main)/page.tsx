@@ -2,22 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import ListingCard from "@/components/ListingCard";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-
-// type Listing = {
-//   id: string;
-//   title: string;
-//   distance: string;
-//   dates: string;
-//   price: number;
-//   location: string;
-//   imageUrl: string;
-//   renterType: "Rice Student" | string;
-//   isFavorite: boolean;
-// };
 
 interface Listing {
   address: string;
@@ -35,88 +22,32 @@ interface Listing {
   user_id: string; // Allow null if `user_id` is not provided
 }
 
-// const listings: Listing[] = [
-//   {
-//     id: "1",
-//     title: "Life Tower",
-//     distance: "1.2 miles away",
-//     dates: "August - May",
-//     price: 1350,
-//     location: "Houston, TX",
-//     imageUrl: "/cherry_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "2",
-//     title: "The Nest on Dryden jawiojeiwoajeiwo",
-//     distance: "0.7 miles away",
-//     dates: "August - May",
-//     price: 1400,
-//     location: "Houston, TX",
-//     imageUrl: "/hobbit_house.jpeg",
-//     renterType: "Not Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "3",
-//     title: "The Nest on Dryden",
-//     distance: "0.7 miles away",
-//     dates: "August - May",
-//     price: 1400,
-//     location: "Houston, TX",
-//     imageUrl: "/hobbit_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: false,
-//   },
-//   {
-//     id: "4",
-//     title: "The Nest on Dryden",
-//     distance: "0.7 miles away",
-//     dates: "August - May",
-//     price: 1400,
-//     location: "Houston, TX",
-//     imageUrl: "/house1.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: false,
-//   },
-//   {
-//     id: "5",
-//     title: "The Nest on Dryden",
-//     distance: "0.7 miles away",
-//     dates: "August - May",
-//     price: 1400,
-//     location: "Houston, TX",
-//     imageUrl: "/house1.jpeg",
-//     renterType: "Not Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "6",
-//     title: "pretty house jeiwoajeiowjaoieaweiwoe",
-//     distance: "15.8 miles away",
-//     dates: "August - May",
-//     price: 1400,
-//     location: "Houston, TX",
-//     imageUrl: "/modern_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: true,
-//   },
-//   // Add more listings as needed
-// ];
+interface Favorite {
+  listing_id: number
+}
 
 export default function Index() {
   const supabase = createClient();
   const router = useRouter();
   const [listings, setListings] = useState<Listing[] | null>(null);
+  const [favorites, setFavorites] = useState<{[key: number]: boolean}>({});
 
   useEffect(() => {
     async function fetchPosts() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        const { data } = await supabase.from('listings').select();
-        setListings(data);
-        
+        const { data: listings } = await supabase.from('listings').select();
+        const { data: favorites } = await supabase.from('users_favorites').select('listing_id').eq('user_id', user?.id);
+
+        setListings(listings);
+
+        // Convert the list of favorites to an object for faster lookups.
+        const favoritesObject: {[key: number]: boolean} = {}
+        favorites?.forEach((favorite: Favorite) => {
+          favoritesObject[favorite.listing_id] = true;
+        })
+
+        setFavorites(favoritesObject);
       }
       catch (error) {
         console.error(error);
@@ -147,22 +78,12 @@ export default function Index() {
                 duration={`${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`}
                 price={`$${listing.price} / month`}
                 isRiceStudent={true}
-                isFavorited={true}
+                isFavorited={listing.id in favorites}
               />
             </div>
           ))}
         </div>
       </main>
     </>
-    // <div className="min-h-screen">
-    //   <Navbar />
-    //   <main className="container mx-auto px-4 py-8">
-    //     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    //       {listings.map((listing, index) => (
-    //         <ListingCard key={index} />
-    //       ))}
-    //     </div>
-    //   </main>
-    // </div>
   );
 }
