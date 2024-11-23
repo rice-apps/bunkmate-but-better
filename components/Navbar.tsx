@@ -25,6 +25,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover
 import { useState } from 'react';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { createClient } from "@/utils/supabase/client";
+
 
 //dm sans, 30px , FF7439, font weight is 600
 //      <i class="fa-solid fa-magnifying-glass"></i>
@@ -99,6 +102,14 @@ const ModularCalendarSelect: React.FC<{ title: string, defaultVal: string, borde
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const supabase = createClient();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    // Redirect to Sign-in page
+    router.push("/sign-in");
+  };
 
   return (
     <div className='my-10 px-6 flex flex-row place-items-center w-screen justify-between'>
@@ -123,7 +134,7 @@ const Navbar = () => {
         </button>
       </div>
 
-      <div className='hidden eric:flex eric:flex-row gap-[25px] items-center'>
+      <div className='hidden eric:flex eric:flex-row gap-[25px] place-items-center items-center'>
         <Link href='/post-a-listing'>
           <button className="py-2 px-7 bg-[#FF7439] hover:bg-[#BB5529] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-105 whitespace-nowrap">
             <p className="text-[15px] text-white font-semibold">Post a Listing</p>
@@ -134,18 +145,34 @@ const Navbar = () => {
             <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[35px] h-[31px]" />
           </button>
         </Link>
-        <Link href='/profile-section'>
-          <button>
-            <CgProfile className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[35px] h-[31px]" />
-          </button>
-        </Link>
+        <DropdownMenu key={"profileTrigger"}>
+          <DropdownMenuTrigger asChild>
+            <button>
+              <CgProfile className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[35px] h-[31px]" />
+            </button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className=''>
+            <DropdownMenuItem key={"profile"} className="flex justify-center">
+              <Link href='/profile-section'>
+                <p className='hover:text-[#FF7439] text-center'>Profile</p>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem key={"logout"} className="flex justify-center">
+              <button onClick={handleLogout}>
+                <p className='hover:text-[#FF7439] text-center'>Logout</p>
+              </button>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+
+        </DropdownMenu>
       </div>
 
       <div className='flex eric:hidden z-100'>
         <button onClick={() => setIsOpen(true)}>
-        <RxHamburgerMenu className='w-[35px] h-[35px]'
-          color={"#FF7439"}
-        />
+          <RxHamburgerMenu className='w-[35px] h-[35px]'
+            color={"#FF7439"}
+          />
         </button>
       </div>
 
@@ -153,19 +180,19 @@ const Navbar = () => {
         <div className="fixed top-0 right-0 h-full w-2/5 bg-[#FF7439] z-50 transition-transform duration-300 flex flex-row">
           <div className="p-4 pl-10 text-white space-y-6 flex flex-col text-[18px] mt-12 justify-left">
             <Link href='/' className="flex place-items-center">
-              <MdHome className='mr-5'/>
+              <MdHome className='mr-5' />
               <button className="">Home</button>
             </Link>
             <Link href='/post-a-listing' className="flex place-items-center">
-              <FaPlus className='mr-5'/>
+              <FaPlus className='mr-5' />
               <button className="">Post a Listing</button>
             </Link>
             <Link href='/favorites' className="flex place-items-center">
-              <FaHeart className='mr-5'/>
+              <FaHeart className='mr-5' />
               <button className="">Favorite Listings</button>
             </Link>
             <Link href='/profile-section' className="flex place-items-center">
-              <CgProfile className='mr-5'/>
+              <CgProfile className='mr-5' />
               <button className="">Your Profile</button>
             </Link>
           </div>
@@ -174,7 +201,7 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
               className="absolute top-[55px] right-[35px] text-white text-2xl"
             >
-              <FaTimes className='w-[28px] h-[28px]'/>
+              <FaTimes className='w-[28px] h-[28px]' />
             </button>
           </div>
         </div> : null

@@ -126,15 +126,8 @@ export default function Index() {
     fetchPosts();
   }, [])
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    // Redirect to Sign-in page
-    router.push("/sign-in");
-  };
-
   return (
     <>
-      <Button onClick={handleLogout}>Logout</Button>
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {listings && listings.map((listing) => (
