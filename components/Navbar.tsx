@@ -58,7 +58,7 @@ const ModularDropDown: React.FC<ModularDropDownProps> = ({ allOptions, title }) 
       <DropdownMenu key={title}>
         <DropdownMenuTrigger asChild>
           <button className='text-left'>
-            <p className={`text-[14px] font-light ${selectedOption !== title ? "text-[#FF7439] font-extrabold" : "text-[#777777]"}`}>
+            <p className={`text-[14px] ${selectedOption !== title ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}>
               {selectedOption}
             </p>
           </button>
@@ -76,34 +76,14 @@ const ModularDropDown: React.FC<ModularDropDownProps> = ({ allOptions, title }) 
   );
 }
 
-const ModularCalendarSelect: React.FC<{ title: string, defaultVal: string, border: boolean }> = ({ title, defaultVal, border }) => {
-  const [date, setDate] = useState<Date | undefined>(undefined);
 
-  return (
-    <div className={`grid grid-rows-2 gap-[2px] w-[180px] pl-10 pr-10 text-left ${border ? "border-r" : ""}`}>
-      <p className='text-[14px] font-semibold text-[#777777]'>{title}</p>
-      <Popover>
-        <PopoverTrigger asChild>
-          <button className='text-left'>
-            <p className={`text-[14px] font-light ${date && date.toDateString() !== defaultVal ? "text-[#FF7439] font-extrabold" : "text-[#777777]"}`}>{date ? date.toDateString() : defaultVal}</p>
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="p-2 bg-white rounded-lg shadow-lg" style={{ zIndex: 1000 }}>
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={setDate}
-          />
-        </PopoverContent>
-      </Popover>
-    </div>
-  );
-};
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const supabase = createClient();
   const router = useRouter();
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -112,7 +92,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className='my-10 px-6 flex flex-row place-items-center w-screen justify-between'>
+    <div className='my-10 px-6 md:px-8 lg:px-10 xl:px-16 flex flex-row place-items-center w-screen justify-between'>
       <button className='hidden rahul:flex justify-center'>
         <Link href='/' className='flex flex-row gap-[8.33] place-items-center'>
           <Image src="/bunkmate_logo.png" alt="Bunkmate Logo" width={35.48} height={35.48} className='h-[35.48px] w-[35.48px]' />
@@ -125,9 +105,46 @@ const Navbar = () => {
           <p className='text-[14px] font-semibold text-[#777777]'>Distance from Rice</p>
           <ModularDropDown allOptions={["< 1 mile", "< 3 miles", "< 5 miles", "> 5 miles"]} title={"Search Properties"} />
         </div>
-        <ModularCalendarSelect title={"Start Date"} defaultVal={"Select Start Date"} border={true} />
-        <ModularCalendarSelect title={"Start Date"} defaultVal={"Select End Date"} border={false} />
-        <button className='pr-8'>
+        <div className="grid grid-rows-2 gap-[2px] w-[180px] pl-10 pr-10 text-left border-r">
+          <p className='text-[14px] font-semibold text-[#777777]'>Start Date</p>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className='text-left'>
+                <p className={`text-[14px] ${startDate && startDate.toDateString() !== "Select Start Date" ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}>{startDate ? startDate.toDateString() : "Select Start Date"}</p>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="p-2 bg-white rounded-lg shadow-lg" style={{ zIndex: 1000 }}>
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={setStartDate}
+                disabled={(date) =>
+                  date < new Date() || (endDate !== undefined && date > endDate)
+                }
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+        <div className="grid grid-rows-2 gap-[2px] w-[180px] pl-10 pr-10 text-left">
+          <p className='text-[14px] font-semibold text-[#777777]'>End Date</p>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className='text-left'>
+                <p className={`text-[14px] ${endDate && endDate.toDateString() !== "Select Start Date" ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}>{endDate ? endDate.toDateString() : "Select Start Date"}</p>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="p-2 bg-white rounded-lg shadow-lg" style={{ zIndex: 1000 }}>
+              <Calendar
+                mode="single"
+                selected={endDate}
+                onSelect={setEndDate}
+                disabled={(date) =>
+                  date < new Date() || (startDate !== undefined && date < startDate)
+                }
+              />
+            </PopoverContent>
+          </Popover>
+        </div>        <button className='pr-8'>
           <FaMagnifyingGlass
             className='hover:cursor-pointer h-[29px] w-[25px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105'
           />
