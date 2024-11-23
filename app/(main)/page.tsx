@@ -1,25 +1,41 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import ListingCard from "@/components/ListingCard";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/utils/supabase/client";
+import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 
-type Listing = {
-  id: string;
-  title: string;
-  distance: string;
-  dates: string;
-  price: number;
-  location: string;
-  imageUrl: string;
-  renterType: "Rice Student" | string;
-  isFavorite: boolean;
-};
+// type Listing = {
+//   id: string;
+//   title: string;
+//   distance: string;
+//   dates: string;
+//   price: number;
+//   location: string;
+//   imageUrl: string;
+//   renterType: "Rice Student" | string;
+//   isFavorite: boolean;
+// };
 
-const listings: Listing[] = [
+interface Listing {
+  address: string;
+  created_at: string; // ISO date string
+  description: string;
+  duration_notes: string;
+  end_date: string; // ISO date string
+  id: number;
+  image_paths: string[]; // Array of image path strings
+  phone_number: string;
+  price: number;
+  price_notes: string;
+  start_date: string; // ISO date string
+  title: string;
+  user_id: string; // Allow null if `user_id` is not provided
+}
+
+// const listings: Listing[] = [
 //   {
 //     id: "1",
 //     title: "Life Tower",
@@ -87,18 +103,19 @@ const listings: Listing[] = [
 //     isFavorite: true,
 //   },
 //   // Add more listings as needed
-];
+// ];
 
 export default function Index() {
   const supabase = createClient();
   const router = useRouter();
+  const [listings, setListings] = useState<Listing[] | null>(null);
 
   useEffect(() => {
     async function fetchPosts() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        const { data }= await supabase.from('listings').select();
-
+        const { data } = await supabase.from('listings').select();
+        setListings(data);
         
       }
       catch (error) {
@@ -106,6 +123,7 @@ export default function Index() {
       }
       
     }
+    fetchPosts();
   }, [])
 
   const handleLogout = async () => {
@@ -119,17 +137,17 @@ export default function Index() {
       <Button onClick={handleLogout}>Logout</Button>
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {listings.map((listing) => (
+          {listings && listings.map((listing) => (
             <div key={listing.id} className="w-full">
               <ListingCard
-                postId={listing.id}
+                postId={listing.id.toString()}
                 name={listing.title}
-                imagePath={listing.imageUrl}
-                distance={listing.distance}
-                duration={listing.dates}
+                imagePath={getImagePublicUrl("listing_images", (listing.image_paths[0]))}
+                distance={"2 miles away"}
+                duration={`${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`}
                 price={`$${listing.price} / month`}
-                isRiceStudent={listing.renterType === "Rice Student"}
-                isFavorited={listing.isFavorite}
+                isRiceStudent={true}
+                isFavorited={true}
               />
             </div>
           ))}
