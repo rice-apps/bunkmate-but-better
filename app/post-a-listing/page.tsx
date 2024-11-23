@@ -13,7 +13,7 @@ import TitleDescription from './TitleDescription';
 import Pricing from './Pricing';
 import Location from './Location';
 import Photos from './Photos';
-import Contact from './Contact';
+import Profile from './Profile';
 
 import { createClient } from '@/utils/supabase/client';
 import { v4 } from 'uuid';
@@ -33,8 +33,8 @@ interface FormData {
   photos: File[];
   photoLabels: string[];
   affiliation: string;
-  name: string;
-  email: string;
+  // name: string;
+  // email: string;
   phone: string;
 }
 
@@ -69,8 +69,10 @@ const PostListing = () => {
     photos: [],
     photoLabels: [],
     affiliation: 'rice',
-    name: '',
-    email: '',
+    // profilePicture: '',
+    // firstName: '',
+    // lastName: '',
+    // email: '',
     phone: '',
     
   });
@@ -187,8 +189,20 @@ const PostListing = () => {
           setFormData={setFormData}
           onNext={handleNextCategory}
         />;
-      case 'contact':
-        return <Contact handleSubmit={handleSubmit} formData={formData} setFormData={setFormData}/>;
+        case 'duration':
+          return <Duration 
+            formData={formData} 
+            setFormData={setFormData} 
+            onNext={handleNextCategory}
+          />;
+          case 'photos':
+            return <Photos 
+              formData={formData} 
+              setFormData={setFormData} 
+              onNext={handleNextCategory}
+            />;
+      case 'profile':
+        return <Profile formData={formData} setFormData={setFormData}/>;
       default:
         return <TitleDescription
           formData={formData}
@@ -224,10 +238,10 @@ const PostListing = () => {
       name: 'Photos',
       completed: formData.photos.length >= 1
     },
-    {
-      id: 'contact',
-      name: 'Contact',
-      completed: Boolean(formData.name && formData.email && formData.phone)
+    { 
+      id: 'profile', 
+      name: 'Profile', 
+      completed: Boolean(formData.phone)
     }
   ], [formData]);
 
@@ -283,7 +297,6 @@ const PostListing = () => {
                 </div>
               </div>
             </div>
-
             {/* Form Content */}
             <div className="flex-1 ml-64 pl-16">
               {renderComponent()}
