@@ -6,6 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { IconContext } from "react-icons";
+import { MdEdit } from "react-icons/md";
+import { RiDeleteBinLine } from "react-icons/ri";
+
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 
 interface CardProps {
@@ -95,9 +105,24 @@ const ListingCard: React.FC<CardProps> = ({
                   className="text-white"
                 />
               ) : (
-                <div className="flex rounded-full bg-white place-items-center justify-center w-[35px] h-[35px] hover:scale-105 transition-transform duration-100">
-                  <Image src="/Vector.png" width={15} height={15} alt="edit"/>
-                </div>
+                <DropdownMenu key={"editTrigger"}>
+                  <DropdownMenuTrigger asChild>
+                    <div className="flex rounded-full bg-white place-items-center justify-center w-[35px] h-[35px] hover:scale-110 transition-transform duration-100">
+                        <MdEdit className="text-[#FF7439]" style={{ width: '18px', height: '18px' }} />
+                    </div>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent className=''>
+                    <DropdownMenuItem key={"edit"} className="flex justify-left group">
+                      <MdEdit className="group-hover:text-[#FF7439]" />
+                      <p className='group-hover:text-[#FF7439] text-left'>Edit</p>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem key={"delete"} className="flex justify-left group">
+                      <RiDeleteBinLine className="group-hover:text-[#FF7439]" />
+                      <p className='group-hover:text-[#FF7439] text-left'>Delete</p>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </IconContext.Provider>
           </Button>
