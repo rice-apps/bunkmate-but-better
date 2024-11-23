@@ -18,19 +18,19 @@ const Photos = ({ formData, setFormData, onNext }: {
   };
 
   const handleRemovePhoto = (indexToRemove: number) => {
-    // const newPhotos = formData.photos.filter((_: any, index: number) => index !== indexToRemove);
-    // const newLabels = { ...formData.photoLabels };
-    // delete newLabels[indexToRemove];
-    // // Reindex the remaining labels
-    // const reindexedLabels: { [key: number]: string } = {};
-    // Object.values(newLabels).forEach((label: string, index: number) => {
-    //   reindexedLabels[index] = label;
-    // });
-    // setFormData({
-    //   ...formData,
-    //   photos: newPhotos,
-    //   photoLabels: reindexedLabels
-    // });
+    const newPhotos = formData.photos.filter((_: any, index: number) => index !== indexToRemove);
+    const newLabels = { ...formData.photoLabels };
+    delete newLabels[indexToRemove];
+    // Reindex the remaining labels
+    const reindexedLabels: { [key: number]: string } = {};
+    Object.values(newLabels).forEach((label: string, index: number) => {
+      reindexedLabels[index] = label;
+    });
+    setFormData({
+      ...formData,
+      photos: newPhotos,
+      photoLabels: reindexedLabels
+    });
   };
 
   return (

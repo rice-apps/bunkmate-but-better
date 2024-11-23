@@ -32,6 +32,8 @@ type ImagePromiseType  = Promise<{
   error: any;
 }>
 
+
+
 // Main PostListing component
 const PostListing = () => {
   const router = useRouter();
@@ -54,6 +56,34 @@ const PostListing = () => {
     startDate: '',
     endDate: '',
   });
+
+  useEffect(() => {
+    const savedData = localStorage.getItem('listingFormData');
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      if (parsedData.photos && Array.isArray(parsedData.photos)) {
+        // Convert Data URLs back to File objects
+        Promise.all(
+          parsedData.photos.map(async (photoUrl: string) => {
+            const response = await fetch(photoUrl);
+            const blob = await response.blob();
+            return new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+          })
+        )
+          .then((photoFiles) => {
+            const validPhotoFiles = photoFiles.filter((file) => file !== null) as File[];
+            setFormData({ ...parsedData, photos: validPhotoFiles });
+          })
+          .catch((error) => {
+            console.error('Error processing photos from localStorage:', error);
+            setFormData(parsedData); // Set formData without photos if conversion fails
+          });
+      } else {
+        setFormData(parsedData);
+      }
+    }
+  }, []);
+  
 
   const handleSubmit = async (e: MouseEvent) => {
     e.preventDefault();
@@ -115,6 +145,13 @@ const PostListing = () => {
     router.push('/post-a-listing/preview');
   };
 
+  
+
+
+
+
+
+  
   const renderComponent = () => {
     switch (selectedCategory) {
       case 'title':

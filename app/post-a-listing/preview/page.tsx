@@ -48,8 +48,47 @@ const PreviewPage = () => {
   };
 
   const handleClose = () => {
-    router.push('/post-a-listing');
+    if (formData) {
+      // Function to convert File objects to Data URLs
+      const convertFilesToDataURLs = async () => {
+        const readFileAsDataURL = (file: File): Promise<string> => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = () => reject(new Error('Failed to convert file to Data URL'));
+            reader.readAsDataURL(file);
+          });
+        };
+  
+        try {
+          const photoDataURLs = await Promise.all(
+            formData.photos.map(readFileAsDataURL)
+          );
+  
+          const updatedData = {
+            ...formData,
+            photos: photoDataURLs,
+          };
+  
+          // Save updated data to localStorage
+          localStorage.setItem('listingFormData', JSON.stringify(updatedData));
+        } catch (error) {
+          console.error('Error converting photos to Data URLs:', error);
+          // Optionally, handle the error (e.g., notify the user)
+        }
+      };
+  
+      // Convert photos and save data
+      convertFilesToDataURLs().then(() => {
+        // Navigate back to the editor after saving
+        router.push('/post-a-listing');
+      });
+    } else {
+      // If no formData, simply navigate back
+      router.push('/post-a-listing');
+    }
   };
+  
 
   if (!formData) {
     return (
