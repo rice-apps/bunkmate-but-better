@@ -42,13 +42,13 @@ const Pricing = ({ formData, setFormData, onNext }: {
           Required: Please enter the monthly rent
         </span>
         <div className="relative">
-          <span className="absolute left-3 top-[13px]">$</span>
+          <span className="absolute left-3 top-[8px]">$</span>
           <Input
             type="number"
             placeholder="$ 1350"
             value={formData.price}
             onChange={handlePriceChange}
-            className={`w-full rounded-xl border border-gray-200`}
+            className={`w-full rounded-xl border border-gray-200 pl-7`}
           />
           {!formData.price && (
             <span className="text-sm text-gray-400 mt-1 block">
