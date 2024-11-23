@@ -9,6 +9,7 @@ import { FaPhoneAlt } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import LoadingCircle from "@/components/LoadingCircle";
 
 type Listing = {
   id: string;
@@ -100,6 +101,7 @@ export default function Index() {
     username: string;
     email: string;
     phone: string;
+    image: string;
   } | null>();
   const [favoritelistings, setFavoriteListings] = useState<Listing[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
@@ -124,6 +126,12 @@ export default function Index() {
               username: data.data[0].name,
               email: data.data[0].email,
               phone: data.data[0].phone,
+              image: data.data[0].profile_image_path
+                ? getImagePublicUrl(
+                    "profile_images",
+                    data.data[0].profile_image_path
+                  )
+                : user.data.user?.user_metadata.avatar_url,
             });
           });
         supabase
@@ -214,113 +222,119 @@ export default function Index() {
         <div className="flex flex-col items-center">
           <Navbar />
 
-          <main className="flex flex-col sm:gap-[20px] w-full h-full items-left mb-20 ml-5">
-            <div className="flex flex-col text-left sm:items-start gap-4">
-              <h1 className="text-left text-3xl font-semibold">Profile</h1>
-              <h1 className="text-left text-sm mb-2">
-                Welcome to your profile page! Here, you can access your profile
-                information, your favorites, and your listings.
-              </h1>
-            </div>
-            <div>
-              <h1 className="text-left text-2xl font-medium mb-6">
-                Your Profile Information
-              </h1>
-              <div className="p-5 flex flex-col sm:flex-row sm:gap-[24vh]">
-                {/* Profile Image and Rice Affiliate text */}
-                <div className="flex flex-col items-center sm:items-start gap-4 sm:gap-8">
-                  <div className="flex flex-col gap-4">
-                    <h1 className="text-lg sm:text-xl font-medium text-center sm:text-left">
-                      Profile Picture
-                    </h1>
-                    <div className="relative w-[24vh] h-[24vh] overflow-hidden rounded-full">
-                      <Image
-                        src={"/profile_pic.jpeg"}
-                        fill={true}
-                        alt="profile pic"
-                        className="object-cover"
-                      />
+          {profile && (
+            <main className="flex flex-col sm:gap-[20px] w-full h-full items-left mb-20 ml-5">
+              <div className="flex flex-col text-left sm:items-start gap-4">
+                <h1 className="text-left text-3xl font-semibold">Profile</h1>
+                <h1 className="text-left text-sm mb-2">
+                  Welcome to your profile page! Here, you can access your
+                  profile information, your favorites, and your listings.
+                </h1>
+              </div>
+              <div>
+                <h1 className="text-left text-2xl font-medium mb-6">
+                  Your Profile Information
+                </h1>
+                <div className="p-5 flex flex-col sm:flex-row sm:gap-[24vh]">
+                  {/* Profile Image and Rice Affiliate text */}
+                  <div className="flex flex-col items-center sm:items-start gap-4 sm:gap-8">
+                    <div className="flex flex-col gap-4">
+                      <h1 className="text-lg sm:text-xl font-medium text-center sm:text-left">
+                        Profile Picture
+                      </h1>
+                      <div className="relative w-[18vh] h-[18vh] overflow-hidden rounded-full">
+                        <Image
+                          src={profile?.image || "/profile_pic.jpeg"}
+                          fill={true}
+                          alt="profile pic"
+                          className="object-cover"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col">
+                      <h1 className="text-lg font-medium">Rice Affiliation</h1>
+                      <div className="flex flex-row gap-[5px] items-center mt-2 sm:mt-0">
+                        <Image
+                          src={"/owl.png"}
+                          width={20}
+                          height={5}
+                          alt="owl"
+                          className="w-5 h-5 scale-75"
+                        />
+                        <p className="text-[#FF7439] text-sm">Rice Student</p>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Additional Information */}
                   <div className="flex flex-col">
-                    <h1 className="text-lg font-medium">Rice Affiliation</h1>
-                    <div className="flex flex-row gap-[5px] items-center mt-2 sm:mt-0">
-                      <Image
-                        src={"/owl.png"}
-                        width={20}
-                        height={5}
-                        alt="owl"
-                        className="w-5 h-5 scale-75"
+                    <div className="flex flex-col gap-4">
+                      <div className="gap-4">
+                        <h1 className="text-lg font-medium">Name</h1>
+                        <p className="text-lg">{profile?.username}</p>
+                      </div>
+
+                      <div className="gap-4">
+                        <h1 className="text-lg font-medium">Email Address</h1>
+                        <p className="text-lg">{profile?.email}</p>
+                      </div>
+
+                      <div className="gap-4">
+                        <h1 className="text-lg font-medium">Phone Number</h1>
+                        <p className="text-lg">{profile?.phone}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h1 className="text-left text-2xl font-medium">
+                  Favorite Listings
+                </h1>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-6">
+                  {favoritelistings.map((listing) => (
+                    <div key={listing.id} className="transform scale-90">
+                      <ListingCard
+                        postId={listing.id}
+                        name={listing.title}
+                        imagePath={listing.imageUrl}
+                        distance={listing.distance}
+                        duration={listing.dates}
+                        price={`$${listing.price} / month`}
+                        isRiceStudent={listing.renterType === "Rice Student"}
+                        isFavorited={listing.isFavorite}
                       />
-                      <p className="text-[#FF7439] text-sm">Rice Student</p>
                     </div>
-                  </div>
-                </div>
-
-                {/* Additional Information */}
-                <div className="flex flex-col">
-                  <div className="flex flex-col gap-4">
-                    <div className="gap-4">
-                      <h1 className="text-lg font-medium">Name</h1>
-                      <p className="text-lg">{profile?.username}</p>
-                    </div>
-
-                    <div className="gap-4">
-                      <h1 className="text-lg font-medium">Email Address</h1>
-                      <p className="text-lg">{profile?.email}</p>
-                    </div>
-
-                    <div className="gap-4">
-                      <h1 className="text-lg font-medium">Phone Number</h1>
-                      <p className="text-lg">{profile?.phone}</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
-            </div>
 
-            <div>
-              <h1 className="text-left text-2xl font-medium">
-                Favorite Listings
-              </h1>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-6">
-                {favoritelistings.map((listing) => (
-                  <div key={listing.id} className="transform scale-90">
-                    <ListingCard
-                      postId={listing.id}
-                      name={listing.title}
-                      imagePath={listing.imageUrl}
-                      distance={listing.distance}
-                      duration={listing.dates}
-                      price={`$${listing.price} / month`}
-                      isRiceStudent={listing.renterType === "Rice Student"}
-                      isFavorited={listing.isFavorite}
-                    />
-                  </div>
-                ))}
+              <div>
+                <h1 className="text-left text-2xl font-medium">
+                  Your Listings
+                </h1>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                  {listings.map((listing) => (
+                    <div key={listing.id} className="transform scale-90 -gap-1">
+                      <ListingCard
+                        postId={listing.id}
+                        name={listing.title}
+                        imagePath={listing.imageUrl}
+                        distance={listing.distance}
+                        duration={listing.dates}
+                        price={`$${listing.price} / month`}
+                        isRiceStudent={listing.renterType === "Rice Student"}
+                        isFavorited={listing.isFavorite}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            </main>
+          )}
 
-            <div>
-              <h1 className="text-left text-2xl font-medium">Your Listings</h1>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {listings.map((listing) => (
-                  <div key={listing.id} className="transform scale-90 -gap-1">
-                    <ListingCard
-                      postId={listing.id}
-                      name={listing.title}
-                      imagePath={listing.imageUrl}
-                      distance={listing.distance}
-                      duration={listing.dates}
-                      price={`$${listing.price} / month`}
-                      isRiceStudent={listing.renterType === "Rice Student"}
-                      isFavorited={listing.isFavorite}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </main>
+          {!profile && <LoadingCircle />}
         </div>
       </main>
     </>
