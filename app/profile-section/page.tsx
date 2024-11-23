@@ -218,7 +218,7 @@ export default function Index() {
 
   return (
     <>
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 pb-8">
         <div className="flex flex-col items-center">
           <Navbar />
 
