@@ -177,6 +177,7 @@ export default function Index() {
                   price={`$${listing.price} / month`}
                   isRiceStudent={listing.renterType === "Rice Student"}
                   isFavorited={listing.isFavorite}
+                  ownListing={false}
                 />
               </div>
             ))}
@@ -198,6 +199,7 @@ export default function Index() {
                   price={`$${listing.price} / month`}
                   isRiceStudent={listing.renterType === "Rice Student"}
                   isFavorited={listing.isFavorite}
+                  ownListing={true}
                 />
               </div>
             ))}

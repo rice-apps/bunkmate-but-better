@@ -142,6 +142,7 @@ export default function Index() {
                   price={`$${listing.price} / month`}
                   isRiceStudent={true}
                   isFavorited={true}
+                  ownListing={false}
                 />
               </div>
             ))}

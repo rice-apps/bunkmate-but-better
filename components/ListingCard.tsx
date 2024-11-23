@@ -7,6 +7,7 @@ import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { IconContext } from "react-icons";
 
+
 interface CardProps {
   postId: string;
   name: string;
@@ -16,6 +17,7 @@ interface CardProps {
   price: string;
   isRiceStudent: boolean;
   isFavorited: boolean;
+  ownListing: boolean;
 }
 
 const ListingCard: React.FC<CardProps> = ({
@@ -27,6 +29,7 @@ const ListingCard: React.FC<CardProps> = ({
   price,
   isRiceStudent,
   isFavorited,
+  ownListing,
 }) => {
   const [favorite, setFavorite] = useState(isFavorited);
   const router = useRouter();
@@ -65,11 +68,12 @@ const ListingCard: React.FC<CardProps> = ({
                 price,
                 isRiceStudent,
                 isFavorited,
+                ownListing,
               });
             }}
           >
             <IconContext.Provider value={{}}>
-              {favorite ? (
+              {favorite && !ownListing ? (
                 <Heart
                   className="fill-[#FF7439] text-white"
                   style={{
@@ -79,7 +83,7 @@ const ListingCard: React.FC<CardProps> = ({
                     strokeWidth: "1.5px",
                   }}
                 />
-              ) : (
+              ) : !favorite && !ownListing ? (
                 <Heart
                   style={{
                     fill: "rgba(0, 0, 0, 0.5)",
@@ -90,6 +94,10 @@ const ListingCard: React.FC<CardProps> = ({
                   }}
                   className="text-white"
                 />
+              ) : (
+                <div className="flex rounded-full bg-white place-items-center justify-center w-[35px] h-[35px] hover:scale-105 transition-transform duration-100">
+                  <Image src="/Vector.png" width={15} height={15} alt="edit"/>
+                </div>
               )}
             </IconContext.Provider>
           </Button>
