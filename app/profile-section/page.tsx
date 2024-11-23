@@ -8,6 +8,9 @@ import { useRouter } from "next/navigation";
 import { FaPhoneAlt } from 'react-icons/fa';
 import { IoMail } from 'react-icons/io5';
 import Image from 'next/image';
+import Link from 'next/link';
+import { RiPencilFill } from 'react-icons/ri';
+
 
 type Listing = {
   id: string;
@@ -106,27 +109,47 @@ export default function Index() {
         
 
           <main className='flex flex-col gap-[20px] w-full h-full items-left mb-20'>
+          
           <div className='flex flex-col text-left sm:items-start ml-5'>
-          <h1 className="text-left text-2xl font-semibold">Profile</h1>
-          <h1 className="text-left text-sm mb-2">Welcome to your profile page! Here, you can access your profile information, your favorites, and your lisitings</h1>
-            </div>
-            <div className='p-5 flex flex-col sm:flex-row gap-[42.7px]'>
+            <h1 className="text-left text-[32px] font-bold">Profile</h1>
+            <h1 className="text-left text-[20px] mb-2 mt-5">Welcome to your profile page! Here, you can access your profile information, your favorites, and your lisitings</h1>
+          </div>
+        
 
               {/* Profile Image and Rice Affiliate text */}
-              <div className='flex flex-col items-center sm:items-start'>
-              <h1 className="text-left text-2xl font-semibold mb-6">Your Profile Information</h1>
+             
+          <div className='flex flex-col items-center sm:items-start mt-10 ml-[16px]'>
 
-                <h1 className='text-lg sm:text-xl'>Profile Picture</h1>
-                <div className='relative w-32 h-32 overflow-hidden rounded-full mb-5'>
-                  <Image 
-                    src={'/profile_pic.jpeg'} 
-                    fill={true}
-                    alt='profile pic' 
-                    className='object-cover'
-                  />
-                </div>
-                <h1 className="text-lg font-semibold mt-10">Rice Affiliate</h1>
-                <div className='flex flex-row gap-[5.1px] items-center mt-2 sm:mt-0'>
+            <div className='flex flex-row gap-[800px]'>
+              <h1 className="text-left text-[30px] text-#000000 font-medium mb-[60px]">Your Profile Information</h1>
+              
+              <Link href='/edit-profile'>
+                <button className="group mr-50mr-50 w-[200px] h-[43px] bg-[#F0F0F0] gap-[5.69px] hover:bg-[#777777] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-105">
+                  <RiPencilFill className="text-[#777777] group-hover:fill-[#F0F0F0]"/>
+                  <p className="text-[16px] text-[#777777] group-hover:text-[#F0F0F0] font-600">EDIT PROFILE</p>
+                </button>
+              </Link>
+            </div>
+
+        <div className='flex flex-row items-center sm:items-start gap-[150px]'>
+          <div className='flex flex-col items-center sm:items-start'>
+
+            <h1 className='text-[24px] font-semibold'>Profile Picture</h1>
+
+          
+            <div className='relative w-[196px] h-[196px] border-[4px] overflow-hidden rounded-full mt-7'>
+                <Image 
+                  src={'/profile_pic.jpeg'} 
+                  fill={true}
+                  alt='profile pic' 
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" 
+                  className='object-cover'
+                />
+            </div>
+            
+            <h1 className="text-[24px] font-medium mt-10">Rice Affiliate</h1>
+
+            <div className='flex flex-row gap-[5.1px] items-center mt-8 sm:mt-5'>
                   <Image 
                     src={'/owl.png'} 
                     width={20}  
@@ -135,37 +158,34 @@ export default function Index() {
                     className='w-5 h-5 scale-75'
                   />
                   <p className='text-[#FF7439] text-sm'>Rice Student</p>
-                </div>              
-            </div>
+             </div>    
+          </div>
 
-              {/* Additional Information */}
-              <div className='flex flex-col justify-center'>
+             <div className="flex flex-col sm:mt-0 sm:ml-[20px]">
+                <div className="flex flex-col  mb-7">
+                  <h1 className="text-[24px] font-medium mb-[2.27px]">Name</h1>
+                  <p className="text-[16px] text-gray-400">First Last</p>
+                </div>
 
-                <div className='flex flex-col mt-4'>
-                  <div className='flex flex-col mb-7'>
-                    <h1 className='text-lg font-semibold mb-[2.27px]'>Name</h1>
-                    <p className='text-lg'>Lucy Han</p>
-                  </div>
-                  
-                  <div className='mb-7'>
-                    <h1 className='text-lg font-semibold mb-[2.27px]'>Email Address</h1>
-                    <p className='text-xs text-gray-400'>riceapps@rice.edu</p>
-                  </div>
-                  
-                  <div className='mb-7 mt-8'>
-                    <h1 className='text-lg font-semibold mb-[2.27px]'>Phone Number</h1>
-                    <p className='text-xs text-gray-400'>(555) 555-5555</p>
-                  </div>
+                <div className="flex flex-col mt-7  mb-7">
+                  <h1 className="text-[24px] font-medium mb-[2.27px]">Email Address</h1>
+                  <p className="text-[16px] text-gray-400">netid@rice.edu</p>
+                </div>
+
+                <div className="flex flex-col mt-7 mb-7">
+                  <h1 className="text-[24px] font-medium mb-[2.27px]">Phone Number</h1>
+                  <p className="text-[16px] text-gray-400">+1 (XXX) XXX-XXXX</p>
                 </div>
               </div>
             </div>
-          </main>
+          </div>
+        </main>
 
-          <div className="container">
-            <h1 className="text-left text-xl font-semibold mb-1">Favorite Listings</h1>
+          <div className="container mx-auto px-4 py-8">
+            <h1 className="text-left text-[30px] font-medium mb-[-20px] ">Your Favorite Listings</h1>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {favoritelistings.map((listing) => (
               <div key={listing.id} className="transform scale-90">
                 <ListingCard
@@ -182,13 +202,13 @@ export default function Index() {
             ))}
           </div>
 
-          <div className="container">
-            <h1 className="text-left text-xl font-semibold mb-1 mt-10">Your Listings</h1>
+          <div className="container mx-auto px-4 py-8">
+            <h1 className="text-left text-[30px] font-medium mt-10 mb-[-20px]">Your Listings</h1>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {listings.map((listing) => (
-              <div key={listing.id} className="transform scale-90 -gap-1">
+              <div key={listing.id} className="transform scale-90">
                 <ListingCard
                   postId={listing.id}
                   name={listing.title}
