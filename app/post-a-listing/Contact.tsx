@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 // Contact Component
-const Contact = ({ formData, setFormData }: { formData: any; setFormData: any }) => (
+const Contact = ({ formData, setFormData, handleSubmit }: { formData: any; setFormData: any, handleSubmit: any }) => (
   <div className="space-y-8 w-full">
     <div>
       <h2 className="text-2xl font-medium mb-4">Affiliation</h2>
@@ -67,7 +67,7 @@ const Contact = ({ formData, setFormData }: { formData: any; setFormData: any })
     </div>
 
     <div className="flex justify-end">
-      <Button className="bg-[#FF7439] hover:bg-[#FF7439]/90 rounded-lg px-6">
+      <Button onClick={handleSubmit} className="bg-[#FF7439] hover:bg-[#FF7439]/90 rounded-lg px-6">
         Post
       </Button>
     </div>
