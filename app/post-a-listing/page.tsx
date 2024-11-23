@@ -33,8 +33,8 @@ interface FormData {
   photos: File[];
   photoLabels: string[];
   affiliation: string;
-  name: string;
-  email: string;
+  // name: string;
+  // email: string;
   phone: string;
 }
 
@@ -189,7 +189,6 @@ const PostListing = () => {
           setFormData={setFormData}
           onNext={handleNextCategory}
         />;
-<<<<<<< HEAD
         case 'duration':
           return <Duration 
             formData={formData} 
@@ -204,10 +203,6 @@ const PostListing = () => {
             />;
       case 'profile':
         return <Profile formData={formData} setFormData={setFormData}/>;
-=======
-      case 'contact':
-        return <Contact handleSubmit={handleSubmit} formData={formData} setFormData={setFormData}/>;
->>>>>>> main
       default:
         return <TitleDescription
           formData={formData}
@@ -243,17 +238,10 @@ const PostListing = () => {
       name: 'Photos',
       completed: formData.photos.length >= 1
     },
-<<<<<<< HEAD
     { 
       id: 'profile', 
       name: 'Profile', 
       completed: Boolean(formData.phone)
-=======
-    {
-      id: 'contact',
-      name: 'Contact',
-      completed: Boolean(formData.name && formData.email && formData.phone)
->>>>>>> main
     }
   ], [formData]);
 
@@ -309,15 +297,8 @@ const PostListing = () => {
                 </div>
               </div>
             </div>
-
-            <div className="w-px bg-[#777777]"></div>
-
             {/* Form Content */}
-<<<<<<< HEAD
-            <div className="flex-1 w-[37.5rem]">
-=======
             <div className="flex-1 ml-64 pl-16">
->>>>>>> main
               {renderComponent()}
             </div>
           </div>
