@@ -5,6 +5,7 @@ import { FiUpload } from "react-icons/fi";
 import { useState } from "react";
 import ProfilePictureModal from "./ProfilePictureModal";
 import Link from "next/link";
+import { FaChevronLeft } from "react-icons/fa6";
 
 // Profile Component
 
@@ -58,9 +59,11 @@ import Link from "next/link";
 const Profile = ({
   formData,
   setFormData,
+  onBack,
 }: {
   formData: any;
   setFormData: any;
+  onBack: () => void;
 }) => (
   <div className="space-y-8 w-full">
     <div>
@@ -173,7 +176,14 @@ const Profile = ({
       </div>
     </div>
 
-    <div className="flex justify-end">
+    <div className="flex justify-between">
+      <Button
+          className='rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90'
+          onClick={onBack}
+        >
+          <FaChevronLeft />
+          <p>Back</p>
+        </Button>
       <Button className="bg-[#FF7439] hover:bg-[#FF7439]/90 rounded-lg px-6">
         Post
       </Button>

@@ -170,39 +170,45 @@ const PostListing = () => {
           formData={formData}
           setFormData={setFormData}
           onNext={handleNextCategory}
+          onBack={handlePreviousCategory}
         />;
       case 'location':
         return <Location
           formData={formData}
           setFormData={setFormData}
           onNext={handleNextCategory}
+          onBack={handlePreviousCategory}
         />;
       case 'duration':
         return <Duration
           formData={formData}
           setFormData={setFormData}
           onNext={handleNextCategory}
+          onBack={handlePreviousCategory}
         />;
       case 'photos':
         return <Photos
           formData={formData}
           setFormData={setFormData}
           onNext={handleNextCategory}
+          onBack={handlePreviousCategory}
         />;
         case 'duration':
           return <Duration 
             formData={formData} 
             setFormData={setFormData} 
             onNext={handleNextCategory}
+            onBack={handlePreviousCategory}
           />;
           case 'photos':
             return <Photos 
               formData={formData} 
               setFormData={setFormData} 
               onNext={handleNextCategory}
+              onBack={handlePreviousCategory}
             />;
       case 'profile':
-        return <Profile formData={formData} setFormData={setFormData}/>;
+        return <Profile formData={formData} setFormData={setFormData} onBack={handlePreviousCategory}/>;
       default:
         return <TitleDescription
           formData={formData}
@@ -249,6 +255,13 @@ const PostListing = () => {
     const currentIndex = categories.findIndex(cat => cat.id === selectedCategory);
     if (currentIndex < categories.length - 1) {
       setSelectedCategory(categories[currentIndex + 1].id);
+    }
+  };
+
+  const handlePreviousCategory = () => {
+    const currentIndex = categories.findIndex(cat => cat.id === selectedCategory);
+    if (currentIndex > 0) {
+      setSelectedCategory(categories[currentIndex - 1].id);
     }
   };
 

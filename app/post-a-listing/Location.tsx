@@ -2,12 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import PreviewButton from "./PreviewButton";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
 // Location Component
-const Location = ({ formData, setFormData, onNext }: {
+const Location = ({ formData, setFormData, onNext, onBack }: {
   formData: any;
   setFormData: any;
   onNext: () => void;
+  onBack: () => void;
 }) => {
   const isComplete = Boolean(formData.address);
 
@@ -64,26 +66,29 @@ const Location = ({ formData, setFormData, onNext }: {
       </div>
 
       <div className="flex flex-col space-y-2">
-        <div className="flex justify-end">
-          <Button
-            onClick={onNext}
-            disabled={!isComplete}
-            className={`rounded-lg px-6 ${isComplete
-              ? 'bg-[#FF7439] hover:bg-[#FF7439]/90'
-              : 'bg-gray-300'
-              }`}
-          >
-            Next
-          </Button>
-        </div>
+      <div className="flex justify-between">
+      <Button
+          className='rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90'
+          onClick={onBack}
+        >
+          <FaChevronLeft />
+          <p>Back</p>
+        </Button>
+        <Button
+          className={`rounded-lg px-6 flex items-center ${isComplete
+            ? 'bg-[#FF7439] hover:bg-[#FF7439]/90'
+            : 'bg-gray-300'
+            }`}
+          onClick={onNext}
+          disabled={!isComplete}
+        >
+          <p>Next</p>
+          <FaChevronRight />
+        </Button>
+      </div>
 
         {/* Completion status */}
-        {!isComplete && (
-          <div className="text-sm text-gray-500 text-right mt-2">
-            To continue, please fill in:
-            {!formData.address && <div>• Property address</div>}
-          </div>
-        )}
+        
       </div>
     </div>
   );

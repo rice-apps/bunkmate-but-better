@@ -2,11 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from 'next/image';
 import PreviewButton from "./PreviewButton";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
-const Photos = ({ formData, setFormData, onNext }: {
+const Photos = ({ formData, setFormData, onNext, onBack }: {
   formData: any;
   setFormData: any;
   onNext: () => void;
+  onBack: () => void
 }) => {
   // Check if we have at least 5 photos
   const isComplete = formData.photos.length >= 5;
@@ -116,26 +118,28 @@ const Photos = ({ formData, setFormData, onNext }: {
       </div>
 
       <div className="flex flex-col space-y-2">
-        <div className="flex justify-end">
-          <Button
-            onClick={onNext}
-            disabled={!isComplete}
-            className={`rounded-lg px-6 ${isComplete
-              ? 'bg-[#FF7439] hover:bg-[#FF7439]/90'
-              : 'bg-gray-300'
-              }`}
-          >
-            Next
-          </Button>
-        </div>
+      <div className="flex justify-between">
+        <Button
+          className='rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90'
+          onClick={onBack}
+        >
+          <FaChevronLeft />
+          <p>Back</p>
+        </Button>
+        <Button
+          className={`rounded-lg px-6 flex items-center ${isComplete
+            ? 'bg-[#FF7439] hover:bg-[#FF7439]/90'
+            : 'bg-gray-300'
+            }`}
+          onClick={onNext}
+          disabled={!isComplete}
+        >
+          <p>Next</p>
+          <FaChevronRight />
+        </Button>
+      </div>
 
         {/* Completion status */}
-        {!isComplete && (
-          <div className="text-sm text-gray-500 text-right">
-            To continue, please:
-            <div>• Upload {5 - formData.photos.length} more photo{formData.photos.length === 4 ? '' : 's'}</div>
-          </div>
-        )}
       </div>
     </div>
   );
