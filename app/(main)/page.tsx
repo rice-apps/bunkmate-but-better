@@ -1,3 +1,5 @@
+//(main)/page.tsx
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -7,124 +9,120 @@ import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 
-// type Listing = {
-//   id: string;
-//   title: string;
-//   distance: string;
-//   dates: string;
-//   price: number;
-//   location: string;
-//   imageUrl: string;
-//   renterType: "Rice Student" | string;
-//   isFavorite: boolean;
-// };
-
 interface Listing {
   address: string;
-  created_at: string; // ISO date string
+  created_at: string;
   description: string;
   duration_notes: string;
-  end_date: string; // ISO date string
+  end_date: string;
   id: number;
-  image_paths: string[]; // Array of image path strings
+  image_paths: string[];
   phone_number: string;
   price: number;
   price_notes: string;
-  start_date: string; // ISO date string
+  start_date: string;
   title: string;
-  user_id: string; // Allow null if `user_id` is not provided
+  user_id: string;
 }
 
-// const listings: Listing[] = [
-//   {
-//     id: "1",
-//     title: "Life Tower",
-//     distance: "1.2 miles away",
-//     dates: "August - May",
-//     price: 1350,
-//     location: "Houston, TX",
-//     imageUrl: "/cherry_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "2",
-//     title: "The Nest on Dryden jawiojeiwoajeiwo",
-//     distance: "0.7 miles away",
-//     dates: "August - May",
-//     price: 1400,
-//     location: "Houston, TX",
-//     imageUrl: "/hobbit_house.jpeg",
-//     renterType: "Not Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "3",
-//     title: "The Nest on Dryden",
-//     distance: "0.7 miles away",
-//     dates: "August - May",
-//     price: 1400,
-//     location: "Houston, TX",
-//     imageUrl: "/hobbit_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: false,
-//   },
-//   {
-//     id: "4",
-//     title: "The Nest on Dryden",
-//     distance: "0.7 miles away",
-//     dates: "August - May",
-//     price: 1400,
-//     location: "Houston, TX",
-//     imageUrl: "/house1.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: false,
-//   },
-//   {
-//     id: "5",
-//     title: "The Nest on Dryden",
-//     distance: "0.7 miles away",
-//     dates: "August - May",
-//     price: 1400,
-//     location: "Houston, TX",
-//     imageUrl: "/house1.jpeg",
-//     renterType: "Not Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "6",
-//     title: "pretty house jeiwoajeiowjaoieaweiwoe",
-//     distance: "15.8 miles away",
-//     dates: "August - May",
-//     price: 1400,
-//     location: "Houston, TX",
-//     imageUrl: "/modern_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: true,
-//   },
-//   // Add more listings as needed
-// ];
+const LoadingCard = () => (
+  <div className="w-full">
+    <div className="relative rounded-2xl overflow-hidden bg-gray-200 animate-pulse">
+      {/* Image placeholder - using aspect ratio to match your images */}
+      <div className="relative w-full aspect-square bg-gray-300" />
+      
+      {/* Content placeholders */}
+      <div className="mt-4 space-y-3 p-4">
+        <div className="flex justify-between items-center">
+          {/* Title placeholder */}
+          <div className="h-6 bg-gray-300 rounded w-3/5" />
+          {/* Rice Student badge placeholder */}
+          <div className="flex items-center gap-1 bg-gray-300 rounded h-6 w-1/4" />
+        </div>
+        {/* Details placeholders */}
+        <div className="space-y-2.5">
+          <div className="h-4 bg-gray-300 rounded w-4/5" />
+          <div className="h-4 bg-gray-300 rounded w-3/4" />
+          <div className="h-4 bg-gray-300 rounded w-2/4" />
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 export default function Index() {
   const supabase = createClient();
   const router = useRouter();
   const [listings, setListings] = useState<Listing[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [loadingCardCount, setLoadingCardCount] = useState(4);
+
+  useEffect(() => {
+    const updateLoadingCardCount = () => {
+      const width = window.innerWidth;
+      if (width >= 1024) setLoadingCardCount(8); // lg: 4 columns
+      else if (width >= 768) setLoadingCardCount(6); // md: 3 columns
+      else if (width >= 640) setLoadingCardCount(4); // sm: 2 columns
+      else setLoadingCardCount(2); // mobile: 1 column
+    };
+
+    // Set initial count
+    updateLoadingCardCount();
+
+    // Add resize listener
+    window.addEventListener('resize', updateLoadingCardCount);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', updateLoadingCardCount);
+  }, []);
 
   useEffect(() => {
     async function fetchPosts() {
       try {
+        setIsLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
-        const { data } = await supabase.from('listings').select();
-        setListings(data);
         
+        if (!user) {
+          router.push('/sign-in');
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from('listings')
+          .select()
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        setListings(data);
       }
       catch (error) {
         console.error(error);
+        setError('Failed to load listings');
       }
-      
+      finally {
+        setIsLoading(false);
+      }
     }
     fetchPosts();
-  }, [])
+  }, [router]);
+
+  const renderLoadingState = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 min-w-[90vw]">
+      {[...Array(loadingCardCount)].map((_, index) => (
+        <LoadingCard key={`loading-${index}`} />
+      ))}
+    </div>
+  );
+
+  const renderError = () => (
+    <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+      <p className="text-red-500">{error}</p>
+      <Button onClick={() => window.location.reload()}>
+        Try Again
+      </Button>
+    </div>
+  );
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -135,22 +133,27 @@ export default function Index() {
   return (
     <>
       <Button onClick={handleLogout}>Logout</Button>
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {listings && listings.map((listing) => (
-            <div key={listing.id} className="w-full">
-              <ListingCard
-                postId={listing.id.toString()}
-                name={listing.title}
-                imagePath={getImagePublicUrl("listing_images", (listing.image_paths[0]))}
-                distance={"2 miles away"}
-                duration={`${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`}
-                price={`$${listing.price} / month`}
-                isRiceStudent={true}
-                isFavorited={true}
-              />
-            </div>
-          ))}
+          {isLoading ? renderLoadingState() : error ? renderError() :
+          (
+            <>
+            {listings && listings.map((listing) => (
+              <div key={listing.id} className="w-full">
+                <ListingCard
+                  postId={listing.id.toString()}
+                  name={listing.title}
+                  imagePath={getImagePublicUrl("listing_images", (listing.image_paths[0]))}
+                  distance={"2 miles away"}
+                  duration={`${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`}
+                  price={`$${listing.price} / month`}
+                  isRiceStudent={true}
+                  isFavorited={true}
+                />
+              </div>
+            ))}
+            </>
+          )}
         </div>
       </main>
     </>
