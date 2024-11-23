@@ -1,6 +1,8 @@
 "use client";
 
 import ListingCard from "@/components/ListingCard";
+import YourListingCard from "@/components/YourListingCard";
+
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
@@ -10,6 +12,7 @@ import { IoMail } from 'react-icons/io5';
 import Image from 'next/image';
 import Link from 'next/link';
 import { RiPencilFill } from 'react-icons/ri';
+import { MdLogout } from "react-icons/md";
 
 
 type Listing = {
@@ -123,12 +126,20 @@ export default function Index() {
             <div className='flex flex-row gap-[800px]'>
               <h1 className="text-left text-[30px] text-#000000 font-medium mb-[60px]">Your Profile Information</h1>
               
+              <div className='flex flex-row gap-[20px]'>
               <Link href='/edit-profile'>
                 <button className="group mr-50mr-50 w-[200px] h-[43px] bg-[#F0F0F0] gap-[5.69px] hover:bg-[#777777] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-105">
                   <RiPencilFill className="text-[#777777] group-hover:fill-[#F0F0F0]"/>
                   <p className="text-[16px] text-[#777777] group-hover:text-[#F0F0F0] font-600">EDIT PROFILE</p>
                 </button>
               </Link>
+
+                <button className="w-[160px] h-[43px] bg-[#CC3333] gap-[5.69px] hover:bg-[#990000] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-95">
+                  <MdLogout className="text-[#FFFFFF]" />
+                  <p className="text-[16px] text-[#FFFFFF] font-600">Log out</p>
+                </button>
+              </div>
+
             </div>
 
         <div className='flex flex-row items-center sm:items-start gap-[150px]'>
@@ -209,7 +220,7 @@ export default function Index() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {listings.map((listing) => (
               <div key={listing.id} className="transform scale-90">
-                <ListingCard
+                <YourListingCard
                   postId={listing.id}
                   name={listing.title}
                   imagePath={listing.imageUrl}
