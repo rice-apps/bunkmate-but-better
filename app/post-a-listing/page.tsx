@@ -48,10 +48,10 @@ const PostListing = () => {
     photos: [],
     photoLabels: {},
     affiliation: 'rice',
-    profilePicture: '',
-    firstName: '',
-    lastName: '',
-    email: '',
+    // profilePicture: '',
+    // firstName: '',
+    // lastName: '',
+    // email: '',
     phone: '',
     startDate: '',
     endDate: '',
@@ -150,7 +150,7 @@ const PostListing = () => {
               onNext={handleNextCategory}
             />;
       case 'profile':
-        return <Profile formData={formData} setFormData={setFormData} />;
+        return <Profile formData={formData} setFormData={setFormData}/>;
       default:
         return <TitleDescription 
         formData={formData} 
@@ -189,7 +189,7 @@ const PostListing = () => {
     { 
       id: 'profile', 
       name: 'Profile', 
-      completed: Boolean(formData.name && formData.email && formData.phone)
+      completed: Boolean(formData.phone)
     }
   ], [formData]);
 
