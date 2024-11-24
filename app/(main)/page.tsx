@@ -143,11 +143,6 @@ export default function Index() {
   return (
     <>
       <main className="container mx-auto px-4 py-8">
-        {!listings && (
-          <div className="flex justify-center items-center h-64">
-            <LoadingCircle />
-          </div>
-        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {isLoading ? renderLoadingState() : error ? renderError() :
           (
