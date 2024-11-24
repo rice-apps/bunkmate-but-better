@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import { createClient } from "@/utils/supabase/client";
 
 interface CardProps {
   postId: string;
@@ -44,10 +45,27 @@ const ListingCard: React.FC<CardProps> = ({
   const [favorite, setFavorite] = useState(isFavorited);
   const router = useRouter();
 
-  const handleAddOrRemoveFavorite = (e: React.MouseEvent, card: CardProps) => {
-    e.stopPropagation(); // Prevent navigation when clicking the heart
-    setFavorite(!favorite);
-    // Add API call to modify isFavorited
+  const handleAddOrRemoveFavorite = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    // Add API call to modify isFavorited (actual attribute in table)
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    try {
+      if (favorite) {
+        await supabase.from('users_favorites').delete().eq('user_id', user?.id).eq('listing_id', postId);
+      } else {
+        await supabase.from('users_favorites').insert({
+          user_id: user?.id,
+          listing_id: postId
+        });
+      }
+  
+      setFavorite(!favorite);
+    } catch (error) {
+      alert("Failed to favorite/unfavorite a listing");
+    }
+    
   };
 
   const handleCardClick = () => {
@@ -68,19 +86,7 @@ const ListingCard: React.FC<CardProps> = ({
           <Button
             className="absolute top-4 right-4 w-10 h-10 p-0 border-none hover:bg-transparent hover:text-white"
             variant="ghost"
-            onClick={(e) => {
-              handleAddOrRemoveFavorite(e, {
-                postId,
-                name,
-                imagePath,
-                distance,
-                duration,
-                price,
-                isRiceStudent,
-                isFavorited,
-                ownListing,
-              });
-            }}
+            onClick={handleAddOrRemoveFavorite}
           >
             <IconContext.Provider value={{}}>
               {favorite && !ownListing ? (

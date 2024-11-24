@@ -76,8 +76,6 @@ const ModularDropDown: React.FC<ModularDropDownProps> = ({ allOptions, title }) 
   );
 }
 
-
-
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const supabase = createClient();
