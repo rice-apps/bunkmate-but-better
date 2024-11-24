@@ -6,6 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { IconContext } from "react-icons";
+import { MdEdit } from "react-icons/md";
+import { RiDeleteBinLine } from "react-icons/ri";
+
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+import { createClient } from "@/utils/supabase/client";
 
 interface CardProps {
   postId: string;
@@ -16,6 +28,7 @@ interface CardProps {
   price: string;
   isRiceStudent: boolean;
   isFavorited: boolean;
+  ownListing: boolean;
 }
 
 const ListingCard: React.FC<CardProps> = ({
@@ -27,14 +40,32 @@ const ListingCard: React.FC<CardProps> = ({
   price,
   isRiceStudent,
   isFavorited,
+  ownListing,
 }) => {
   const [favorite, setFavorite] = useState(isFavorited);
   const router = useRouter();
 
-  const handleAddOrRemoveFavorite = (e: React.MouseEvent, card: CardProps) => {
-    e.stopPropagation(); // Prevent navigation when clicking the heart
-    setFavorite(!favorite);
-    // Add API call to modify isFavorited
+  const handleAddOrRemoveFavorite = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    // Add API call to modify isFavorited (actual attribute in table)
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    try {
+      if (favorite) {
+        await supabase.from('users_favorites').delete().eq('user_id', user?.id).eq('listing_id', postId);
+      } else {
+        await supabase.from('users_favorites').insert({
+          user_id: user?.id,
+          listing_id: postId
+        });
+      }
+  
+      setFavorite(!favorite);
+    } catch (error) {
+      alert("Failed to favorite/unfavorite a listing");
+    }
+    
   };
 
   const handleCardClick = () => {
@@ -55,21 +86,10 @@ const ListingCard: React.FC<CardProps> = ({
           <Button
             className="absolute top-4 right-4 w-10 h-10 p-0 border-none hover:bg-transparent hover:text-white"
             variant="ghost"
-            onClick={(e) => {
-              handleAddOrRemoveFavorite(e, {
-                postId,
-                name,
-                imagePath,
-                distance,
-                duration,
-                price,
-                isRiceStudent,
-                isFavorited,
-              });
-            }}
+            onClick={handleAddOrRemoveFavorite}
           >
             <IconContext.Provider value={{}}>
-              {favorite ? (
+              {favorite && !ownListing ? (
                 <Heart
                   className="fill-[#FF7439] text-white"
                   style={{
@@ -79,7 +99,7 @@ const ListingCard: React.FC<CardProps> = ({
                     strokeWidth: "1.5px",
                   }}
                 />
-              ) : (
+              ) : !favorite && !ownListing ? (
                 <Heart
                   style={{
                     fill: "rgba(0, 0, 0, 0.5)",
@@ -90,6 +110,25 @@ const ListingCard: React.FC<CardProps> = ({
                   }}
                   className="text-white"
                 />
+              ) : (
+                <DropdownMenu key={"editTrigger"}>
+                  <DropdownMenuTrigger asChild>
+                    <div className="flex rounded-full bg-white place-items-center justify-center w-[35px] h-[35px] hover:scale-110 transition-transform duration-100">
+                        <MdEdit className="text-[#FF7439]" style={{ width: '18px', height: '18px' }} />
+                    </div>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent className=''>
+                    <DropdownMenuItem key={"edit"} className="flex justify-left group">
+                      <MdEdit className="group-hover:text-[#FF7439]" />
+                      <p className='group-hover:text-[#FF7439] text-left'>Edit</p>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem key={"delete"} className="flex justify-left group">
+                      <RiDeleteBinLine className="group-hover:text-[#FF7439]" />
+                      <p className='group-hover:text-[#FF7439] text-left'>Delete</p>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </IconContext.Provider>
           </Button>

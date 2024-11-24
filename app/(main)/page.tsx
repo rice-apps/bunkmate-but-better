@@ -2,12 +2,12 @@
 
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import ListingCard from "@/components/ListingCard";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import LoadingCircle from "@/components/LoadingCircle";
 
 interface Listing {
   address: string;
@@ -25,6 +25,9 @@ interface Listing {
   user_id: string;
 }
 
+interface Favorite {
+  listing_id: number;
+}
 const LoadingCard = () => (
   <div className="w-full">
     <div className="relative rounded-2xl overflow-hidden bg-gray-200 animate-pulse">
@@ -54,6 +57,7 @@ export default function Index() {
   const supabase = createClient();
   const router = useRouter();
   const [listings, setListings] = useState<Listing[] | null>(null);
+  const [favorites, setFavorites] = useState<{[key: number]: boolean}>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadingCardCount, setLoadingCardCount] = useState(4);
@@ -82,6 +86,18 @@ export default function Index() {
       try {
         setIsLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
+        const { data: listings } = await supabase.from('listings').select();
+        const { data: favorites } = await supabase.from('users_favorites').select('listing_id').eq('user_id', user?.id);
+
+        setListings(listings);
+
+        // Convert the list of favorites to an object for faster lookups.
+        const favoritesObject: { [key: number]: boolean } = {};
+        favorites?.forEach((favorite: Favorite) => {
+          favoritesObject[favorite.listing_id] = true;
+        });
+
+        setFavorites(favoritesObject);
         
         if (!user) {
           router.push('/sign-in');
@@ -127,6 +143,11 @@ export default function Index() {
   return (
     <>
       <main className="container mx-auto px-4 py-8">
+        {!listings && (
+          <div className="flex justify-center items-center h-64">
+            <LoadingCircle />
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {isLoading ? renderLoadingState() : error ? renderError() :
           (
@@ -141,7 +162,8 @@ export default function Index() {
                   duration={`${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`}
                   price={`$${listing.price} / month`}
                   isRiceStudent={true}
-                  isFavorited={true}
+                  ownListing={false}
+                  isFavorited={listing.id in favorites}
                 />
               </div>
             ))}
@@ -150,15 +172,5 @@ export default function Index() {
         </div>
       </main>
     </>
-    // <div className="min-h-screen">
-    //   <Navbar />
-    //   <main className="container mx-auto px-4 py-8">
-    //     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    //       {listings.map((listing, index) => (
-    //         <ListingCard key={index} />
-    //       ))}
-    //     </div>
-    //   </main>
-    // </div>
   );
 }
