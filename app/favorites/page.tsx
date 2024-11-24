@@ -2,9 +2,10 @@
 
 import ListingCard from "@/components/ListingCard";
 import Navbar from "@/components/Navbar";
-import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import { BsArrowUpCircleFill } from "react-icons/bs";
+
 
 type Listing = {
   id: string;
@@ -162,10 +163,17 @@ export default function Favorites() {
     router.push("/sign-in");
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   return (
-    <div>
+    <div className = "mb-20">
       <Navbar />
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-0">
         <div className="flex justify-between items-center mb-6">
           <h1
             className="font-dm-sans text-[32px] font-bold leading-[41.66px] text-left"
@@ -176,6 +184,7 @@ export default function Favorites() {
           >
             Your Favorite Listings
           </h1>
+
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {listings.map((listing) => (
@@ -194,6 +203,13 @@ export default function Favorites() {
           ))}
         </div>
       </div>
+        {/* Scroll to Top Icon */}
+        <div
+          className="group fixed bottom-9 right-9 p-0.5 cursor-pointer rounded-full shadow-lg bg-[#FF7439] border-[#FF7439] hover:bg-white"
+          onClick={scrollToTop}
+        >
+          <BsArrowUpCircleFill className="w-16 h-16 text-white group-hover:text-[#FF7439]" />
+        </div>
     </div>
   );
 }

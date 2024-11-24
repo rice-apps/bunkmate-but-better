@@ -1,107 +1,107 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import PreviewButton from "./PreviewButton";
+import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
 
 // Pricing Component
-const Pricing = ({ formData, setFormData, onNext }: { 
-  formData: any; 
+const Pricing = ({ formData, setFormData, onNext, onBack }: {
+  formData: any;
   setFormData: any;
   onNext: () => void;
+  onBack: () => void;
 }) => {
-  const isComplete = Boolean(formData.monthlyRent && formData.utilities);
+  const isComplete = Boolean(formData.price);
 
-  const handleMonthlyRentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Ensure the rent is a positive number
     if (Number(value) >= 0 || value === '') {
-      setFormData({...formData, monthlyRent: value});
+      setFormData({ ...formData, price: value });
     }
   };
 
-  const handleUtilitiesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData({...formData, utilities: e.target.value});
-  };
-
-  const handleSpecialNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData({...formData, specialNotes: e.target.value});
+  const handlePriceNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData({ ...formData, priceNotes: e.target.value });
   };
 
   return (
     <div className="space-y-8 w-full">
+      <div className="flex flex-row justify-between mb-12">
+        <div>
+          <h1 className="text-2xl font-semibold mb-3">
+            Pricing
+          </h1>
+          <h2 className="text-sm font-[500] text-gray-500">Add details about all things money here. </h2>
+        </div>
+
+        <PreviewButton formData={formData} />
+      </div>
+      
       <div>
-        <h2 className="text-2xl font-medium mb-4">Monthly Rent</h2>
+        <h2 className="text-2xl font-medium mb-2">Monthly Rent</h2>
+        <span className="text-sm text-gray-400 mb-5 block">
+          Required: Please enter the monthly rent
+        </span>
         <div className="relative">
+          <span className="absolute left-3 top-[8px]">$</span>
           <Input
             type="number"
             placeholder="$ 1350"
-            value={formData.monthlyRent}
-            onChange={handleMonthlyRentChange}
-            className={`w-full rounded-xl border border-gray-200`}
+            value={formData.price}
+            onChange={handlePriceChange}
+            className={`w-full rounded-xl border border-gray-200 pl-7`}
           />
-          {!formData.monthlyRent && (
+          {!formData.price && (
             <span className="text-sm text-gray-400 mt-1 block">
               Required: Please enter the monthly rent
             </span>
           )}
         </div>
       </div>
-      
-      <div>
-        <h2 className="text-2xl font-medium mb-4">Utilities</h2>
-        <div className="relative">
-          <Textarea
-            placeholder="Ex: Utilities not included in rent/month."
-            value={formData.utilities}
-            onChange={handleUtilitiesChange}
-            className={`min-h-[150px] rounded-xl border resize-none border-gray-200`}
-          />
-          {!formData.utilities && (
-            <span className="text-sm text-gray-400 mt-1 block">
-              Required: Please provide utilities information
-            </span>
-          )}
-        </div>
-      </div>
 
       <div>
-        <h2 className="text-2xl font-medium mb-4">Special Notes</h2>
+        <h2 className="text-2xl font-medium mb-2">Special Notes</h2>
+        <p className="text-sm text-gray-400 mb-5"><span className="font-semibold text-gray-500">This is optional!</span> You can include information such as any breaks in your lease, or variable payment per month. </p>
         <div className="relative">
           <Textarea
-            placeholder="Ex: Parking spot prices."
+            placeholder="Ex: Parking spot prices, willing to negotiate rent..."
             value={formData.specialNotes}
-            onChange={handleSpecialNotesChange}
-            className="min-h-[150px] rounded-xl border border-gray-200 resize-none"
+            onChange={handlePriceNotesChange}
+            maxLength={500}
+            className="min-h-[150px] rounded-xl border border-gray-200 resize-none placeholder:text-gray-400 py-3"
           />
-          <span className="text-sm text-gray-400 mt-1 block">
-            Optional: Add any additional pricing information
-          </span>
+          <div className="flex justify-end mt-2 text-sm text-gray-400">
+            <span>{formData.priceNotes.length}/500 characters</span>
+          </div>
         </div>
       </div>
 
-      <div className="flex justify-end">
-        <Button 
+      <div className="flex flex-col space-y-2">
+        <div className="flex justify-between">
+        <Button
+          className='rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90'
+          onClick={onBack}
+        >
+          <FaChevronLeft />
+          <p>Back</p>
+        </Button>
+        <Button
+          className={`rounded-lg px-6 flex items-center ${isComplete
+            ? 'bg-[#FF7439] hover:bg-[#FF7439]/90'
+            : 'bg-gray-300'
+            }`}
           onClick={onNext}
           disabled={!isComplete}
-          className={`rounded-lg px-6 ${
-            isComplete 
-              ? 'bg-[#FF7439] hover:bg-[#FF7439]/90' 
-              : 'bg-gray-300'
-          }`}
         >
-          Next
+          <p>Next</p>
+          <FaChevronRight />
         </Button>
       </div>
 
       {/* Optional: Show completion status */}
-      {!isComplete && (
-        <div className="text-sm text-gray-500 text-right mt-2">
-          To continue, please fill in:
-          <ul>
-            {!formData.monthlyRent && <li>• Monthly rent</li>}
-            {!formData.utilities && <li>• Utilities information</li>}
-          </ul>
-        </div>
-      )}
+      
+      </div>
     </div>
   );
 };

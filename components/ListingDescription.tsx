@@ -1,56 +1,74 @@
+import React from 'react';
+
 type DescriptionItemProps = {
-    icon: React.ReactNode;
-    title: string;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}
+
+const DescriptionItem = ({ icon, title, description }: DescriptionItemProps) => {
+  return (
+    <div className="flex items-start gap-4">
+      <div className="p-2 rounded-full bg-gray-50">
+        {icon}
+      </div>
+      <div>
+        <h3 className="font-medium text-gray-900">{title}</h3>
+        <p className="text-gray-600 text-sm">{description}</p>
+      </div>
+    </div>
+  )
+}
+
+interface ListingDescriptionProps {
+  data: {
     description: string;
-  }
-  
-  const DescriptionItem = ({ icon, title, description }: DescriptionItemProps) => {
-    return (
-      <div className="flex items-start gap-4">
-        <div className="p-2 rounded-full bg-gray-50">
-          {icon}
-        </div>
-        <div>
-          <h3 className="font-medium text-gray-900">{title}</h3>
-          <p className="text-gray-600 text-sm">{description}</p>
-        </div>
-      </div>
-    )
-  }
-  
-  const ListingDescription = () => {
-    return (
-      <div className="">
-        <p className="text-gray-700 text-sm leading-relaxed mb-6">
-          Lifetower is a modern high-rise apartment complex near Rice University, offering student-friendly housing
-          with various amenities like a fitness center, study lounges, and a rooftop pool. It provides convenient
-          access to campus and nearby attractions, making it a popular choice for Rice students seeking off-
-          campus living with a community vibe.
-        </p>
-  
-        <div className="border-t pt-6">
-          <div className="space-y-6">
-            <DescriptionItem 
-              icon={<span className="text-xl">$</span>}
-              title="Cost per month"
-              description="$1,300 / month — willing to negotiate"
-            />
-  
-            <DescriptionItem 
-              icon={<span className="text-xl">⏰</span>}
-              title="Duration being leased"
-              description="August 18th to May 28th"
-            />
-  
-            <DescriptionItem 
-              icon={<span className="text-xl">📍</span>}
-              title="Distance from Rice"
-              description="1.2 miles away — a 5 minute drive or 10 minute walk"
-            />
-          </div>
+    price: number;
+    priceNotes: string;
+    start_date: string;
+    end_date: string;
+    durationNotes: string;
+    distance?: string;
+  };
+}
+
+const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  return (
+    <div className="">
+      <p className="text-gray-700 text-sm leading-relaxed mb-6">
+        {data.description}
+      </p>
+
+      <div className="border-t pt-6">
+        <div className="space-y-6">
+          <DescriptionItem 
+            icon={<span className="text-xl">$</span>}
+            title="Cost per month"
+            description={`$${data.price.toLocaleString()} / month${data.priceNotes ? ` — ${data.priceNotes}` : ''}`}
+          />
+
+          <DescriptionItem 
+            icon={<span className="text-xl">⏰</span>}
+            title="Duration being leased"
+            description={`${formatDate(data.start_date)} to ${formatDate(data.end_date)}${data.durationNotes ? ` — ${data.durationNotes}` : ''}`}
+          />
+
+          <DescriptionItem 
+            icon={<span className="text-xl">📍</span>}
+            title="Distance from Rice"
+            description={data.distance || "Distance information not available"}
+          />
         </div>
       </div>
-    )
-  }
-  
-  export default ListingDescription;
+    </div>
+  )
+}
+
+export default ListingDescription

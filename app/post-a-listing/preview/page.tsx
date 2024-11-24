@@ -35,14 +35,14 @@ const PreviewPage = () => {
 
   const handleNextPhoto = () => {
     if (!formData?.photos) return;
-    setCurrentPhotoIndex((prev) => 
+    setCurrentPhotoIndex((prev) =>
       prev === formData.photos.length - 1 ? 0 : prev + 1
     );
   };
 
   const handlePrevPhoto = () => {
     if (!formData?.photos) return;
-    setCurrentPhotoIndex((prev) => 
+    setCurrentPhotoIndex((prev) =>
       prev === 0 ? formData.photos.length - 1 : prev - 1
     );
   };
@@ -174,11 +174,6 @@ const PreviewPage = () => {
                 <p className="text-2xl font-bold text-[#FF7439]">
                   ${formData.monthlyRent || '0'}/month
                 </p>
-                {formData.utilities && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Utilities: {formData.utilities}
-                  </p>
-                )}
               </div>
               <div className="flex items-center text-gray-500">
                 <Calendar className="h-4 w-4 mr-2" />
@@ -210,6 +205,13 @@ const PreviewPage = () => {
               <div>
                 <h3 className="text-xl font-semibold mb-2">Location Details</h3>
                 <p className="text-gray-600 whitespace-pre-wrap">{formData.locationNotes}</p>
+              </div>
+            )}
+
+            {formData.durationNotes && (
+              <div>
+                <h3 className="text-xl font-semibold mb-2">Duration Details</h3>
+                <p className="text-gray-600 whitespace-pre-wrap">{formData.durationNotes}</p>
               </div>
             )}
 
