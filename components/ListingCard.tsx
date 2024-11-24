@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { IconContext } from "react-icons";
 import { createClient } from "@/utils/supabase/client";
 
@@ -28,9 +29,11 @@ const ListingCard: React.FC<CardProps> = ({
   isRiceStudent,
   isFavorited,
 }) => {
-  const [favorite, setFavorite] = useState(isFavorited); // proxy for isFavorited attribute
+  const [favorite, setFavorite] = useState(isFavorited);
+  const router = useRouter();
 
-  const handleAddOrRemoveFavorite = async (card: CardProps) => {
+  const handleAddOrRemoveFavorite = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     // Add API call to modify isFavorited (actual attribute in table)
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -52,13 +55,12 @@ const ListingCard: React.FC<CardProps> = ({
     
   };
 
-  // here for debugging, can be deleted
-  useEffect(() => {
-    console.log("Updated favorite:", favorite);
-  }, [favorite]);
+  const handleCardClick = () => {
+    router.push(`/listing/${postId}`);
+  };
 
   return (
-    <div className="w-full">
+    <div className="w-full cursor-pointer" onClick={handleCardClick}>
       <div className="relative rounded-2xl overflow-hidden bg-white">
         {/* Image Container */}
         <div className="relative w-full aspect-square">
@@ -71,18 +73,7 @@ const ListingCard: React.FC<CardProps> = ({
           <Button
             className="absolute top-4 right-4 w-10 h-10 p-0 border-none hover:bg-transparent hover:text-white"
             variant="ghost"
-            onClick={() => {
-              handleAddOrRemoveFavorite({
-                postId,
-                name,
-                imagePath,
-                distance,
-                duration,
-                price,
-                isRiceStudent,
-                isFavorited,
-              });
-            }}
+            onClick={handleAddOrRemoveFavorite}
           >
             <IconContext.Provider value={{}}>
               {favorite ? (
@@ -114,14 +105,13 @@ const ListingCard: React.FC<CardProps> = ({
         {/* Content */}
         <div className="mt-4 space-y-1">
           <div className="flex justify-between items-center">
-            {isRiceStudent ?
-            <h3 className="font-semibold text-lg max-w-[60%] truncate">
-              {name}
-            </h3> :
-            <h3 className="font-semibold text-lg truncate">
-              {name}
-            </h3>
-            }
+            {isRiceStudent ? (
+              <h3 className="font-semibold text-lg max-w-[60%] truncate">
+                {name}
+              </h3>
+            ) : (
+              <h3 className="font-semibold text-lg truncate">{name}</h3>
+            )}
             {isRiceStudent && (
               <div className="flex items-center gap-1 text-[#FF7439] text-m flex-shrink-0">
                 <Image src="/owl.png" width={16} height={16} alt="owl" />
