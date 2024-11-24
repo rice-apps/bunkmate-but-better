@@ -161,11 +161,6 @@ const PostListing = () => {
           { 
             user_id: userId,
             phone_number: formData.phone,
-            price: formData.monthlyRent, 
-            description: formData.description,
-            address: formData.address,
-            userId,
-            distance: distance,
             title: formData.title,
             description: formData.description,
             price: formData.price, 
@@ -175,6 +170,7 @@ const PostListing = () => {
             duration_notes: formData.durationNotes,
             address: formData.address,
             image_paths: filePaths,
+            distance: distance
            },
           
         ])
