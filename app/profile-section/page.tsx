@@ -39,6 +39,14 @@ export default function Index() {
   } | null>();
   const [favoritelistings, setFavoriteListings] = useState<Listing[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
+
+  const handleLogout = async () => {
+    console.log("LOGOUT CLICKED")
+    await supabase.auth.signOut();
+    // Redirect to Sign-in page
+    router.push("/sign-in");
+  };
+
   useEffect(() => {
     const fetchUser = async () => {
       const user = await supabase.auth.getUser();
@@ -177,7 +185,7 @@ export default function Index() {
                   </button>
                 </Link>
 
-                  <button className="w-[160px] h-[43px] bg-[#CC3333] gap-[5.69px] hover:bg-[#990000] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-95">
+                  <button onClick = {handleLogout} className="w-[160px] h-[43px] bg-[#CC3333] gap-[5.69px] hover:bg-[#990000] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-95">
                     <MdLogout className="text-[#FFFFFF]" />
                     <p className="text-[16px] text-[#FFFFFF] font-600">Log out</p>
                   </button>

@@ -8,8 +8,6 @@ import { CgProfile } from "react-icons/cg";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { MdHome } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
-
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,20 +18,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
-
-
 import { useState } from 'react';
-
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from "@/utils/supabase/client";
 
-
-//dm sans, 30px , FF7439, font weight is 600
-//      <i class="fa-solid fa-magnifying-glass"></i>
-// 158px by 43px, 10.2px rounded radius
-// <FaMagnifyingGlass />
-// 
 
 interface ModularDropDownProps {
   allOptions: string[];
