@@ -47,7 +47,7 @@ const Pricing = ({ formData, setFormData, onNext, onBack }: {
           <span className="absolute left-3 top-[8px]">$</span>
           <Input
             type="number"
-            placeholder="$ 1350"
+            placeholder="1350"
             value={formData.price}
             onChange={handlePriceChange}
             className={`w-full rounded-xl border border-gray-200 pl-7`}

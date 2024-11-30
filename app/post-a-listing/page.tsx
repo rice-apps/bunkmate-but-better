@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,14 +23,14 @@ import CategoryStatusIndicator from './CategoryStatusIndicator';
 interface FormData {
   title: string;
   description: string;
-  price: number;
+  price: string;
   priceNotes: string;
   startDate: string;
   endDate: string;
   durationNotes: string;
   address: string;
   locationNotes: string;
-  photos: File[];
+  photos: string[];
   photoLabels: string[];
   affiliation: string;
   // name: string;
@@ -57,11 +57,12 @@ type ImagePromiseType  = Promise<ImageResponse>
 // Main PostListing component
 const PostListing = () => {
   const router = useRouter();
+  const params = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState('title');
   const [formData, setFormData] = useState<FormData>({
     title: '',
     description: '',
-    price: 0,
+    price: '',
     priceNotes: '',
     startDate: '',
     endDate: '',
@@ -71,38 +72,15 @@ const PostListing = () => {
     photos: [],
     photoLabels: [],
     affiliation: 'rice',
-    // profilePicture: '',
-    // firstName: '',
-    // lastName: '',
-    // email: '',
     phone: '',
     
   });
 
   useEffect(() => {
-    const savedData = localStorage.getItem('listingFormData');
+    const savedData = params.get("data");
     if (savedData) {
       const parsedData = JSON.parse(savedData);
-      if (parsedData.photos && Array.isArray(parsedData.photos)) {
-        // Convert Data URLs back to File objects
-        Promise.all(
-          parsedData.photos.map(async (photoUrl: string) => {
-            const response = await fetch(photoUrl);
-            const blob = await response.blob();
-            return new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-          })
-        )
-          .then((photoFiles) => {
-            const validPhotoFiles = photoFiles.filter((file) => file !== null) as File[];
-            setFormData({ ...parsedData, photos: validPhotoFiles });
-          })
-          .catch((error) => {
-            console.error('Error processing photos from localStorage:', error);
-            setFormData(parsedData); // Set formData without photos if conversion fails
-          });
-      } else {
-        setFormData(parsedData);
-      }
+      setFormData(parsedData);
     }
   }, []);
   
@@ -189,12 +167,12 @@ const PostListing = () => {
 
   const handlePreviewClick = () => {
     // Convert File objects to URLs for storage
-    const photoURLs = formData.photos.map((photo: File) => URL.createObjectURL(photo));
+    // const photoURLs = formData.photos.map((photo: File) => URL.createObjectURL(photo));
     
     // Prepare data for storage
     const previewData = {
       ...formData,
-      photos: photoURLs // Store URLs instead of File objects
+      photos: formData.photos // Store URLs instead of File objects
     };
 
     // Save to localStorage
