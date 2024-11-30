@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import LoadingCircle from "@/components/LoadingCircle";
+import LoadingCard from "@/components/LoadingCard";
 
 interface Listing {
   address: string;
@@ -28,30 +29,6 @@ interface Listing {
 interface Favorite {
   listing_id: number;
 }
-const LoadingCard = () => (
-  <div className="w-full">
-    <div className="relative rounded-2xl overflow-hidden bg-gray-200 animate-pulse">
-      {/* Image placeholder - using aspect ratio to match your images */}
-      <div className="relative w-full aspect-square bg-gray-300" />
-      
-      {/* Content placeholders */}
-      <div className="mt-4 space-y-3 p-4">
-        <div className="flex justify-between items-center">
-          {/* Title placeholder */}
-          <div className="h-6 bg-gray-300 rounded w-3/5" />
-          {/* Rice Student badge placeholder */}
-          <div className="flex items-center gap-1 bg-gray-300 rounded h-6 w-1/4" />
-        </div>
-        {/* Details placeholders */}
-        <div className="space-y-2.5">
-          <div className="h-4 bg-gray-300 rounded w-4/5" />
-          <div className="h-4 bg-gray-300 rounded w-3/4" />
-          <div className="h-4 bg-gray-300 rounded w-2/4" />
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 export default function Index() {
   const supabase = createClient();
@@ -86,7 +63,13 @@ export default function Index() {
       try {
         setIsLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
-        const { data: listings } = await supabase.from('listings').select();
+
+        if (!user) {
+          router.push('/sign-in');
+          return;
+        }
+
+        const { data: listings } = await supabase.from('listings').select().order('created_at', { ascending: false });
         const { data: favorites } = await supabase.from('users_favorites').select('listing_id').eq('user_id', user?.id);
 
         setListings(listings);
@@ -98,19 +81,14 @@ export default function Index() {
         });
 
         setFavorites(favoritesObject);
-        
-        if (!user) {
-          router.push('/sign-in');
-          return;
-        }
 
-        const { data, error } = await supabase
-          .from('listings')
-          .select()
-          .order('created_at', { ascending: false });
+        // const { data, error } = await supabase
+        //   .from('listings')
+        //   .select()
+        //   .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        setListings(data);
+        // if (error) throw error;
+        // setListings(data);
       }
       catch (error) {
         console.error(error);
@@ -124,11 +102,11 @@ export default function Index() {
   }, [router]);
 
   const renderLoadingState = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 min-w-[90vw]">
+    <>
       {[...Array(loadingCardCount)].map((_, index) => (
         <LoadingCard key={`loading-${index}`} />
       ))}
-    </div>
+    </>
   );
 
   const renderError = () => (
