@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import Image from 'next/image';
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { FaHeart, FaTimes } from "react-icons/fa";
@@ -25,7 +25,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover
 import { useState } from 'react';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from "@/utils/supabase/client";
 
 
@@ -38,15 +38,22 @@ import { createClient } from "@/utils/supabase/client";
 interface ModularDropDownProps {
   allOptions: string[];
   title: string;
+  onSelect: (option: string) => void;
 }
 
-const ModularDropDown: React.FC<ModularDropDownProps> = ({ allOptions, title }) => {
+const ModularDropDown: React.FC<ModularDropDownProps> = ({ allOptions, title, onSelect }) => {
   const [selectedOption, setSelectedOption] = useState(title);
 
   const MenuItem: React.FC<{ option: string }> = ({ option }) => {
     return (
       <>
-        <DropdownMenuItem key={option} onClick={() => setSelectedOption(option)} className="flex justify-center">
+        <DropdownMenuItem
+          key={option}
+          onClick={() => {
+            setSelectedOption(option);
+            onSelect(option);
+          }}
+          className="flex justify-center">
           <p className='hover:text-[#FF7439] text-center'>{option}</p>
         </DropdownMenuItem>
       </>
@@ -82,6 +89,8 @@ const Navbar = () => {
   const router = useRouter();
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [distance, setDistance] = useState('');
+  const searchParams = useSearchParams(); // Use useSearchParams
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -89,6 +98,33 @@ const Navbar = () => {
     router.push("/sign-in");
   };
 
+  // Make sure the navbar reflects the search parameters even if you search from a different section
+  // like the profile section
+  useEffect(() => {
+    if (searchParams && searchParams.get('startDate')) {
+      setStartDate(new Date(searchParams.get('startDate')!));
+    }
+    if (searchParams && searchParams.get('endDate')) {
+      setEndDate(new Date(searchParams.get('endDate')!));
+    }
+    if (searchParams && searchParams.get('distance')) {
+      setDistance(searchParams.get('distance')!);
+    }
+  }, []);
+
+  const handleFilterChange = () => {
+    const queryParams = new URLSearchParams();
+    if (distance) queryParams.set('distance', distance);
+    if (startDate) queryParams.set('startDate', startDate.toISOString());
+    if (endDate) queryParams.set('endDate', endDate.toISOString());
+
+    const queryString = queryParams.toString();
+    router.push(`/?${queryString}`);
+  };
+
+  const handleDistanceChange = (selectedDistance: string) => {
+    setDistance(selectedDistance);
+  };
   return (
     <div className='my-10 px-6 md:px-8 lg:px-10 xl:px-16 flex flex-row place-items-center w-screen justify-between'>
       <button className='hidden rahul:flex justify-center'>
@@ -101,7 +137,10 @@ const Navbar = () => {
       <div className="h-[10vh] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3">
         <div className='grid grid-rows-2 gap-[2px] border-r pl-8 pr-10'>
           <p className='text-[14px] font-semibold text-[#777777]'>Distance from Rice</p>
-          <ModularDropDown allOptions={["< 1 mile", "< 3 miles", "< 5 miles", "> 5 miles"]} title={"Search Properties"} />
+          <ModularDropDown
+            allOptions={["< 1 mile", "< 3 miles", "< 5 miles", "> 5 miles"]}
+            title={"Search Properties"}
+            onSelect={handleDistanceChange} />
         </div>
         <div className="grid grid-rows-2 gap-[2px] w-[180px] pl-10 pr-10 text-left border-r">
           <p className='text-[14px] font-semibold text-[#777777]'>Start Date</p>
@@ -142,7 +181,8 @@ const Navbar = () => {
               />
             </PopoverContent>
           </Popover>
-        </div>        <button className='pr-8'>
+        </div>
+        <button className='pr-8' onClick={handleFilterChange}>
           <FaMagnifyingGlass
             className='hover:cursor-pointer h-[29px] w-[25px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105'
           />

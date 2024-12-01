@@ -198,6 +198,7 @@ export default function Favorites() {
                 price={`$${listing.price} / month`}
                 isRiceStudent={listing.renterType === "Rice Student"}
                 isFavorited={listing.isFavorite}
+                ownListing={false}
               />
             </div>
           ))}
