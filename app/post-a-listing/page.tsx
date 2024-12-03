@@ -184,7 +184,6 @@ const PostListing = () => {
             end_date: formData.endDate,
             duration_notes: formData.durationNotes,
             image_paths: filePaths,
-            distance: distance
            },
           
         ])
