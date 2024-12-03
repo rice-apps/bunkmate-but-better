@@ -95,10 +95,12 @@ const PostListing = () => {
     });
 
     const geocodeAddress = async (address: string) => {
+      if (!address) {
+        throw new Error('Vaild address is required');
+      }
       try {
         const API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
-        const response = await fetch(`https://geocode.maps.co/search?q=${address}$api_key=${API_KEY}`
-        );
+        const response = await fetch(`https://geocode.maps.co/search?q=${address}&api_key=${API_KEY}`);
         if(!response.ok) {
           throw new Error('Failed to geocode address')   
         }
@@ -120,19 +122,26 @@ const PostListing = () => {
     };
 
     const calculateDistance = async (address: string) => {
+      if (!address) {
+        throw new Error('Vaild address is required');
+      }
       try {
         const RICE_ADDRESS = '6100 Main St, Houston, TX 77005';
         const [riceCoords, listingCoords] = await Promise.all([
           geocodeAddress(RICE_ADDRESS),
           geocodeAddress(address),
         ]);
-        const osrmResponse = await fetch(
-          `https://router.project-osrm.org/route/v1/driving/${riceCoords.lon},${riceCoords.lat};${listingCoords.lon},${listingCoords.lat}?overview=false`,
-        );
+        if (!riceCoords || !listingCoords) {
+          throw new Error('Could not geocode addresses');
+        }
+        const osrmResponse = await fetch(`https://router.project-osrm.org/route/v1/driving/${riceCoords.lon},${riceCoords.lat};${listingCoords.lon},${listingCoords.lat}?overview=false`);
         if(!osrmResponse.ok) {
           throw new Error('Failed to calculate distance');
         }
         const osrmData = await osrmResponse.json();
+        if(!osrmData.routes || osrmData.routes.length === 0) {
+          throw new Error('No distance results found');
+        }
         const distanceMeters = osrmData.routes[0].distance;
         const distanceMiles = (distanceMeters * 0.000621371).toFixed(1);
         return distanceMiles;
@@ -154,6 +163,9 @@ const PostListing = () => {
       const results = await Promise.all(insertions);
       //calculate distance from address
       const distance = await calculateDistance(formData.address);
+      if (!distance) {
+        throw new Error('Unable to validate address or calculate distance. Please check the address.');
+      }
 
       const { data, error } = await supabase
         .from('listings')
@@ -161,19 +173,16 @@ const PostListing = () => {
           { 
             user_id: userId,
             phone_number: formData.phone,
-            price: formData.monthlyRent, 
             description: formData.description,
             address: formData.address,
             userId,
             distance: distance,
             title: formData.title,
-            description: formData.description,
             price: formData.price, 
             price_notes: formData.priceNotes,
             start_date: formData.startDate,
             end_date: formData.endDate,
             duration_notes: formData.durationNotes,
-            address: formData.address,
             image_paths: filePaths,
            },
           
