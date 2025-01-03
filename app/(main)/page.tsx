@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import LoadingCircle from "@/components/LoadingCircle";
+import LoadingCard from "@/components/LoadingCard";
 
 interface Listing {
   address: string;
@@ -161,11 +162,11 @@ export default function Index() {
   }, [router, searchParams]);
 
   const renderLoadingState = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 min-w-[90vw]">
+    <>
       {[...Array(loadingCardCount)].map((_, index) => (
         <LoadingCard key={`loading-${index}`} />
       ))}
-    </div>
+    </>
   );
 
   const renderError = () => (

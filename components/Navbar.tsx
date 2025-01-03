@@ -8,26 +8,18 @@ import { CgProfile } from "react-icons/cg";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { MdHome } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
-
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
-
-
 import { useState } from 'react';
-
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from "@/utils/supabase/client";
-
 
 //dm sans, 30px , FF7439, font weight is 600
 //      <i class="fa-solid fa-magnifying-glass"></i>
@@ -138,7 +130,6 @@ const Navbar = () => {
           <p className="ml-4 text-[30px] text-[#FF7439] font-semibold">bunkmate</p>
         </div>
       </button>
-
       <div className="h-[10vh] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3">
         <div className='grid grid-rows-2 gap-[2px] border-r pl-8 pr-10'>
           <p className='text-[14px] font-semibold text-[#777777]'>Distance from Rice</p>
@@ -191,7 +182,6 @@ const Navbar = () => {
           />
         </div>
       </div>
-
       <div className='hidden eric:flex eric:flex-row gap-[25px] place-items-center items-center'>
         <Link href='/post-a-listing'>
           <button className="py-2 px-7 bg-[#FF7439] hover:bg-[#BB5529] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-105 whitespace-nowrap">
@@ -209,7 +199,6 @@ const Navbar = () => {
               <CgProfile className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[35px] h-[31px]" />
             </button>
           </DropdownMenuTrigger>
-
           <DropdownMenuContent className=''>
             <DropdownMenuItem key={"profile"} className="flex justify-center">
               <Link href='/profile-section'>
@@ -222,10 +211,8 @@ const Navbar = () => {
               </button>
             </DropdownMenuItem>
           </DropdownMenuContent>
-
         </DropdownMenu>
       </div>
-
       <div className='flex eric:hidden z-100'>
         <button onClick={() => setIsOpen(true)}>
           <RxHamburgerMenu className='w-[35px] h-[35px]'
@@ -233,7 +220,6 @@ const Navbar = () => {
           />
         </button>
       </div>
-
       {isOpen ?
         <div className="fixed top-0 right-0 h-full w-2/5 bg-[#FF7439] z-50 transition-transform duration-300 flex flex-row">
           <div className="p-4 pl-10 text-white space-y-6 flex flex-col text-[18px] mt-12 justify-left">
@@ -267,5 +253,4 @@ const Navbar = () => {
     </div>
   )
 }
-
 export default Navbar
