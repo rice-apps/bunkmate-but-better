@@ -56,10 +56,11 @@ const Navbar = () => {
           <DropdownMenuItem
             key={option}
             onClick={() => {
-              setDistance(option);
+              if (option === distance) setDistance(distanceTitle);
+              else setDistance(option);
             }}
             className="flex justify-center">
-            <p className='hover:text-[#FF7439] text-center'>{option}</p>
+            <p className={`${distance === option && "text-[#FF7439] font-bold"} hover:text-[#FF7439] text-center`}>{option}</p>
           </DropdownMenuItem>
         </>
       )
@@ -118,6 +119,10 @@ const Navbar = () => {
     router.push(`/?${queryString}`);
   };
 
+  useEffect(() => {
+    handleFilterChange();
+  }, [startDate, endDate, distance])
+
   const handleHomeRoute = () => {
     setStartDate(undefined);
     setEndDate(undefined);
@@ -125,9 +130,6 @@ const Navbar = () => {
     router.push('/');
   }
 
-  const handleDistanceChange = (selectedDistance: string) => {
-    setDistance(selectedDistance);
-  };
   return (
     <div className='my-10 px-6 md:px-8 lg:px-10 xl:px-16 flex flex-row place-items-center w-screen justify-between'>
       <button className='hidden rahul:flex justify-center'>
