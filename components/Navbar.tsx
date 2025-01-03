@@ -211,7 +211,7 @@ const Navbar = () => {
             </DropdownMenuItem>
             <DropdownMenuItem key={"logout"} className="flex justify-center">
               <button onClick={handleLogout}>
-                <p className='hover:text-[#FF7439] text-center'>Logout</p>
+                <p className='hover:text-[#FF7439] text-center'>Log Out</p>
               </button>
             </DropdownMenuItem>
           </DropdownMenuContent>
