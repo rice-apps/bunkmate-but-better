@@ -337,7 +337,7 @@ const PostListing = () => {
             {/* Sidebar */}
             <div className="fixed">
               <div className="w-80 pr-16 h-svh">
-                <h1 className="text-2xl font-semibold mb-10">Listing Editor</h1>
+                <h1 className="text-2xl font-semibold mb-8">Listing Editor</h1>
                 <div className="space-y-3">
                   {categories.map((category) => (
                     <div
@@ -364,7 +364,7 @@ const PostListing = () => {
             {/* Post Button */}
             <div className="mt-8"></div>
             {/* Form Content */}
-            <div className="flex-1 ml-[20rem] pl-16 border-l border-gray-500">
+            <div className="flex-1 ml-[16rem] pl-16 border-l border-gray-500">
               {renderComponent()}
             </div>
           </div>
