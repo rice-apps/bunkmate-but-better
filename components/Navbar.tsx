@@ -1,5 +1,6 @@
 "use client"
-import React from 'react'
+
+import React, { useEffect } from 'react'
 import Image from 'next/image';
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { FaHeart, FaTimes } from "react-icons/fa";
@@ -17,68 +18,127 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from "@/utils/supabase/client";
 
-interface ModularDropDownProps {
-  allOptions: string[];
-  title: string;
-}
-const ModularDropDown: React.FC<ModularDropDownProps> = ({ allOptions, title }) => {
-  const [selectedOption, setSelectedOption] = useState(title);
-  const MenuItem: React.FC<{ option: string }> = ({ option }) => {
-    return (
-      <>
-        <DropdownMenuItem key={option} onClick={() => setSelectedOption(option)} className="flex justify-center">
-          <p className='hover:text-[#FF7439] text-center'>{option}</p>
-        </DropdownMenuItem>
-      </>
-    )
-  }
-  return (
-    <>
-      <DropdownMenu key={title}>
-        <DropdownMenuTrigger asChild>
-          <button className='text-left'>
-            <p className={`text-[14px] ${selectedOption !== title ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}>
-              {selectedOption}
-            </p>
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className=''>
-          {allOptions.map((option) => {
-            return (
-              <MenuItem option={option} key={option} />
-            );
-          })}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
-  );
-}
+//dm sans, 30px , FF7439, font weight is 600
+//      <i class="fa-solid fa-magnifying-glass"></i>
+// 158px by 43px, 10.2px rounded radius
+// <FaMagnifyingGlass />
+// 
+
 const Navbar = () => {
+  const distanceTitle = "Search Properties";
   const [isOpen, setIsOpen] = useState(false);
   const supabase = createClient();
   const router = useRouter();
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [distance, setDistance] = useState("");
+  const searchParams = useSearchParams(); // Use useSearchParams
+
+  const pathname = usePathname();
+
+  interface DistDropDownProps {
+    allOptions: string[];
+  }
+
+  const DistDropDown: React.FC<DistDropDownProps> = ({ allOptions }) => {
+    const MenuItem: React.FC<{ option: string }> = ({ option }) => {
+      return (
+        <>
+          <DropdownMenuItem
+            key={option}
+            onClick={() => {
+              if (option === distance) setDistance("");
+              else setDistance(option);
+            }}
+            className="flex justify-center">
+            <p className={`${distance === option && "text-[#FF7439] font-bold"} hover:text-[#FF7439] text-center`}>{option}</p>
+          </DropdownMenuItem>
+        </>
+      )
+    }
+
+    return (
+      <>
+        <DropdownMenu key={distanceTitle}>
+          <DropdownMenuTrigger asChild>
+            <button className='text-left'>
+              <p className={`text-[14px] ${distance !== "" ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}>
+                {distance ? distance : distanceTitle}
+              </p>
+            </button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className=''>
+            {allOptions.map((option) => {
+              return (
+                <MenuItem option={option} key={option} />
+              );
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </>
+    );
+  }
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     // Redirect to Sign-in page
     router.push("/sign-in");
   };
+
+  // Make sure the navbar reflects the search parameters even if you search from a different section
+  // like the profile section
+  useEffect(() => {
+    if (searchParams && searchParams.get('startDate')) {
+      setStartDate(new Date(searchParams.get('startDate')!));
+    }
+    if (searchParams && searchParams.get('endDate')) {
+      setEndDate(new Date(searchParams.get('endDate')!));
+    }
+    if (searchParams && searchParams.get('distance')) {
+      setDistance(searchParams.get('distance')!);
+    }
+  }, []);
+
+  const handleFilterChange = () => {
+    const queryParams = new URLSearchParams();
+    if (distance) queryParams.set('distance', distance);
+    if (startDate) queryParams.set('startDate', startDate.toISOString());
+    if (endDate) queryParams.set('endDate', endDate.toISOString());
+
+    const queryString = queryParams.toString();
+    router.push(`/?${queryString}`);
+  };
+
+  useEffect(() => {
+    if (pathname === "/" || startDate != null || endDate != null || distance != "") {
+      handleFilterChange();
+    }
+  }, [startDate, endDate, distance])
+
+  const handleHomeRoute = () => {
+    setStartDate(undefined);
+    setEndDate(undefined);
+    setDistance("");
+    router.push('/');
+  }
+
   return (
     <div className='my-10 px-6 md:px-8 lg:px-10 xl:px-16 flex flex-row place-items-center w-screen justify-between'>
-      <button className='hidden rahul:flex justify-center'>
-        <Link href='/' className='flex flex-row gap-[8.33] place-items-center'>
+      <button className='hidden rahul:flex justify-center' onClick={handleHomeRoute}>
+        <div className='flex flex-row gap-[8.33] place-items-center'>
           <Image src="/bunkmate_logo.png" alt="Bunkmate Logo" width={35.48} height={35.48} className='h-[35.48px] w-[35.48px]' />
           <p className="ml-4 text-[30px] text-[#FF7439] font-semibold">bunkmate</p>
-        </Link>
+        </div>
       </button>
       <div className="h-[10vh] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3">
         <div className='grid grid-rows-2 gap-[2px] border-r pl-8 pr-10'>
           <p className='text-[14px] font-semibold text-[#777777]'>Distance from Rice</p>
-          <ModularDropDown allOptions={["< 1 mile", "< 3 miles", "< 5 miles", "> 5 miles"]} title={"Search Properties"} />
+          <DistDropDown
+            allOptions={["< 1 mile", "< 3 miles", "< 5 miles", "> 5 miles"]} />
         </div>
         <div className="grid grid-rows-2 gap-[2px] w-[180px] pl-10 pr-10 text-left border-r">
           <p className='text-[14px] font-semibold text-[#777777]'>Start Date</p>
@@ -119,11 +179,12 @@ const Navbar = () => {
               />
             </PopoverContent>
           </Popover>
-        </div>        <button className='pr-8'>
+        </div>
+        <div className='pr-8'>
           <FaMagnifyingGlass
-            className='hover:cursor-pointer h-[29px] w-[25px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105'
+            className='h-[29px] w-[25px] transition-transform duration-100 text-[#FF7439]'
           />
-        </button>
+        </div>
       </div>
       <div className='hidden eric:flex eric:flex-row gap-[25px] place-items-center items-center'>
         <Link href='/post-a-listing'>
@@ -150,7 +211,7 @@ const Navbar = () => {
             </DropdownMenuItem>
             <DropdownMenuItem key={"logout"} className="flex justify-center">
               <button onClick={handleLogout}>
-                <p className='hover:text-[#FF7439] text-center'>Logout</p>
+                <p className='hover:text-[#FF7439] text-center'>Log Out</p>
               </button>
             </DropdownMenuItem>
           </DropdownMenuContent>
