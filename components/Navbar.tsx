@@ -35,62 +35,58 @@ import { createClient } from "@/utils/supabase/client";
 // <FaMagnifyingGlass />
 // 
 
-interface ModularDropDownProps {
-  allOptions: string[];
-  title: string;
-  onSelect: (option: string) => void;
-}
-
-const ModularDropDown: React.FC<ModularDropDownProps> = ({ allOptions, title, onSelect }) => {
-  const [selectedOption, setSelectedOption] = useState(title);
-
-  const MenuItem: React.FC<{ option: string }> = ({ option }) => {
-    return (
-      <>
-        <DropdownMenuItem
-          key={option}
-          onClick={() => {
-            setSelectedOption(option);
-            onSelect(option);
-          }}
-          className="flex justify-center">
-          <p className='hover:text-[#FF7439] text-center'>{option}</p>
-        </DropdownMenuItem>
-      </>
-    )
-  }
-
-  return (
-    <>
-      <DropdownMenu key={title}>
-        <DropdownMenuTrigger asChild>
-          <button className='text-left'>
-            <p className={`text-[14px] ${selectedOption !== title ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}>
-              {selectedOption}
-            </p>
-          </button>
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent className=''>
-          {allOptions.map((option) => {
-            return (
-              <MenuItem option={option} key={option} />
-            );
-          })}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
-  );
-}
-
 const Navbar = () => {
+  const distanceTitle = "Search Properties";
   const [isOpen, setIsOpen] = useState(false);
   const supabase = createClient();
   const router = useRouter();
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [distance, setDistance] = useState('');
+  const [distance, setDistance] = useState(distanceTitle);
   const searchParams = useSearchParams(); // Use useSearchParams
+
+  interface DistDropDownProps {
+    allOptions: string[];
+  }
+
+  const DistDropDown: React.FC<DistDropDownProps> = ({ allOptions }) => {  
+    const MenuItem: React.FC<{ option: string }> = ({ option }) => {
+      return (
+        <>
+          <DropdownMenuItem
+            key={option}
+            onClick={() => {
+              setDistance(option);
+            }}
+            className="flex justify-center">
+            <p className='hover:text-[#FF7439] text-center'>{option}</p>
+          </DropdownMenuItem>
+        </>
+      )
+    }
+  
+    return (
+      <>
+        <DropdownMenu key={distanceTitle}>
+          <DropdownMenuTrigger asChild>
+            <button className='text-left'>
+              <p className={`text-[14px] ${distance !== distanceTitle ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}>
+                {distance}
+              </p>
+            </button>
+          </DropdownMenuTrigger>
+  
+          <DropdownMenuContent className=''>
+            {allOptions.map((option) => {
+              return (
+                <MenuItem option={option} key={option} />
+              );
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </>
+    );
+  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -122,25 +118,30 @@ const Navbar = () => {
     router.push(`/?${queryString}`);
   };
 
+  const handleHomeRoute = () => {
+    setStartDate(undefined);
+    setEndDate(undefined);
+    setDistance(distanceTitle);
+    router.push('/');
+  }
+
   const handleDistanceChange = (selectedDistance: string) => {
     setDistance(selectedDistance);
   };
   return (
     <div className='my-10 px-6 md:px-8 lg:px-10 xl:px-16 flex flex-row place-items-center w-screen justify-between'>
       <button className='hidden rahul:flex justify-center'>
-        <Link href='/' className='flex flex-row gap-[8.33] place-items-center'>
+        <div onClick={handleHomeRoute} className='flex flex-row gap-[8.33] place-items-center'>
           <Image src="/bunkmate_logo.png" alt="Bunkmate Logo" width={35.48} height={35.48} className='h-[35.48px] w-[35.48px]' />
           <p className="ml-4 text-[30px] text-[#FF7439] font-semibold">bunkmate</p>
-        </Link>
+        </div>
       </button>
 
       <div className="h-[10vh] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3">
         <div className='grid grid-rows-2 gap-[2px] border-r pl-8 pr-10'>
           <p className='text-[14px] font-semibold text-[#777777]'>Distance from Rice</p>
-          <ModularDropDown
-            allOptions={["< 1 mile", "< 3 miles", "< 5 miles", "> 5 miles"]}
-            title={"Search Properties"}
-            onSelect={handleDistanceChange} />
+          <DistDropDown
+            allOptions={["< 1 mile", "< 3 miles", "< 5 miles", "> 5 miles"]} />
         </div>
         <div className="grid grid-rows-2 gap-[2px] w-[180px] pl-10 pr-10 text-left border-r">
           <p className='text-[14px] font-semibold text-[#777777]'>Start Date</p>

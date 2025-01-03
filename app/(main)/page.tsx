@@ -117,6 +117,16 @@ export default function Index() {
           query = query.lte('end_date', endRange.toISOString());
         }
         // Implement distance filtering logic here if applicable
+        if (distance) {
+          if (distance == "< 1 mile") {
+            query = query.lte('distance', 1);
+          }
+          else if (distance == "< 3 miles") {
+            query = query.lte('distance', 3).gte('distance', 1);
+          }
+          else if (distance == "< 5 miles") query = query.lte('distance', 5).gte('distance', 3);
+          else if (distance == "> 5 miles") query = query.gte('distance', 5);
+        }
 
         const { data: listings, error } = await query.order('created_at', { ascending: false });
 
