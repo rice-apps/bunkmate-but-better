@@ -35,6 +35,7 @@ interface ListingProps {
     price: number;
     location: string;
     imagePaths: string[];
+    captions: string[];
     loadImages: boolean;
     description: string;
     phoneNumber: string;
@@ -209,8 +210,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
           <div className='text-white absolute bottom-8'>
             <p className="text-center font-semibold">{data.title}</p>
             <p className="text-center">
-              {`${data.location} • ${formatDateRange(data.start_date, data.end_date)} • $${data.price.toLocaleString()} / month`}
-              {data.priceNotes && ` - ${data.priceNotes}`}
+              {`${data.captions[currentImageIndex]}`}
             </p>
           </div>
 

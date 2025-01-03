@@ -93,6 +93,7 @@ return (
       price: formData.price,
       location: formData.address,
       imagePaths: formData.photos,
+      captions: formData.photoLabels,
       loadImages: false,
       description: formData.description,
       phoneNumber: formData.phone,
