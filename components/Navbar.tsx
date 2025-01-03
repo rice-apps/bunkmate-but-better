@@ -82,7 +82,7 @@ const Navbar = () => {
   return (
     <div className='my-10 md:px-8 items-center lg:px-20 xl:px-20 flex flex-row place-items-center w-screen justify-between'>
       {/* Logo */}
-      <button className='hidden rahul:flex justify-center'>
+      <button className='hidden hide-logo:flex justify-center'>
         <Link href='/' className='flex flex-row gap-[8.33] place-items-center'>
           <Image src="/bunkmate_logo.png" alt="Bunkmate Logo" width={35} height={35} />
           <p className="ml-4 text-[30px] text-[#FF7439] font-semibold">bunkmate</p>
@@ -164,7 +164,7 @@ const Navbar = () => {
 
       {/* ===== Right Section of Nav Bar */}
       {/* Post a Listing */}
-      <div className='flex justify-center items-center hidden eric:flex eric:flex-row gap-[25px] place-items-center items-center'>
+      <div className='flex justify-center items-center hidden hide-icons:flex hide-icons:flex-row gap-[25px] place-items-center items-center'>
         <Link href='/post-a-listing'>
           <button className="py-2 px-7 bg-[#FF7439] hover:bg-[#BB5529] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-105 whitespace-nowrap">
             <p className="text-[15px] text-white font-semibold">Post a Listing</p>
@@ -198,7 +198,7 @@ const Navbar = () => {
         </DropdownMenu>
       </div>
 
-      <div className='flex eric:hidden z-100'>
+      <div className='flex hide-icons:hidden z-100'>
         <button onClick={() => setIsOpen(true)}>
           <RxHamburgerMenu className='w-[35px] h-[35px]'
             color={"#FF7439"}
