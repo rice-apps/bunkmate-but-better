@@ -34,7 +34,7 @@ const Navbar = () => {
   const router = useRouter();
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [distance, setDistance] = useState(distanceTitle);
+  const [distance, setDistance] = useState("");
   const searchParams = useSearchParams(); // Use useSearchParams
 
   interface DistDropDownProps {
@@ -48,7 +48,7 @@ const Navbar = () => {
           <DropdownMenuItem
             key={option}
             onClick={() => {
-              if (option === distance) setDistance(distanceTitle);
+              if (option === distance) setDistance("");
               else setDistance(option);
             }}
             className="flex justify-center">
@@ -63,8 +63,8 @@ const Navbar = () => {
         <DropdownMenu key={distanceTitle}>
           <DropdownMenuTrigger asChild>
             <button className='text-left'>
-              <p className={`text-[14px] ${distance !== distanceTitle ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}>
-                {distance}
+              <p className={`text-[14px] ${distance !== "" ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}>
+                {distance ? distance : distanceTitle}
               </p>
             </button>
           </DropdownMenuTrigger>
