@@ -185,11 +185,11 @@ const Navbar = () => {
             </PopoverContent>
           </Popover>
         </div>
-        <button className='pr-8' onClick={handleFilterChange}>
+        <div className='pr-8'>
           <FaMagnifyingGlass
-            className='hover:cursor-pointer h-[29px] w-[25px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105'
+            className='h-[29px] w-[25px] transition-transform duration-100 text-[#FF7439]'
           />
-        </button>
+        </div>
       </div>
 
       <div className='hidden eric:flex eric:flex-row gap-[25px] place-items-center items-center'>
