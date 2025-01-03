@@ -5,6 +5,7 @@ import { FiUpload } from "react-icons/fi";
 import { useState } from "react";
 import ProfilePictureModal from "./ProfilePictureModal";
 import Link from "next/link";
+import PreviewButton from "./PreviewButton";
 import { FaChevronLeft } from "react-icons/fa6";
 
 // Profile Component
@@ -66,24 +67,31 @@ const Profile = ({
   onBack: () => void;
 }) => (
   <div className="space-y-8 w-full">
-    <div>
-      <h1 className="text-3xl font-medium mb-4 text-[#222222]">Profile</h1>
-      <p className="mb-4 text-sm text-[#222222] font-bold">
-        Below is your current profile information. If you want to change this
-        information, go to the <Link href='/profile-section' className="font-bold text-[#FF7439]">Profiles Section</Link>.
-      </p>
-    </div>
-    <div className="grid grid-cols-[1fr_2fr] items-start">
+    <div className="flex flex-row justify-between mb-12">
       <div>
-        <h2 className="text-2xl font-medium mb-4">Profile Picture</h2>
+        <h1 className="text-2xl font-semibold mb-3">Profile</h1>
+        <h2 className="mb-2 text-sm text-[#222222] font-bold whitespace-nowrap">
+          Below is your current profile information. If you want to change this
+          information, go to the{" "}
+          <Link href="/profile-section" className="font-bold text-[#FF7439]">
+            Profiles Section
+          </Link>
+          .
+        </h2>
+      </div>
+      <PreviewButton formData={formData} />
+    </div>
+    <div className="grid grid-cols-[1fr_2fr] items-start gap-4 pl-8">
+      <div>
+        <h2 className="text-[1.25rem] font-medium mb-4">Profile Picture</h2>
         <div className="flex items-center justify-center w-28 h-28 bg-gray-100 border border-gray-300 rounded-full text-gray-500">
           profile pic
         </div>
       </div>
       <div>
-        <h2 className="text-2xl font-medium mb-4">Name</h2>
+        <h2 className="text-[1.25rem] font-medium mb-4">Name</h2>
         <p className="mb-6 text-sm text-gray-400">First Last</p>
-        <h2 className="text-2xl font-medium mb-4">Email address</h2>
+        <h2 className="text-[1.25rem] font-medium mb-4">Email address</h2>
         <p className="mb-6 text-sm text-gray-400">netid@rice.edu</p>
       </div>
     </div>
@@ -98,8 +106,8 @@ const Profile = ({
       </p>
     </div>
     <div>
-      <h2 className="text-2xl font-medium mb-4">Rice Affiliation</h2>
-      <p className="mb-2 text-sm text-gray-400">
+      <h2 className="text-[1.25rem] font-medium mb-2">Rice Affiliation</h2>
+      <p className="text-sm text-gray-400 mb-6">
         Below, select the option that applies to you:
       </p>
       <div className="space-y-8">
@@ -154,14 +162,14 @@ const Profile = ({
     </div>
     <div>
       <div>
-        <h2 className="text-2xl font-medium mb-4">Phone Number</h2>
-        <p className="mb-4 text-sm text-gray-400">
+        <h2 className="text-[1.25rem] font-medium mb-2">Phone Number</h2>
+        <p className="mb-4 text-sm text-gray-400 mb-6">
           Use the number you’d like to be contacted with.
         </p>
         <div>
           <Input
             type="tel"
-            placeholder="+1 (XXX) XXX-XXX"
+            placeholder="+1 (123) 456-7890"
             value={formData.phone}
             onChange={(e) => {
               const value = e.target.value;
@@ -170,7 +178,8 @@ const Profile = ({
               }
             }}
             maxLength={15}
-            className="p-4 rounded-xl border border-[#B5B5B5]"
+            // className="p-4 rounded-xl border border-[#B5B5B5]"
+            className="h-15 p-4 rounded-xl border border-[#B5B5B5]"
           />
         </div>
       </div>
@@ -178,12 +187,12 @@ const Profile = ({
 
     <div className="flex justify-between">
       <Button
-          className='rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90'
-          onClick={onBack}
-        >
-          <FaChevronLeft />
-          <p>Back</p>
-        </Button>
+        className="rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"
+        onClick={onBack}
+      >
+        <FaChevronLeft />
+        <p>Back</p>
+      </Button>
       <Button className="bg-[#FF7439] hover:bg-[#FF7439]/90 rounded-lg px-6">
         Post
       </Button>
