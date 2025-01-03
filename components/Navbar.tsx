@@ -18,7 +18,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from "@/utils/supabase/client";
 
 //dm sans, 30px , FF7439, font weight is 600
@@ -37,11 +37,13 @@ const Navbar = () => {
   const [distance, setDistance] = useState("");
   const searchParams = useSearchParams(); // Use useSearchParams
 
+  const pathname = usePathname();
+
   interface DistDropDownProps {
     allOptions: string[];
   }
 
-  const DistDropDown: React.FC<DistDropDownProps> = ({ allOptions }) => {  
+  const DistDropDown: React.FC<DistDropDownProps> = ({ allOptions }) => {
     const MenuItem: React.FC<{ option: string }> = ({ option }) => {
       return (
         <>
@@ -57,7 +59,7 @@ const Navbar = () => {
         </>
       )
     }
-  
+
     return (
       <>
         <DropdownMenu key={distanceTitle}>
@@ -68,7 +70,7 @@ const Navbar = () => {
               </p>
             </button>
           </DropdownMenuTrigger>
-  
+
           <DropdownMenuContent className=''>
             {allOptions.map((option) => {
               return (
@@ -112,20 +114,22 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    handleFilterChange();
+    if (pathname === "/" || startDate != null || endDate != null || distance != "") {
+      handleFilterChange();
+    }
   }, [startDate, endDate, distance])
 
   const handleHomeRoute = () => {
     setStartDate(undefined);
     setEndDate(undefined);
-    setDistance(distanceTitle);
+    setDistance("");
     router.push('/');
   }
 
   return (
     <div className='my-10 px-6 md:px-8 lg:px-10 xl:px-16 flex flex-row place-items-center w-screen justify-between'>
-      <button className='hidden rahul:flex justify-center'>
-        <div onClick={handleHomeRoute} className='flex flex-row gap-[8.33] place-items-center'>
+      <button className='hidden rahul:flex justify-center' onClick={handleHomeRoute}>
+        <div className='flex flex-row gap-[8.33] place-items-center'>
           <Image src="/bunkmate_logo.png" alt="Bunkmate Logo" width={35.48} height={35.48} className='h-[35.48px] w-[35.48px]' />
           <p className="ml-4 text-[30px] text-[#FF7439] font-semibold">bunkmate</p>
         </div>
