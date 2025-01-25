@@ -1,23 +1,90 @@
 "use client";
 
-import React, {useState, useCallback} from 'react'
+import React, { useState, useCallback, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
-import { Upload, X } from "lucide-react";
+import { Upload, PencilIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Cropper from 'react-easy-crop';
+import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
+import { useRouter } from 'next/navigation';
 
 const EditProfile = () => {
+  const supabase = createClient();
   const [selectedFile, setSelectedFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [isCropping, setIsCropping] = useState(false);
+  const [profileImageUrl, setProfileImageUrl] = useState('');
+  const [isHovered, setIsHovered] = useState(false);
+  const router = useRouter();
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    riceAffiliation: 'student',
+    profileImage: ''
+  });
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Fetch user data on component mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('users')
+          .select()
+          .eq('id', user.id)
+          .single();
+          
+        if (error) {
+          console.error('Error fetching user data:', error);
+          return;
+        }
+
+        if (data) {
+          const [firstName, lastName] = (data.name || '').split(' ');
+          setFormData({
+            firstName: firstName || '',
+            lastName: lastName || '',
+            email: data.email || '',
+            phone: data.phone || '',
+            riceAffiliation: 'student',
+            profileImage: data.profile_image_path || ''
+          });
+
+          // Set the profile image URL
+          if (data.profile_image_path) {
+            const imageUrl = getImagePublicUrl('profile_images', data.profile_image_path);
+            setProfileImageUrl(imageUrl);
+            setSelectedFile(imageUrl);
+          } else if (user.user_metadata?.avatar_url) {
+            setProfileImageUrl(user.user_metadata.avatar_url);
+            setSelectedFile(user.user_metadata.avatar_url);
+          }
+        }
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -29,7 +96,7 @@ const EditProfile = () => {
     }
   };
 
-  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
@@ -61,58 +128,151 @@ const EditProfile = () => {
 
       const croppedImageUrl = canvas.toDataURL('image/jpeg');
       setSelectedFile(croppedImageUrl);
+      setProfileImageUrl(croppedImageUrl);
       setIsCropping(false);
     } catch (e) {
       console.error(e);
     }
   };
 
+  const handleSave = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const updates = {
+      id: user.id,
+      name: `${formData.firstName} ${formData.lastName}`.trim(),
+      email: formData.email,
+      phone: formData.phone,
+    };
+
+    const { error } = await supabase
+      .from('users')
+      .upsert(updates);
+
+    if (error) {
+      router.push('/profile-section');
+    }
+  };
+
   return (
     <main className='w-full h-full max-w-[1200px]'>
-      {/* Heading */}
       <h1 className='text-3xl font-semibold'>Profile Editor</h1>
       <p className='mt-4 text-gray-600'>Welcome to your profile editor! Here, you can edit your personal information. </p>
 
       <div className='w-full flex justify-between items-center mt-14'>
         <h2 className='text-2xl font-medium'>Your Profile Information</h2>
-        <div className='px-6 py-2 rounded-lg bg-[#FF7439] hover:bg-[#FF7439]/80 hover:cursor-pointer hover:scale-105 transition duration-300'>
+        <button 
+          onClick={handleSave}
+          className='px-6 py-2 rounded-lg bg-[#FF7439] hover:bg-[#FF7439]/80 hover:cursor-pointer hover:scale-105 transition duration-300'
+        >
           <p className='text-white font-medium'>Save</p>
-        </div>
+        </button>
       </div>
 
       <div className='flex flex-row w-full h-full space-x-5 mt-14 mb-20'>
-        {/* Right Hand Side */}
         <div className='w-1/3 h-full'>
-          {/* Description */}
           <h2 className='text-2xl font-medium'>Profile Picture</h2>
           <p className='mt-2 text-gray-400 text-sm'>Upload your profile picture.</p>
           <p className='text-gray-400 text-sm'>Please make sure your face is recognizable! </p>
 
-          {/* Upload Photo */}
           <div className='mt-8 w-40 h-40 relative'>
             <div
               onClick={() => setIsModalOpen(true)}
-              className={`w-full h-full rounded-full border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors ${
-                selectedFile ? 'bg-gray-100' : 'bg-gray-50'
-              }`}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              className="w-full h-full rounded-full relative cursor-pointer group"
             >
-              {selectedFile ? (
-                <img
-                  src={selectedFile}
-                  alt="Profile preview"
-                  className="w-full h-full rounded-full object-cover"
-                />
-              ) : (
+              {profileImageUrl ? (
                 <>
+                  <img
+                    src={profileImageUrl}
+                    alt="Profile"
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                  <div className={`absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+                    <PencilIcon className="w-8 h-8 text-white" />
+                  </div>
+                </>
+              ) : (
+                <div className="w-full h-full rounded-full border-2 border-dashed border-gray-300 flex flex-col items-center justify-center bg-gray-50 hover:border-gray-400 transition-colors">
                   <Upload className="w-8 h-8 text-gray-400" />
                   <span className="mt-2 text-sm text-gray-500">Upload File</span>
-                </>
+                </div>
               )}
             </div>
           </div>
 
-          {/* Upload Modal */}
-          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          {/* Rice Affiliation */}
+          <div className='mt-20'>
+            <h2 className='text-2xl font-medium'>Rice Affiliation</h2>
+            <p className='mt-2 text-gray-400 text-sm'>Below, select the option that applies to you:</p>
+            
+            <RadioGroup 
+              className="mt-8 space-y-4 w-3/5"
+              value={formData.riceAffiliation}
+              onValueChange={(value) => handleInputChange({ target: { name: 'riceAffiliation', value } })}
+            >
+              <div className="flex items-center space-x-2 border rounded-lg justify-center py-3">
+                <RadioGroupItem value="student" id="student" />
+                <Label htmlFor="student" className="text-sm">I am a Rice Student</Label>
+              </div>
+              <div className="flex items-center space-x-2 border rounded-lg justify-center py-3">
+                <RadioGroupItem value="alumni" id="alumni" />
+                <Label htmlFor="alumni" className="text-sm">I am a Rice alumni</Label>
+              </div>
+            </RadioGroup>
+          </div>
+        </div>
+
+        <div className='w-2/3 h-full mb-20'>
+          {/* Name Fields */}
+          <h2 className='text-2xl font-medium'>Name</h2>
+          <p className='mt-2 text-gray-400 text-sm'>If Rice Student: Make sure this matches the name on your Rice Student ID.</p>
+          <p className='text-gray-400 text-sm'>If not Rice-affiliated: Make sure this matches the name on your government ID.</p>
+          <div className='mt-8 flex items-center justify-between space-x-8'>
+            <Input 
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleInputChange}
+              placeholder="First Name on ID" 
+              className='w-1/2 rounded-xl border border-gray-200' 
+            />
+            <Input 
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              placeholder="Last Name on ID" 
+              className='w-1/2 rounded-xl border border-gray-200' 
+            />
+          </div>
+
+          {/* Email Field */}
+          <h2 className='text-2xl font-medium mt-20'>Email Address</h2>
+          <p className='mt-2 text-gray-400 text-sm'>Use the address you'd like to be contacted with.</p>
+          <Input 
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="Email Address" 
+            className='w-full rounded-xl mt-8 border border-gray-200' 
+          />
+
+          {/* Phone Number Field */}
+          <h2 className='text-2xl font-medium mt-20'>Phone Number</h2>
+          <p className='mt-2 text-gray-400 text-sm'>Use the number you'd like to be contacted with.</p>
+          <Input 
+            name="phone"
+            value={formData.phone}
+            onChange={handleInputChange}
+            placeholder="+1 (xxx) xxx-xxxx" 
+            className='w-full rounded-xl mt-8 border border-gray-200' 
+          />
+        </div>
+      </div>
+
+      {/* Image Cropping Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogContent className={`max-w-md ${isCropping ? 'max-h-[700px]' : ''}`}>
               <DialogHeader>
                 <DialogTitle>Profile Picture</DialogTitle>
@@ -194,11 +354,14 @@ const EditProfile = () => {
                         Change
                       </Button>
                       <Button
-                        onClick={() => setIsModalOpen(false)}
-                        className="bg-gray-600 hover:bg-gray-700 text-white"
-                      >
-                        Done
-                      </Button>
+                      onClick={() => {
+                        setProfileImageUrl(selectedFile);
+                        setIsModalOpen(false);
+                      }}
+                      className="bg-gray-600 hover:bg-gray-700 text-white"
+                    >
+                      Done
+                    </Button>
                     </>
                   )}
                 </div>
@@ -221,49 +384,8 @@ const EditProfile = () => {
               </div>
             </DialogContent>
           </Dialog>
-
-          {/* Rice Affiliation */}
-          <div className='mt-20'>
-            <h2 className='text-2xl font-medium'>Rice Affiliation</h2>
-            <p className='mt-2 text-gray-400 text-sm'>Below, select the option that applies to you:</p>
-            
-            <RadioGroup className="mt-8 space-y-4 w-3/5">
-              <div className="flex items-center space-x-2 border rounded-lg justify-center py-3">
-                <RadioGroupItem value="student" id="student" />
-                <Label htmlFor="student" className="text-sm">I am a Rice Student</Label>
-              </div>
-              <div className="flex items-center space-x-2 border rounded-lg justify-center py-3">
-                <RadioGroupItem value="alumni" id="alumni" />
-                <Label htmlFor="alumni" className="text-sm">I am a Rice alumni</Label>
-              </div>
-            </RadioGroup>
-          </div>
-        </div>
-
-        {/* Left Hand Side */}
-        <div className='w-2/3 h-full mb-20'>
-          {/* Name */}
-          <h2 className='text-2xl font-medium'>Name</h2>
-          <p className='mt-2 text-gray-400 text-sm'>If Rice Student: Make sure this matches the name on your Rice Student ID.</p>
-          <p className='text-gray-400 text-sm'>If not Rice-affiliated: Make sure this matches the name on your government ID.</p>
-          <div className='mt-8 flex items-center justify-between space-x-8'>
-            <Input placeholder="First Name on ID" className='w-1/2 rounded-xl border border-gray-200' />
-            <Input placeholder="Last Name on ID" className='w-1/2 rounded-xl border border-gray-200' />
-          </div>
-
-          {/* Email */}
-          <h2 className='text-2xl font-medium mt-20'>Email Address</h2>
-          <p className='mt-2 text-gray-400 text-sm'>Use the address you'd like to be contacted with.</p>
-          <Input placeholder="Email Address" className='w-full rounded-xl mt-8 border border-gray-200' />
-
-          {/* Phone Number */}
-          <h2 className='text-2xl font-medium mt-20'>Phone Number</h2>
-          <p className='mt-2 text-gray-400 text-sm'>Use the number you'd like to be contacted with.</p>
-          <Input placeholder="+1 (xxx) xxx-xxxx" className='w-full rounded-xl mt-8 border border-gray-200' />
-        </div>
-      </div>
     </main>
-  )
-}
+  );
+};
 
-export default EditProfile
+export default EditProfile;
