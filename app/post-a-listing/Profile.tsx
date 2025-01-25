@@ -60,10 +60,12 @@ const Profile = ({
   formData,
   setFormData,
   onBack,
+  onPost
 }: {
   formData: any;
   setFormData: any;
   onBack: () => void;
+  onPost: () => void;
 }) => (
   <div className="space-y-8 w-full">
     <div>
@@ -184,7 +186,7 @@ const Profile = ({
           <FaChevronLeft />
           <p>Back</p>
         </Button>
-      <Button className="bg-[#FF7439] hover:bg-[#FF7439]/90 rounded-lg px-6">
+      <Button className="bg-[#FF7439] hover:bg-[#FF7439]/90 rounded-lg px-6" onClick={onPost}>
         Post
       </Button>
     </div>

@@ -77,9 +77,7 @@ const PostListing = () => {
     
   });
 
-  const handleSubmit = async (e: MouseEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     const supabase = createClient();
     const userId = (await supabase.auth.getUser()).data.user?.id;
     const insertions: ImagePromiseType[] = [];
@@ -96,16 +94,16 @@ const PostListing = () => {
 
     const geocodeAddress = async (address: string) => {
       if (!address) {
-        throw new Error('Vaild address is required');
+        throw new Error('Valid address is required');
       }
       try {
         const API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
         const response = await fetch(`https://geocode.maps.co/search?q=${address}&api_key=${API_KEY}`);
-        if(!response.ok) {
+        if (!response.ok) {
           throw new Error('Failed to geocode address')   
         }
         const data = await response.json();
-        if (data && data.length >0) {
+        if (data && data.length > 0) {
           return {
             lat: data[0].lat,
             lon: data[0].lon,
@@ -123,7 +121,7 @@ const PostListing = () => {
 
     const calculateDistance = async (address: string) => {
       if (!address) {
-        throw new Error('Vaild address is required');
+        throw new Error('Valid address is required');
       }
       try {
         const RICE_ADDRESS = '6100 Main St, Houston, TX 77005';
@@ -175,7 +173,6 @@ const PostListing = () => {
             phone_number: formData.phone,
             description: formData.description,
             address: formData.address,
-            userId,
             distance: distance,
             title: formData.title,
             price: formData.price, 
@@ -208,7 +205,7 @@ const PostListing = () => {
         throw new Error(captionError.message, { cause: filePaths });
       }
       
-      router.push('/listing');
+      router.push('/');
     }
     catch (error: any) {
       //revert all uploads
@@ -275,7 +272,7 @@ const PostListing = () => {
               onBack={handlePreviousCategory}
             />;
       case 'profile':
-        return <Profile formData={formData} setFormData={setFormData} onBack={handlePreviousCategory}/>;
+        return <Profile formData={formData} setFormData={setFormData} onBack={handlePreviousCategory} onPost={handleSubmit}/>;
       default:
         return <TitleDescription
           formData={formData}
