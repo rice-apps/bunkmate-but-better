@@ -173,6 +173,7 @@ const PostListing = () => {
             phone_number: formData.phone,
             description: formData.description,
             address: formData.address,
+            location_notes: formData.locationNotes,
             distance: distance,
             title: formData.title,
             price: formData.price, 
@@ -197,9 +198,11 @@ const PostListing = () => {
         caption: formData.photoLabels[index] || '',
       }))
 
+      const filteredImageCaptions = imageCaptions.filter((imageCaption) => imageCaption.caption != '');
+
       const { error: captionError } = await supabase
         .from('images_captions')
-        .insert(imageCaptions)
+        .insert(filteredImageCaptions)
         .select();
       if (captionError) {
         throw new Error(captionError.message, { cause: filePaths });
