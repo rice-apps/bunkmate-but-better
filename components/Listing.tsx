@@ -194,7 +194,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
               src={images[currentImageIndex].src} 
               fill={true} 
               alt={`${data.title} - Image ${currentImageIndex + 1}`}
-              className="object-cover rounded-lg" 
+              className="object-contain rounded-lg" 
             />
           </div>
 
