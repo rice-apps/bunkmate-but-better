@@ -2,11 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FiUpload } from "react-icons/fi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProfilePictureModal from "./ProfilePictureModal";
 import Link from "next/link";
 import PreviewButton from "./PreviewButton";
 import { FaChevronLeft } from "react-icons/fa6";
+import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 
 // Profile Component
 
@@ -74,6 +75,51 @@ const Profile = ({ formData, setFormData, onBack}: {
       formData.phone
   );
 
+  const supabase = createClient();
+
+  const [profile, setProfile] = useState({
+    username: "",
+    email: "",
+    phone: "",
+    image: "",
+  })
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await supabase.auth.getUser();
+      if (user.data.user) {
+        supabase
+          .from("users")
+          .select()
+          .eq("id", user.data.user.id)
+          .then((data) => {
+            if (data.error) {
+              console.error("Error fetching user");
+              return;
+            }
+            if (data.data.length === 0) {
+              console.error("No user");
+              return;
+            }
+            setProfile({
+              username: data.data[0].name,
+              email: data.data[0].email,
+              phone: data.data[0].phone,
+              image: data.data[0].profile_image_path
+                ? getImagePublicUrl(
+                    "profile_images",
+                    data.data[0].profile_image_path
+                  )
+                : user.data.user?.user_metadata.avatar_url,
+            });
+          });
+      } else {
+        console.error("No user");
+      }
+    };
+    fetchUser();
+  }, []);
+
   return (
     <div>
       <div className="flex flex-row justify-between mr-10">
@@ -93,15 +139,22 @@ const Profile = ({ formData, setFormData, onBack}: {
       <div className="grid grid-cols-[1fr_2fr] items-start gap-4 pl-8">
         <div>
           <h2 className="text-[1.25rem] font-medium mb-4">Profile Picture</h2>
+          {profile.image ? (
+            <img
+              src={profile.image}
+              alt="profile pic"
+              className="w-28 h-28 bg-gray-100 border border-gray-300 rounded-full text-gray-500"
+            />
+          ) : (
           <div className="flex items-center justify-center w-28 h-28 bg-gray-100 border border-gray-300 rounded-full text-gray-500">
             profile pic
-          </div>
+          </div>)}
         </div>
         <div>
           <h2 className="text-[1.25rem] font-medium mb-4">Name</h2>
-          <p className="mb-6 text-sm text-gray-400">First Last</p>
+          <p className="mb-6 text-sm text-gray-400">{profile ? profile.username : "First Last"}</p>
           <h2 className="text-[1.25rem] font-medium mb-4">Email address</h2>
-          <p className="mb-6 text-sm text-gray-400">netid@rice.edu</p>
+          <p className="mb-6 text-sm text-gray-400">{profile ? profile.email : "netid@rice.edu"}</p>
         </div>
       </div>
       <hr></hr>
