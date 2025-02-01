@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import ListingCard from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import LoadingCircle from "@/components/LoadingCircle";
 import LoadingCard from "@/components/LoadingCard";
 
@@ -34,10 +34,13 @@ export default function Index() {
   const supabase = createClient();
   const router = useRouter();
   const [listings, setListings] = useState<Listing[] | null>(null);
-  const [favorites, setFavorites] = useState<{[key: number]: boolean}>({});
+  const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadingCardCount, setLoadingCardCount] = useState(4);
+
+  const searchParams = useSearchParams(); // Use useSearchParams
+
 
   useEffect(() => {
     const updateLoadingCardCount = () => {
@@ -64,15 +67,47 @@ export default function Index() {
         setIsLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
 
-        if (!user) {
-          router.push('/sign-in');
-          return;
+        let query = supabase.from('listings').select();
+
+        const startDate = (searchParams && searchParams.get('startDate') ? new Date(searchParams.get('startDate')!) : null);
+        const endDate = (searchParams && searchParams.get('endDate') ? new Date(searchParams.get('endDate')!) : null);
+        const distance = (searchParams && searchParams.get('distance')) || null;
+
+
+        // Apply filters
+        if (startDate) {
+          const startRange = new Date(startDate);
+          startRange.setMonth(startRange.getMonth() - 1); // One month before
+          const endRange = new Date(startDate);
+          endRange.setMonth(endRange.getMonth() + 1); // One month after
+
+          query = query.gte('start_date', startRange.toISOString());
+          query = query.lte('start_date', endRange.toISOString());
+        }
+        if (endDate) {
+          const startRange = new Date(endDate);
+          startRange.setMonth(startRange.getMonth() - 1); // One month before
+          const endRange = new Date(endDate);
+          endRange.setMonth(endRange.getMonth() + 1); // One month after
+
+          query = query.gte('end_date', startRange.toISOString());
+          query = query.lte('end_date', endRange.toISOString());
+        }
+        // Implement distance filtering logic here if applicable
+        if (distance) {
+          if (distance == "< 1 mile") query = query.lte('distance', 1);
+          else if (distance == "< 3 miles") query = query.lte('distance', 3).gte('distance', 1);
+          else if (distance == "< 5 miles") query = query.lte('distance', 5).gte('distance', 3);
+          else if (distance == "> 5 miles") query = query.gte('distance', 5);
         }
 
-        const { data: listings } = await supabase.from('listings').select().order('created_at', { ascending: false });
-        const { data: favorites } = await supabase.from('users_favorites').select('listing_id').eq('user_id', user?.id);
+        const { data: listings, error } = await query.order('created_at', { ascending: false });
+
+        if (error) throw error;
 
         setListings(listings);
+
+        const { data: favorites } = await supabase.from('users_favorites').select('listing_id').eq('user_id', user?.id);
 
         // Convert the list of favorites to an object for faster lookups.
         const favoritesObject: { [key: number]: boolean } = {};
@@ -82,13 +117,10 @@ export default function Index() {
 
         setFavorites(favoritesObject);
 
-        // const { data, error } = await supabase
-        //   .from('listings')
-        //   .select()
-        //   .order('created_at', { ascending: false });
-
-        // if (error) throw error;
-        // setListings(data);
+        if (!user) {
+          router.push('/sign-in');
+          return;
+        }
       }
       catch (error) {
         console.error(error);
@@ -99,7 +131,7 @@ export default function Index() {
       }
     }
     fetchPosts();
-  }, [router]);
+  }, [router, searchParams]);
 
   const renderLoadingState = () => (
     <>
@@ -123,25 +155,25 @@ export default function Index() {
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {isLoading ? renderLoadingState() : error ? renderError() :
-          (
-            <>
-            {listings && listings.map((listing) => (
-              <div key={listing.id} className="w-full">
-                <ListingCard
-                  postId={listing.id.toString()}
-                  name={listing.title}
-                  imagePath={getImagePublicUrl("listing_images", (listing.image_paths[0]))}
-                  distance={"2 miles away"}
-                  duration={`${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`}
-                  price={`$${listing.price} / month`}
-                  isRiceStudent={true}
-                  ownListing={false}
-                  isFavorited={listing.id in favorites}
-                />
-              </div>
-            ))}
-            </>
-          )}
+            (
+              <>
+                {listings && listings.map((listing) => (
+                  <div key={listing.id} className="w-full">
+                    <ListingCard
+                      postId={listing.id.toString()}
+                      name={listing.title}
+                      imagePath={getImagePublicUrl("listing_images", (listing.image_paths[0]))}
+                      distance={"2 miles away"}
+                      duration={`${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`}
+                      price={`$${listing.price} / month`}
+                      isRiceStudent={true}
+                      ownListing={false}
+                      isFavorited={listing.id in favorites}
+                    />
+                  </div>
+                ))}
+              </>
+            )}
         </div>
       </main>
     </>
