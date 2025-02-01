@@ -54,7 +54,7 @@ const Duration = ({
         Set the start and end dates of your lease here.{" "}
       </h2>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between mt-10">
         <div className="w-[49%]">
           <h2 className="text-2xl font-medium mb-2">Start Date</h2>
           <span className="text-sm text-gray-400 mb-5 block">
@@ -137,7 +137,7 @@ const Duration = ({
         </div>
       </div>
 
-      <div>
+      <div className="mt-10">
         <h2 className="text-2xl font-medium mb-2">Special Notes</h2>
         <p className="text-gray-400 text-sm mb-5">
           <span className="text-gray-500 font-semibold">This is optional!</span>{" "}
@@ -165,7 +165,7 @@ const Duration = ({
         </div>
       </div>
 
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col space-y-2 mt-10">
         <div className="flex justify-between">
           <Button
             className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"
