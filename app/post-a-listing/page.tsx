@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
+import React, { useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,14 +23,14 @@ import CategoryStatusIndicator from "./CategoryStatusIndicator";
 interface FormData {
   title: string;
   description: string;
-  price: number;
+  price: string;
   priceNotes: string;
   startDate: string;
   endDate: string;
   durationNotes: string;
   address: string;
   locationNotes: string;
-  photos: File[];
+  photos: string[];
   photoLabels: string[];
   affiliation: string;
   // name: string;
@@ -38,54 +38,54 @@ interface FormData {
   phone: string;
 }
 
-type ImageResponse =
-  | {
-      data: {
-        id: string;
-        path: string;
-        fullPath: string;
-      };
-      error: null;
-    }
-  | {
-      data: null;
-      error: any;
-    };
 
-type ImagePromiseType = Promise<ImageResponse>;
+type ImageResponse = {
+  data: {
+    id: string;
+    path: string;
+    fullPath: string;
+  };
+  error: null;
+} | {
+  data: null;
+  error: any;
+}
+
+type ImagePromiseType = Promise<ImageResponse>
+
+
 
 // Main PostListing component
 const PostListing = () => {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState("title");
+  const params = useSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState('title');
   const [formData, setFormData] = useState<FormData>({
-    title: "",
-    description: "",
-    price: 0,
-    priceNotes: "",
-    startDate: "",
-    endDate: "",
-    durationNotes: "",
-    address: "",
-    locationNotes: "",
+    title: '',
+    description: '',
+    price: '',
+    priceNotes: '',
+    startDate: '',
+    endDate: '',
+    durationNotes: '',
+    address: '',
+    locationNotes: '',
     photos: [],
     photoLabels: [],
-    affiliation: "rice",
-    // profilePicture: '',
-    // firstName: '',
-    // lastName: '',
-    // email: '',
-    phone: "",
+    affiliation: 'rice',
+    phone: '',
   });
 
-  const isComplete = Boolean(
-    formData.title.length >= 1 && formData.description.length >= 100 && formData.price && formData.address &&
-    formData.startDate && formData.endDate && formData.photos.length >= 5 && formData.phone
-  );
+  useEffect(() => {
+    const savedData = params.get("data");
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      setFormData(parsedData);
+    }
+  }, []);
 
-  const handleSubmit = async (e: MouseEvent) => {
-    e.preventDefault();
 
+  const handleSubmit = async () => {
     const supabase = createClient();
     const userId = (await supabase.auth.getUser()).data.user?.id;
     const insertions: ImagePromiseType[] = [];
@@ -102,6 +102,65 @@ const PostListing = () => {
       filePaths.push(filePath);
     });
 
+    const geocodeAddress = async (address: string) => {
+      if (!address) {
+        throw new Error('Valid address is required');
+      }
+      try {
+        const API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
+        const response = await fetch(`https://geocode.maps.co/search?q=${address}&api_key=${API_KEY}`);
+        if (!response.ok) {
+          throw new Error('Failed to geocode address')   
+        }
+        const data = await response.json();
+        if (data && data.length > 0) {
+          return {
+            lat: data[0].lat,
+            lon: data[0].lon,
+          };
+        }
+        else {
+          throw new Error('No results found');
+        }
+      }
+      catch (error) {
+        console.error('Error geocoding address:', error);
+        throw error;
+      }
+    };
+
+    const calculateDistance = async (address: string) => {
+      if (!address) {
+        throw new Error('Valid address is required');
+      }
+      try {
+        const RICE_ADDRESS = '6100 Main St, Houston, TX 77005';
+        const [riceCoords, listingCoords] = await Promise.all([
+          geocodeAddress(RICE_ADDRESS),
+          geocodeAddress(address),
+        ]);
+        if (!riceCoords || !listingCoords) {
+          throw new Error('Could not geocode addresses');
+        }
+        const osrmResponse = await fetch(`https://router.project-osrm.org/route/v1/driving/${riceCoords.lon},${riceCoords.lat};${listingCoords.lon},${listingCoords.lat}?overview=false`);
+        if(!osrmResponse.ok) {
+          throw new Error('Failed to calculate distance');
+        }
+        const osrmData = await osrmResponse.json();
+        if(!osrmData.routes || osrmData.routes.length === 0) {
+          throw new Error('No distance results found');
+        }
+        const distanceMeters = osrmData.routes[0].distance;
+        const distanceMiles = (distanceMeters * 0.000621371).toFixed(1);
+        return distanceMiles;
+      }
+      catch (error) {
+        console.error('Error calculating distance:', error);
+        throw error;
+      }
+    };
+
+
     try {
       const imageUploads = await Promise.all(insertions);
       const successfulUploads = imageUploads.filter(
@@ -115,6 +174,12 @@ const PostListing = () => {
           cause: successfulFilePaths,
         });
       }
+      const results = await Promise.all(insertions);
+      //calculate distance from address
+      const distance = await calculateDistance(formData.address);
+      if (!distance) {
+        throw new Error('Unable to validate address or calculate distance. Please check the address.');
+      }
 
       const { data, error } = await supabase
         .from("listings")
@@ -122,14 +187,16 @@ const PostListing = () => {
           {
             user_id: userId,
             phone_number: formData.phone,
-            title: formData.title,
             description: formData.description,
-            price: formData.price,
+            address: formData.address,
+            location_notes: formData.locationNotes,
+            distance: distance,
+            title: formData.title,
+            price: formData.price, 
             price_notes: formData.priceNotes,
             start_date: formData.startDate,
             end_date: formData.endDate,
             duration_notes: formData.durationNotes,
-            address: formData.address,
             image_paths: filePaths,
           },
         ])
@@ -150,16 +217,18 @@ const PostListing = () => {
         caption: formData.photoLabels[index] || "",
       }));
 
+      const filteredImageCaptions = imageCaptions.filter((imageCaption) => imageCaption.caption != '');
+
       const { error: captionError } = await supabase
-        .from("images_captions")
-        .insert(imageCaptions)
+        .from('images_captions')
+        .insert(filteredImageCaptions)
         .select();
       if (captionError) {
         throw new Error(captionError.message, { cause: filePaths });
       }
-
-      router.push("/listing");
-    } catch (error: any) {
+      router.push('/');
+    }
+    catch (error: any) {
       //revert all uploads
       console.error(error.message);
       await cleanupUploads(error.cause);
@@ -172,6 +241,23 @@ const PostListing = () => {
     }
   };
 
+  const handlePreviewClick = () => {
+    // Convert File objects to URLs for storage
+    // const photoURLs = formData.photos.map((photo: File) => URL.createObjectURL(photo));
+    
+    // Prepare data for storage
+    const previewData = {
+      ...formData,
+      photos: formData.photos // Store URLs instead of File objects
+    };
+
+    // Save to localStorage
+    localStorage.setItem('listingFormData', JSON.stringify(previewData));
+    
+    // Navigate to preview
+    router.push('/post-a-listing/preview');
+  };
+  
   const renderComponent = () => {
     switch (selectedCategory) {
       case "title":
@@ -255,42 +341,38 @@ const PostListing = () => {
     }
   };
 
-  const categories = useMemo(
-    () => [
-      {
-        id: "title",
-        name: "Title & Description",
-        completed:
-          formData.title.length >= 1 && formData.description.length >= 100,
-      },
-      {
-        id: "pricing",
-        name: "Pricing",
-        completed: Boolean(formData.price),
-      },
-      {
-        id: "location",
-        name: "Location",
-        completed: Boolean(formData.address),
-      },
-      {
-        id: "duration",
-        name: "Duration",
-        completed: Boolean(formData.startDate && formData.endDate),
-      },
-      {
-        id: "photos",
-        name: "Photos",
-        completed: formData.photos.length >= 1,
-      },
-      {
-        id: "profile",
-        name: "Profile",
-        completed: Boolean(formData.phone),
-      },
-    ],
-    [formData]
-  );
+  const categories = useMemo(() => [
+    {
+      id: 'title',
+      name: 'Title & Description',
+      completed: formData.title.length >= 1 && formData.description.length >= 100
+    },
+    {
+      id: 'pricing',
+      name: 'Pricing',
+      completed: Boolean(formData.price)
+    },
+    {
+      id: 'location',
+      name: 'Location',
+      completed: Boolean(formData.address)
+    },
+    {
+      id: 'duration',
+      name: 'Duration',
+      completed: Boolean(formData.startDate && formData.endDate)
+    },
+    {
+      id: 'photos',
+      name: 'Photos',
+      completed: formData.photos.length >= 1
+    },
+    {
+      id: 'profile',
+      name: 'Profile',
+      completed: Boolean(formData.phone)
+    }
+  ], [formData]);
 
   const handleNextCategory = () => {
     const currentIndex = categories.findIndex(
@@ -312,22 +394,16 @@ const PostListing = () => {
 
   return (
     <div className="min-h-screen w-full bg-white">
-      {/* Navbar */}
-      <nav className="bg-white top-0 z-10 h-16 fixed w-full">
-        <div className="container mx-auto px-10 py-4 flex justify-between items-center">
-          <Link href="/">
-            <div className="flex items-center space-x-2">
-              <Image
-                src="/bunkmate_logo.png"
-                alt="Bunkmate"
-                width={32}
-                height={32}
-              />
-              <span className="text-2xl text-[#FF7439] font-semibold">
-                bunkmate
-              </span>
-            </div>
-          </Link>
+      {/* Navbar. */}
+      <nav className='mt-10 md:px-8 items-center lg:px-20 xl:px-20 flex flex-row place-items-center w-screen justify-between'>
+        {/* Logo — make consistent with the previous nav bar. */}
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <button className='hidden hide-logo:flex justify-center'>
+            <Link href='/' className='flex flex-row gap-[8.33] place-items-center'>
+              <Image src="/bunkmate_logo.png" alt="Bunkmate Logo" width={35} height={35} />
+              <p className="ml-4 text-[30px] text-[#FF7439] font-semibold">bunkmate</p>
+            </Link>
+          </button>
           <div className="flex items-center space-x-4">
             <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 hover:cursor-pointer transition-transform duration-150 w-[35px] h-[31px]" />
             <CgProfile className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 hover:cursor-pointer transition-transform duration-150 w-[35px] h-[31px]" />

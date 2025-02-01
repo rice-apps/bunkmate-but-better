@@ -21,7 +21,8 @@ const Photos = ({
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newPhotos = Array.from(e.target.files);
-      setFormData({ ...formData, photos: [...formData.photos, ...newPhotos] });
+      const parsedPhotos = newPhotos.map((photo: File) => URL.createObjectURL(photo))
+      setFormData({ ...formData, photos: [...formData.photos, ...parsedPhotos] });
     }
   };
 
@@ -69,12 +70,12 @@ const Photos = ({
         </p>
 
         <div className="grid grid-cols-3 gap-4">
-          {formData.photos.map((photo: any, index: number) => (
+          {formData.photos.map((photo: string, index: number) => (
             <div key={index} className="relative group">
               <div className="aspect-square rounded-xl overflow-hidden border border-gray-200">
                 <div className="relative w-full h-full">
                   <Image
-                    src={URL.createObjectURL(photo)}
+                    src={photo}
                     alt={`Upload ${index + 1}`}
                     fill
                     className="object-cover"

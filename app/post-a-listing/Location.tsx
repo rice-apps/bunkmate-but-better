@@ -28,6 +28,7 @@ const Location = ({
     setFormData({ ...formData, locationNotes: e.target.value });
   };
 
+
   return (
     <div>
       <div className="flex flex-row justify-between mr-10">

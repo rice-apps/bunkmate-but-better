@@ -60,12 +60,12 @@ import { FaChevronLeft } from "react-icons/fa6";
 const Profile = ({
   formData,
   setFormData,
-  onBack,
+  onBack
 }: {
   formData: any;
   setFormData: any;
   onBack: () => void;
-}) => {
+
   const isComplete = Boolean(
     formData.title.length >= 1 &&
       formData.description.length >= 100 &&
