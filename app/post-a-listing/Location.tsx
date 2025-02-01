@@ -42,10 +42,10 @@ const Location = ({
       </h2>
 
       <div>
-        <h2 className="text-2xl font-medium mb-2">Address</h2>
+        <h2 className="text-2xl font-medium mb-2 mt-10">Address</h2>
         <p className="text-gray-400 text-sm mb-5">
           Use the following format:{" "}
-          <span className="text-gray-500">
+          <span className="text-gray-600">
             123 Sammy Blvd, Houston, TX 77005
           </span>
         </p>
