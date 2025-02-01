@@ -60,7 +60,7 @@ const Location = ({
         </div>
       </div>
 
-      <div>
+      <div className="mt-10">
         <h2 className="text-2xl font-medium mb-2">Special Notes</h2>
         <p className="text-gray-400 text-sm mb-5">
           <span className="text-gray-500 font-semibold">This is optional!</span>{" "}
@@ -86,7 +86,7 @@ const Location = ({
         </div>
       </div>
 
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col space-y-2 mt-10">
         <div className="flex justify-between">
           <Button
             className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"
