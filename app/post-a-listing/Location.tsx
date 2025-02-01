@@ -21,7 +21,7 @@ const Location = ({ formData, setFormData, onNext, onBack }: {
     setFormData({ ...formData, locationNotes: e.target.value });
   };
 
-  return (
+  return (  
     <div className="space-y-8 w-full">
       <div className="flex flex-row justify-between mb-12">
         <div>

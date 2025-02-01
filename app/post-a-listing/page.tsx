@@ -77,9 +77,7 @@ const PostListing = () => {
 
   });
 
-  const handleSubmit = async (e: MouseEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     const supabase = createClient();
     const userId = (await supabase.auth.getUser()).data.user?.id;
     const insertions: ImagePromiseType[] = [];
@@ -94,12 +92,77 @@ const PostListing = () => {
       filePaths.push(filePath);
     });
 
+    const geocodeAddress = async (address: string) => {
+      if (!address) {
+        throw new Error('Valid address is required');
+      }
+      try {
+        const API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
+        const response = await fetch(`https://geocode.maps.co/search?q=${address}&api_key=${API_KEY}`);
+        if (!response.ok) {
+          throw new Error('Failed to geocode address')   
+        }
+        const data = await response.json();
+        if (data && data.length > 0) {
+          return {
+            lat: data[0].lat,
+            lon: data[0].lon,
+          };
+        }
+        else {
+          throw new Error('No results found');
+        }
+      }
+      catch (error) {
+        console.error('Error geocoding address:', error);
+        throw error;
+      }
+    };
+
+    const calculateDistance = async (address: string) => {
+      if (!address) {
+        throw new Error('Valid address is required');
+      }
+      try {
+        const RICE_ADDRESS = '6100 Main St, Houston, TX 77005';
+        const [riceCoords, listingCoords] = await Promise.all([
+          geocodeAddress(RICE_ADDRESS),
+          geocodeAddress(address),
+        ]);
+        if (!riceCoords || !listingCoords) {
+          throw new Error('Could not geocode addresses');
+        }
+        const osrmResponse = await fetch(`https://router.project-osrm.org/route/v1/driving/${riceCoords.lon},${riceCoords.lat};${listingCoords.lon},${listingCoords.lat}?overview=false`);
+        if(!osrmResponse.ok) {
+          throw new Error('Failed to calculate distance');
+        }
+        const osrmData = await osrmResponse.json();
+        if(!osrmData.routes || osrmData.routes.length === 0) {
+          throw new Error('No distance results found');
+        }
+        const distanceMeters = osrmData.routes[0].distance;
+        const distanceMiles = (distanceMeters * 0.000621371).toFixed(1);
+        return distanceMiles;
+      }
+      catch (error) {
+        console.error('Error calculating distance:', error);
+        throw error;
+      }
+    };
+
+
     try {
       const imageUploads = await Promise.all(insertions);
       const successfulUploads = imageUploads.filter((imageUploads) => imageUploads.data);
       if (successfulUploads.length != filePaths.length) {
         const successfulFilePaths = successfulUploads.map((imgResp: ImageResponse) => imgResp.data?.path);
         throw new Error('Some image(s) failed to upload', { cause: successfulFilePaths });
+      }
+      const results = await Promise.all(insertions);
+      //calculate distance from address
+      const distance = await calculateDistance(formData.address);
+      if (!distance) {
+        throw new Error('Unable to validate address or calculate distance. Please check the address.');
       }
 
       const { data, error } = await supabase
@@ -108,14 +171,16 @@ const PostListing = () => {
           {
             user_id: userId,
             phone_number: formData.phone,
-            title: formData.title,
             description: formData.description,
-            price: formData.price,
+            address: formData.address,
+            location_notes: formData.locationNotes,
+            distance: distance,
+            title: formData.title,
+            price: formData.price, 
             price_notes: formData.priceNotes,
             start_date: formData.startDate,
             end_date: formData.endDate,
             duration_notes: formData.durationNotes,
-            address: formData.address,
             image_paths: filePaths,
           },
 
@@ -133,15 +198,16 @@ const PostListing = () => {
         caption: formData.photoLabels[index] || '',
       }))
 
+      const filteredImageCaptions = imageCaptions.filter((imageCaption) => imageCaption.caption != '');
+
       const { error: captionError } = await supabase
         .from('images_captions')
-        .insert(imageCaptions)
+        .insert(filteredImageCaptions)
         .select();
       if (captionError) {
         throw new Error(captionError.message, { cause: filePaths });
       }
-
-      router.push('/listing');
+      router.push('/');
     }
     catch (error: any) {
       //revert all uploads
@@ -208,7 +274,7 @@ const PostListing = () => {
           onBack={handlePreviousCategory}
         />;
       case 'profile':
-        return <Profile formData={formData} setFormData={setFormData} onBack={handlePreviousCategory} />;
+        return <Profile formData={formData} setFormData={setFormData} onBack={handlePreviousCategory} onPost={handleSubmit}/>;
       default:
         return <TitleDescription
           formData={formData}
