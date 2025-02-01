@@ -53,7 +53,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [images, setImages] = useState<ImageData[]>([]);
-
+  // TODO: Fetch image captions from Supabase
   useEffect(() => {
     if (data?.imagePaths) {
       // Transform the image paths into our gallery format
