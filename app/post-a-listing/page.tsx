@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,14 +23,14 @@ import CategoryStatusIndicator from './CategoryStatusIndicator';
 interface FormData {
   title: string;
   description: string;
-  price: number;
+  price: string;
   priceNotes: string;
   startDate: string;
   endDate: string;
   durationNotes: string;
   address: string;
   locationNotes: string;
-  photos: File[];
+  photos: string[];
   photoLabels: string[];
   affiliation: string;
   // name: string;
@@ -52,14 +52,17 @@ type ImageResponse = {
 
 type ImagePromiseType = Promise<ImageResponse>
 
+
+
 // Main PostListing component
 const PostListing = () => {
   const router = useRouter();
+  const params = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState('title');
   const [formData, setFormData] = useState<FormData>({
     title: '',
     description: '',
-    price: 0,
+    price: '',
     priceNotes: '',
     startDate: '',
     endDate: '',
@@ -69,13 +72,17 @@ const PostListing = () => {
     photos: [],
     photoLabels: [],
     affiliation: 'rice',
-    // profilePicture: '',
-    // firstName: '',
-    // lastName: '',
-    // email: '',
     phone: '',
 
-  });
+
+  useEffect(() => {
+    const savedData = params.get("data");
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      setFormData(parsedData);
+    }
+  }, []);
+
 
   const handleSubmit = async () => {
     const supabase = createClient();
@@ -223,6 +230,23 @@ const PostListing = () => {
 
   }
 
+  const handlePreviewClick = () => {
+    // Convert File objects to URLs for storage
+    // const photoURLs = formData.photos.map((photo: File) => URL.createObjectURL(photo));
+    
+    // Prepare data for storage
+    const previewData = {
+      ...formData,
+      photos: formData.photos // Store URLs instead of File objects
+    };
+
+    // Save to localStorage
+    localStorage.setItem('listingFormData', JSON.stringify(previewData));
+    
+    // Navigate to preview
+    router.push('/post-a-listing/preview');
+  };
+  
   const renderComponent = () => {
     switch (selectedCategory) {
       case 'title':

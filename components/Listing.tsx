@@ -35,6 +35,8 @@ interface ListingProps {
     price: number;
     location: string;
     imagePaths: string[];
+    captions: string[];
+    loadImages: boolean;
     description: string;
     phoneNumber: string;
     durationNotes: string;
@@ -55,7 +57,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
   const [images, setImages] = useState<ImageData[]>([]);
 
   useEffect(() => {
-    if (data?.imagePaths) {
+    if (data?.imagePaths && data?.loadImages) {
       // Transform the image paths into our gallery format
       const transformedImages = data.imagePaths.map((path, index) => ({
         src: getImagePublicUrl("listing_images", path),
@@ -80,6 +82,13 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
       }
 
       setImages(paddedImages);
+    } else if (!data?.loadImages) {
+      const transformedImages = data.imagePaths.map((path, index) => ({
+        src: path,
+        span: index === 0 ? "col-span-4 row-span-4" : "col-span-2 row-span-2"
+      }));
+
+      setImages(transformedImages);
     }
   }, [data?.imagePaths]);
 
@@ -201,8 +210,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
           <div className='text-white absolute bottom-8'>
             <p className="text-center font-semibold">{data.title}</p>
             <p className="text-center">
-              {`${data.location} • ${formatDateRange(data.start_date, data.end_date)} • $${data.price.toLocaleString()} / month`}
-              {data.priceNotes && ` - ${data.priceNotes}`}
+              {`${data.captions[currentImageIndex]}`}
             </p>
           </div>
 
