@@ -8,14 +8,12 @@ import { useRouter } from "next/navigation";
 import { IconContext } from "react-icons";
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
-
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 import { createClient } from "@/utils/supabase/client";
 
@@ -45,27 +43,34 @@ const ListingCard: React.FC<CardProps> = ({
   const [favorite, setFavorite] = useState(isFavorited);
   const router = useRouter();
 
-  const handleAddOrRemoveFavorite = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleAddOrRemoveFavorite = async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
     e.stopPropagation();
     // Add API call to modify isFavorited (actual attribute in table)
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     try {
       if (favorite) {
-        await supabase.from('users_favorites').delete().eq('user_id', user?.id).eq('listing_id', postId);
+        await supabase
+          .from("users_favorites")
+          .delete()
+          .eq("user_id", user?.id)
+          .eq("listing_id", postId);
       } else {
-        await supabase.from('users_favorites').insert({
+        await supabase.from("users_favorites").insert({
           user_id: user?.id,
-          listing_id: postId
+          listing_id: postId,
         });
       }
-  
+
       setFavorite(!favorite);
     } catch (error) {
       alert("Failed to favorite/unfavorite a listing");
     }
-    
   };
 
   const handleCardClick = () => {
@@ -74,7 +79,7 @@ const ListingCard: React.FC<CardProps> = ({
 
   return (
     <div className="w-full cursor-pointer" onClick={handleCardClick}>
-      <div className="relative rounded-2xl overflow-hidden bg-white">
+      <div className="relative overflow-hidden bg-white">
         {/* Image Container */}
         <div className="relative w-full aspect-square">
           <Image
@@ -114,18 +119,31 @@ const ListingCard: React.FC<CardProps> = ({
                 <DropdownMenu key={"editTrigger"}>
                   <DropdownMenuTrigger asChild>
                     <div className="flex rounded-full bg-white place-items-center justify-center w-[35px] h-[35px] hover:scale-110 transition-transform duration-100">
-                        <MdEdit className="text-[#FF7439]" style={{ width: '18px', height: '18px' }} />
+                      <MdEdit
+                        className="text-[#FF7439]"
+                        style={{ width: "18px", height: "18px" }}
+                      />
                     </div>
                   </DropdownMenuTrigger>
 
-                  <DropdownMenuContent className=''>
-                    <DropdownMenuItem key={"edit"} className="flex justify-left group">
+                  <DropdownMenuContent className="">
+                    <DropdownMenuItem
+                      key={"edit"}
+                      className="flex justify-left group"
+                    >
                       <MdEdit className="group-hover:text-[#FF7439]" />
-                      <p className='group-hover:text-[#FF7439] text-left'>Edit</p>
+                      <p className="group-hover:text-[#FF7439] text-left">
+                        Edit
+                      </p>
                     </DropdownMenuItem>
-                    <DropdownMenuItem key={"delete"} className="flex justify-left group">
+                    <DropdownMenuItem
+                      key={"delete"}
+                      className="flex justify-left group"
+                    >
                       <RiDeleteBinLine className="group-hover:text-[#FF7439]" />
-                      <p className='group-hover:text-[#FF7439] text-left'>Delete</p>
+                      <p className="group-hover:text-[#FF7439] text-left">
+                        Delete
+                      </p>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
