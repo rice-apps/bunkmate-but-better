@@ -45,12 +45,12 @@ type ImageResponse = {
     fullPath: string;
   };
   error: null;
-  } | {
+} | {
   data: null;
   error: any;
 }
 
-type ImagePromiseType  = Promise<ImageResponse>
+type ImagePromiseType = Promise<ImageResponse>
 
 // Main PostListing component
 const PostListing = () => {
@@ -74,7 +74,7 @@ const PostListing = () => {
     // lastName: '',
     // email: '',
     phone: '',
-    
+
   });
 
   const handleSubmit = async (e: MouseEvent) => {
@@ -105,20 +105,20 @@ const PostListing = () => {
       const { data, error } = await supabase
         .from('listings')
         .insert([
-          { 
+          {
             user_id: userId,
             phone_number: formData.phone,
             title: formData.title,
             description: formData.description,
-            price: formData.price, 
+            price: formData.price,
             price_notes: formData.priceNotes,
             start_date: formData.startDate,
             end_date: formData.endDate,
             duration_notes: formData.durationNotes,
             address: formData.address,
             image_paths: filePaths,
-           },
-          
+          },
+
         ])
         .select()
         .single();
@@ -129,7 +129,7 @@ const PostListing = () => {
 
       const imageCaptions = filePaths.map((path, index) => ({
         user_id: userId,
-        image_path: path, 
+        image_path: path,
         caption: formData.photoLabels[index] || '',
       }))
 
@@ -140,7 +140,7 @@ const PostListing = () => {
       if (captionError) {
         throw new Error(captionError.message, { cause: filePaths });
       }
-      
+
       router.push('/listing');
     }
     catch (error: any) {
@@ -193,22 +193,22 @@ const PostListing = () => {
           onNext={handleNextCategory}
           onBack={handlePreviousCategory}
         />;
-        case 'duration':
-          return <Duration 
-            formData={formData} 
-            setFormData={setFormData} 
-            onNext={handleNextCategory}
-            onBack={handlePreviousCategory}
-          />;
-          case 'photos':
-            return <Photos 
-              formData={formData} 
-              setFormData={setFormData} 
-              onNext={handleNextCategory}
-              onBack={handlePreviousCategory}
-            />;
+      case 'duration':
+        return <Duration
+          formData={formData}
+          setFormData={setFormData}
+          onNext={handleNextCategory}
+          onBack={handlePreviousCategory}
+        />;
+      case 'photos':
+        return <Photos
+          formData={formData}
+          setFormData={setFormData}
+          onNext={handleNextCategory}
+          onBack={handlePreviousCategory}
+        />;
       case 'profile':
-        return <Profile formData={formData} setFormData={setFormData} onBack={handlePreviousCategory}/>;
+        return <Profile formData={formData} setFormData={setFormData} onBack={handlePreviousCategory} />;
       default:
         return <TitleDescription
           formData={formData}
@@ -224,9 +224,9 @@ const PostListing = () => {
       name: 'Title & Description',
       completed: formData.title.length >= 1 && formData.description.length >= 100
     },
-    { 
-      id: 'pricing', 
-      name: 'Pricing', 
+    {
+      id: 'pricing',
+      name: 'Pricing',
       completed: Boolean(formData.price)
     },
     {
@@ -244,9 +244,9 @@ const PostListing = () => {
       name: 'Photos',
       completed: formData.photos.length >= 1
     },
-    { 
-      id: 'profile', 
-      name: 'Profile', 
+    {
+      id: 'profile',
+      name: 'Profile',
       completed: Boolean(formData.phone)
     }
   ], [formData]);
@@ -267,15 +267,16 @@ const PostListing = () => {
 
   return (
     <div className="min-h-screen w-full bg-white">
-      {/* Navbar */}
-      <nav className="bg-white top-0 z-10 h-16 fixed w-full">
+      {/* Navbar. */}
+      <nav className='mt-10 md:px-8 items-center lg:px-20 xl:px-20 flex flex-row place-items-center w-screen justify-between'>
+        {/* Logo — make consistent with the previous nav bar. */}
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href='/'>
-            <div className="flex items-center space-x-2">
-              <Image src="/bunkmate_logo.png" alt="Bunkmate" width={32} height={32} />
-              <span className="text-2xl text-[#FF7439] font-semibold">bunkmate</span>
-            </div>
-          </Link>
+          <button className='hidden hide-logo:flex justify-center'>
+            <Link href='/' className='flex flex-row gap-[8.33] place-items-center'>
+              <Image src="/bunkmate_logo.png" alt="Bunkmate Logo" width={35} height={35} />
+              <p className="ml-4 text-[30px] text-[#FF7439] font-semibold">bunkmate</p>
+            </Link>
+          </button>
           <div className="flex items-center space-x-4">
             <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 hover:cursor-pointer transition-transform duration-150 w-[35px] h-[31px]" />
             <CgProfile className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 hover:cursor-pointer transition-transform duration-150 w-[35px] h-[31px]" />
@@ -284,7 +285,7 @@ const PostListing = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 mt-16">
+      <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex gap-16">
             {/* Sidebar */}
