@@ -83,6 +83,25 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
     }
   }, [data?.imagePaths]);
 
+  // Keyboard shortcuts for slideshow
+  useEffect(() => {
+    if (!isDialogOpen) return;
+  
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeDialog();
+      } else if (e.key === 'ArrowLeft') {
+        handlePrev();
+      } else if (e.key === 'ArrowRight') {
+        handleNext();
+      }
+    };
+  
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDialogOpen]);
+
+
   const openDialog = (index: number = 0) => {
     setCurrentImageIndex(index);
     setDialogOpen(true);
@@ -173,23 +192,36 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
 
       {/* Image Dialog */}
       {isDialogOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50" onClick={closeDialog}>
+          {/* Close Button */}
           <button 
-            onClick={closeDialog} 
-            className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors"
+            onClick={(e) => { e.stopPropagation(); closeDialog(); }} 
+            className="absolute top-4 right-4 z-70 w-10 text-white hover:text-gray-300 transition-colors"
             aria-label="Close gallery"
           >
             <span className="text-4xl">×</span>
           </button>
-          <button 
-            onClick={handlePrev} 
-            className="absolute left-12 text-white hover:text-gray-300 transition-colors"
+          
+          {/* Left Button */}
+          <div 
+            className="absolute left-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors"
+            onClick={(e) => { e.stopPropagation(); handlePrev(); }}
             aria-label="Previous image"
           >
-            <span className="text-5xl">&lt;</span>
-          </button>
+            <span className="text-5xl text-white hover:text-gray-300 transition-colors cursor-pointer">&lt;</span>
+          </div>
+          {/* Right Button */}
 
-          <div className="w-3/4 md:w-3/4 lg:w-1/2 h-3/4 relative mb-17.5">
+          <div 
+            className="absolute right-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors"
+            onClick={(e) => { e.stopPropagation(); handleNext(); }}
+            aria-label="Next image"
+          >
+            <span className="text-5xl text-white hover:text-gray-300 transition-colors cursor-pointer">&gt;</span>
+          </div>
+          
+          {/* Image Container */}
+          <div className="w-3/4 md:w-3/4 lg:w-1/2 h-3/4 relative p-4">
             <Image 
               src={images[currentImageIndex].src} 
               fill={true} 
@@ -197,7 +229,8 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
               className="object-contain rounded-lg" 
             />
           </div>
-
+          
+          {/* Caption */}
           <div className='text-white absolute bottom-8'>
             <p className="text-center font-semibold">{data.title}</p>
             <p className="text-center">
@@ -205,14 +238,6 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
               {data.priceNotes && ` - ${data.priceNotes}`}
             </p>
           </div>
-
-          <button 
-            onClick={handleNext} 
-            className="absolute right-12 text-white hover:text-gray-300 transition-colors"
-            aria-label="Next image"
-          >
-            <span className="text-5xl">&gt;</span>
-          </button>
         </div>
       )}
     </div>
