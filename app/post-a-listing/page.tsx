@@ -277,8 +277,12 @@ const PostListing = () => {
             </div>
           </Link>
           <div className="flex items-center space-x-4">
+            <Link href = '/favorites'>
             <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 hover:cursor-pointer transition-transform duration-150 w-[35px] h-[31px]" />
+            </Link>
+            <Link href='/profile-section'>
             <CgProfile className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 hover:cursor-pointer transition-transform duration-150 w-[35px] h-[31px]" />
+            </Link>
           </div>
         </div>
       </nav>
