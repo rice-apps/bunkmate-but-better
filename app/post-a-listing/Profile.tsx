@@ -57,14 +57,11 @@ import { FaChevronLeft } from "react-icons/fa6";
 //   );
 // }
 
-const Profile = ({
-  formData,
-  setFormData,
-  onBack
-}: {
+const Profile = ({ formData, setFormData, onBack}: {
   formData: any;
   setFormData: any;
   onBack: () => void;
+}) => {
 
   const isComplete = Boolean(
     formData.title.length >= 1 &&
