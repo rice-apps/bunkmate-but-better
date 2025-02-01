@@ -43,17 +43,16 @@ const Duration = ({
   };
 
   return (
-    <div className="space-y-8 w-full">
-      <div className="flex flex-row justify-between mb-12">
+    <div>
+      <div className="flex flex-row justify-between mr-10">
         <div>
           <h1 className="text-2xl font-semibold mb-3">Duration</h1>
-          <h2 className="text-sm font-[500] text-gray-500">
-            Set the start and end dates of your lease here.{" "}
-          </h2>
         </div>
-
         <PreviewButton formData={formData} />
       </div>
+      <h2 className="text-sm font-bold">
+        Set the start and end dates of your lease here.{" "}
+      </h2>
 
       <div className="flex justify-between">
         <div className="w-[49%]">
@@ -169,14 +168,14 @@ const Duration = ({
       <div className="flex flex-col space-y-2">
         <div className="flex justify-between">
           <Button
-            className="rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"
+            className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"
             onClick={onBack}
           >
             <FaChevronLeft />
             <p>Back</p>
           </Button>
           <Button
-            className={`rounded-lg px-6 flex items-center ${
+            className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
               isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
             }`}
             onClick={onNext}

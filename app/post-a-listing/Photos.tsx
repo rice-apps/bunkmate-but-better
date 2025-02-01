@@ -44,21 +44,20 @@ const Photos = ({
   };
 
   return (
-    <div className="space-y-8 w-full">
-      <div className="flex flex-row justify-between mb-12">
+    <div>
+      <div className="flex flex-row justify-between mr-10">
         <div>
           <h1 className="text-2xl font-semibold mb-3">Photos</h1>
-          <h2 className="text-sm font-[500] text-gray-800 mb-3">
-            Add photos and optional descriptions to your lease!{" "}
-          </h2>
-          <p className="mb-6 text-gray-500 text-sm">
-            You are required to upload at least 5 relevant photos to post your
-            listing. Captions are optional but highly encouraged!
-          </p>
         </div>
-
         <PreviewButton formData={formData} />
       </div>
+      <h2 className="text-sm font-[500] text-gray-800">
+        Add photos and optional descriptions to your lease!{" "}
+      </h2>
+      <p className="mb-6 text-gray-500 text-sm">
+        You are required to upload at least 5 relevant photos to post your
+        listing. Captions are optional but highly encouraged!
+      </p>
 
       <div>
         <p
@@ -137,14 +136,14 @@ const Photos = ({
       <div className="flex flex-col space-y-2">
         <div className="flex justify-between">
           <Button
-            className="rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"
+            className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"
             onClick={onBack}
           >
             <FaChevronLeft />
             <p>Back</p>
           </Button>
           <Button
-            className={`rounded-lg px-6 flex items-center ${
+            className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
               isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
             }`}
             onClick={onNext}

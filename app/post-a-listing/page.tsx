@@ -78,6 +78,11 @@ const PostListing = () => {
     phone: "",
   });
 
+  const isComplete = Boolean(
+    formData.title.length >= 1 && formData.description.length >= 100 && formData.price && formData.address &&
+    formData.startDate && formData.endDate && formData.photos.length >= 5 && formData.phone
+  );
+
   const handleSubmit = async (e: MouseEvent) => {
     e.preventDefault();
 
@@ -358,10 +363,20 @@ const PostListing = () => {
                       {category.name}
                     </div>
                   ))}
+                  {/* Post Button */}
+                  <div className="flex items-center justify-center pt-12">
+                  <Button
+                    className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
+                      isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
+                    }`}
+                    disabled={!isComplete}
+                  >
+                    <p>Post</p>
+                  </Button>
+                  </div>
                 </div>
               </div>
             </div>
-            {/* Post Button */}
             <div className="mt-8"></div>
             {/* Form Content */}
             <div className="flex-1 ml-[16rem] pl-16 border-l border-gray-500">
