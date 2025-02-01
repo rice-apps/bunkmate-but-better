@@ -90,7 +90,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
 
       setImages(transformedImages);
     }
-  }, [data?.imagePaths]);
+  }, [data?.imagePaths, data?.loadImages]);
 
   const openDialog = (index: number = 0) => {
     setCurrentImageIndex(index);
@@ -114,13 +114,6 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
     // TODO: Add API call to update favorite status in Supabase
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
   const formatDateRange = (startDate: string, endDate: string) => {
     const formatDate = (dateString: string) => {
       return new Date(dateString).toLocaleDateString('en-US', {
@@ -131,6 +124,13 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
     };
   
     return `${formatDate(startDate)} - ${formatDate(endDate)}`;
+  };
+
+  // Helper function to safely get caption
+  const getCaption = (index: number): string => {
+    return data.captions && Array.isArray(data.captions) && data.captions[index] 
+      ? data.captions[index] 
+      : '';
   };
 
   return (
@@ -166,7 +166,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
               fill={true} 
               alt={`${data.title} - Image ${index + 1}`}
               className="object-cover hover:scale-105 transition-transform duration-300" 
-              priority={index === 0} // Prioritize loading the main image
+              priority={index === 0}
             />
           </div>
         ))}
@@ -181,7 +181,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
       </div>
 
       {/* Image Dialog */}
-      {isDialogOpen && (
+      {isDialogOpen && images.length > 0 && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
           <button 
             onClick={closeDialog} 
@@ -209,9 +209,11 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
 
           <div className='text-white absolute bottom-8'>
             <p className="text-center font-semibold">{data.title}</p>
-            <p className="text-center">
-              {`${data.captions[currentImageIndex]}`}
-            </p>
+            {getCaption(currentImageIndex) && (
+              <p className="text-center">
+                {getCaption(currentImageIndex)}
+              </p>
+            )}
           </div>
 
           <button 
