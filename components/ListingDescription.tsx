@@ -22,6 +22,7 @@ const DescriptionItem = ({ icon, title, description }: DescriptionItemProps) => 
 
 interface ListingDescriptionProps {
   data: {
+    location: string;
     description: string;
     price: number;
     priceNotes: string;
@@ -42,7 +43,8 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
 
   return (
     <div className="">
-      <p className="text-gray-700 text-sm leading-relaxed mb-6">
+      <h1 className='text-xl sm:text-xl font-semibold'>{data.location}</h1>
+      <p className="text-gray-700 text-sm leading-relaxed mb-6 mt-4">
         {data.description}
       </p>
 

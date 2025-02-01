@@ -154,6 +154,7 @@ const ListingPage = () => {
       <div className='lg:w-1/2 xl:w-2/3'>
         <ListingDescription 
           data={{
+            location: listing.address,
             description: listing.description,
             price: listing.price,
             priceNotes: listing.price_notes,
