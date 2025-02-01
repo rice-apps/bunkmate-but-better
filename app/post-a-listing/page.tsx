@@ -73,6 +73,7 @@ const PostListing = () => {
     photoLabels: [],
     affiliation: 'rice',
     phone: '',
+  });
 
 
   useEffect(() => {
