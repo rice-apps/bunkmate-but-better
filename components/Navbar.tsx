@@ -132,7 +132,7 @@ const Navbar = () => {
           </button>
         </Link>
         <Link href='/favorites'>
-          <button>
+          <button className="flex items-center justify-center">
             <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[35px] h-[31px]" />
           </button>
         </Link>
