@@ -5,7 +5,12 @@ import PreviewButton from "./PreviewButton";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
 // Location Component
-const Location = ({ formData, setFormData, onNext, onBack }: {
+const Location = ({
+  formData,
+  setFormData,
+  onNext,
+  onBack,
+}: {
   formData: any;
   setFormData: any;
   onNext: () => void;
@@ -17,26 +22,34 @@ const Location = ({ formData, setFormData, onNext, onBack }: {
     setFormData({ ...formData, address: e.target.value });
   };
 
-  const handleLocationNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleLocationNotesChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setFormData({ ...formData, locationNotes: e.target.value });
   };
 
-  return (  
-    <div className="space-y-8 w-full">
-      <div className="flex flex-row justify-between mb-12">
+
+  return (
+    <div>
+      <div className="flex flex-row justify-between mr-10">
         <div>
-          <h1 className="text-2xl font-semibold mb-3">
-            Location
-          </h1>
-          <h2 className="text-sm font-[500] text-gray-500">Add details about where your listing is</h2>
+          <h1 className="text-2xl font-semibold mb-3">Location</h1>
         </div>
 
         <PreviewButton formData={formData} />
       </div>
+      <h2 className="text-sm font-bold">
+        Add details about where your listing is.
+      </h2>
 
       <div>
-        <h2 className="text-2xl font-medium mb-2">Address</h2>
-        <p className="text-gray-400 text-sm mb-5">Use the following format: <span className="text-gray-500">123 Sammy Blvd, Houston, TX 77005</span></p>
+        <h2 className="text-2xl font-medium mb-2 mt-10">Address</h2>
+        <p className="text-gray-400 text-sm mb-5">
+          Use the following format:{" "}
+          <span className="text-gray-600">
+            123 Sammy Blvd, Houston, TX 77005
+          </span>
+        </p>
         <div className="relative">
           <Input
             placeholder="Ex: 123 Sammy Blvd, Houston, TX 77005"
@@ -49,7 +62,10 @@ const Location = ({ formData, setFormData, onNext, onBack }: {
 
       <div>
         <h2 className="text-2xl font-medium mb-2">Special Notes</h2>
-        <p className="text-gray-400 text-sm mb-5"><span className="text-gray-500 font-semibold">This is optional!</span> You can include information relevant to location. </p>
+        <p className="text-gray-400 text-sm mb-5">
+          <span className="text-gray-500 font-semibold">This is optional!</span>{" "}
+          You can include information relevant to location.{" "}
+        </p>
         <div className="relative">
           <Textarea
             placeholder="Ex: Distance from Rice. 
@@ -60,35 +76,38 @@ const Location = ({ formData, setFormData, onNext, onBack }: {
             className="min-h-[150px] rounded-xl border border-gray-200 resize-none placeholder:text-gray-400 py-3"
           />
           <div className="flex justify-end text-sm mt-2 text-gray-400">
-            <span><span className="font-semibold text-gray-500">{formData.locationNotes.length}</span>/500 characters</span>
+            <span>
+              <span className="font-semibold text-gray-500">
+                {formData.locationNotes.length}
+              </span>
+              /500 characters
+            </span>
           </div>
         </div>
       </div>
 
       <div className="flex flex-col space-y-2">
-      <div className="flex justify-between">
-      <Button
-          className='rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90'
-          onClick={onBack}
-        >
-          <FaChevronLeft />
-          <p>Back</p>
-        </Button>
-        <Button
-          className={`rounded-lg px-6 flex items-center ${isComplete
-            ? 'bg-[#FF7439] hover:bg-[#FF7439]/90'
-            : 'bg-gray-300'
+        <div className="flex justify-between">
+          <Button
+            className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"
+            onClick={onBack}
+          >
+            <FaChevronLeft />
+            <p>Back</p>
+          </Button>
+          <Button
+            className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
+              isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
             }`}
-          onClick={onNext}
-          disabled={!isComplete}
-        >
-          <p>Next</p>
-          <FaChevronRight />
-        </Button>
-      </div>
+            onClick={onNext}
+            disabled={!isComplete}
+          >
+            <p>Next</p>
+            <FaChevronRight />
+          </Button>
+        </div>
 
         {/* Completion status */}
-        
       </div>
     </div>
   );

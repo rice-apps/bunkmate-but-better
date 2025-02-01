@@ -1,14 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Image from 'next/image';
+import Image from "next/image";
 import PreviewButton from "./PreviewButton";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
-const Photos = ({ formData, setFormData, onNext, onBack }: {
+const Photos = ({
+  formData,
+  setFormData,
+  onNext,
+  onBack,
+}: {
   formData: any;
   setFormData: any;
   onNext: () => void;
-  onBack: () => void
+  onBack: () => void;
 }) => {
   // Check if we have at least 5 photos
   const isComplete = formData.photos.length >= 5;
@@ -22,7 +27,9 @@ const Photos = ({ formData, setFormData, onNext, onBack }: {
   };
 
   const handleRemovePhoto = (indexToRemove: number) => {
-    const newPhotos = formData.photos.filter((_: any, index: number) => index !== indexToRemove);
+    const newPhotos = formData.photos.filter(
+      (_: any, index: number) => index !== indexToRemove
+    );
     const newLabels = { ...formData.photoLabels };
     delete newLabels[indexToRemove];
     // Reindex the remaining labels
@@ -33,31 +40,33 @@ const Photos = ({ formData, setFormData, onNext, onBack }: {
     setFormData({
       ...formData,
       photos: newPhotos,
-      photoLabels: reindexedLabels
+      photoLabels: reindexedLabels,
     });
   };
 
   return (
-    <div className="space-y-8 w-full">
-      <div className="flex flex-row justify-between mb-12">
+    <div>
+      <div className="flex flex-row justify-between mr-10">
         <div>
-          <h1 className="text-2xl font-semibold mb-3">
-            Pricing
-          </h1>
-          <h2 className="text-sm font-[500] text-gray-800 mb-3">Add photos and optional descriptions to your lease! </h2>
-          <p className="mb-6 text-gray-500 text-sm">You are required to upload at least 5 relevant photos to post your listing. Captions are optional but highly encouraged!</p>
-
+          <h1 className="text-2xl font-semibold mb-3">Photos</h1>
         </div>
-
         <PreviewButton formData={formData} />
       </div>
+      <h2 className="text-sm font-[500] text-gray-800">
+        Add photos and optional descriptions to your lease!{" "}
+      </h2>
+      <p className="mb-6 text-gray-500 text-sm">
+        You are required to upload at least 5 relevant photos to post your
+        listing. Captions are optional but highly encouraged!
+      </p>
 
       <div>
-        <p className={`mb-6 text-sm ${isComplete ? 'text-green-500' : 'text-red-500'}`}>
+        <p
+          className={`mb-6 text-sm ${isComplete ? "text-green-500" : "text-red-500"}`}
+        >
           {isComplete
-            ? '✓ Required photos uploaded'
-            : `You are required to upload ${5 - formData.photos.length} more photo${formData.photos.length === 4 ? '' : 's'} to post your listing.`
-          }
+            ? "✓ Required photos uploaded"
+            : `You are required to upload ${5 - formData.photos.length} more photo${formData.photos.length === 4 ? "" : "s"} to post your listing.`}
         </p>
 
         <div className="grid grid-cols-3 gap-4">
@@ -82,9 +91,12 @@ const Photos = ({ formData, setFormData, onNext, onBack }: {
               <Input
                 placeholder="Label (e.g., Bedroom)"
                 className="mt-2 rounded-xl"
-                value={formData.photoLabels[index] || ''}
+                value={formData.photoLabels[index] || ""}
                 onChange={(e) => {
-                  const newLabels = { ...formData.photoLabels, [index]: e.target.value };
+                  const newLabels = {
+                    ...formData.photoLabels,
+                    [index]: e.target.value,
+                  };
                   setFormData({ ...formData, photoLabels: newLabels });
                 }}
               />
@@ -93,8 +105,13 @@ const Photos = ({ formData, setFormData, onNext, onBack }: {
 
           {formData.photos.length >= 0 && (
             <label className="cursor-pointer">
-              <div className={`aspect-square rounded-xl border-2 border-dashed flex items-center justify-center ${isComplete ? 'border-green-500' : 'border-gray-300 hover:border-gray-400'
-                }`}>
+              <div
+                className={`aspect-square rounded-xl border-2 border-dashed flex items-center justify-center ${
+                  isComplete
+                    ? "border-green-500"
+                    : "border-gray-300 hover:border-gray-400"
+                }`}
+              >
                 <div className="flex flex-col items-center text-center">
                   <span className="flex items-center justify-center w-8 h-8 bg-gray-300 rounded-full text-white text-[35px] font-[200]">
                     +
@@ -104,7 +121,6 @@ const Photos = ({ formData, setFormData, onNext, onBack }: {
                       {5 - formData.photos.length} more required
                     </p>
                   )}
-
                 </div>
                 <input
                   type="file"
@@ -119,26 +135,25 @@ const Photos = ({ formData, setFormData, onNext, onBack }: {
       </div>
 
       <div className="flex flex-col space-y-2">
-      <div className="flex justify-between">
-        <Button
-          className='rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90'
-          onClick={onBack}
-        >
-          <FaChevronLeft />
-          <p>Back</p>
-        </Button>
-        <Button
-          className={`rounded-lg px-6 flex items-center ${isComplete
-            ? 'bg-[#FF7439] hover:bg-[#FF7439]/90'
-            : 'bg-gray-300'
+        <div className="flex justify-between">
+          <Button
+            className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"
+            onClick={onBack}
+          >
+            <FaChevronLeft />
+            <p>Back</p>
+          </Button>
+          <Button
+            className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
+              isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
             }`}
-          onClick={onNext}
-          disabled={!isComplete}
-        >
-          <p>Next</p>
-          <FaChevronRight />
-        </Button>
-      </div>
+            onClick={onNext}
+            disabled={!isComplete}
+          >
+            <p>Next</p>
+            <FaChevronRight />
+          </Button>
+        </div>
 
         {/* Completion status */}
       </div>

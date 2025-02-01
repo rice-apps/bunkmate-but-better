@@ -6,19 +6,19 @@ import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import Link from 'next/link';
+import Link from "next/link";
 import { FaHeart, FaEye } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
-import TitleDescription from './TitleDescription';
-import Pricing from './Pricing';
-import Location from './Location';
-import Photos from './Photos';
-import Profile from './Profile';
+import TitleDescription from "./TitleDescription";
+import Pricing from "./Pricing";
+import Location from "./Location";
+import Photos from "./Photos";
+import Profile from "./Profile";
 
-import { createClient } from '@/utils/supabase/client';
-import { v4 } from 'uuid';
-import Duration from './Duration';
-import CategoryStatusIndicator from './CategoryStatusIndicator';
+import { createClient } from "@/utils/supabase/client";
+import { v4 } from "uuid";
+import Duration from "./Duration";
+import CategoryStatusIndicator from "./CategoryStatusIndicator";
 
 interface FormData {
   title: string;
@@ -37,6 +37,7 @@ interface FormData {
   // email: string;
   phone: string;
 }
+
 
 type ImageResponse = {
   data: {
@@ -75,7 +76,6 @@ const PostListing = () => {
     phone: '',
   });
 
-
   useEffect(() => {
     const savedData = params.get("data");
     if (savedData) {
@@ -95,7 +95,9 @@ const PostListing = () => {
 
     formData.photos.forEach((photo) => {
       const filePath = `${userId}/${v4()}`;
-      const insertion = supabase.storage.from('listing_images').upload(filePath, photo);
+      const insertion = supabase.storage
+        .from("listing_images")
+        .upload(filePath, photo);
       insertions.push(insertion);
       filePaths.push(filePath);
     });
@@ -161,10 +163,16 @@ const PostListing = () => {
 
     try {
       const imageUploads = await Promise.all(insertions);
-      const successfulUploads = imageUploads.filter((imageUploads) => imageUploads.data);
+      const successfulUploads = imageUploads.filter(
+        (imageUploads) => imageUploads.data
+      );
       if (successfulUploads.length != filePaths.length) {
-        const successfulFilePaths = successfulUploads.map((imgResp: ImageResponse) => imgResp.data?.path);
-        throw new Error('Some image(s) failed to upload', { cause: successfulFilePaths });
+        const successfulFilePaths = successfulUploads.map(
+          (imgResp: ImageResponse) => imgResp.data?.path
+        );
+        throw new Error("Some image(s) failed to upload", {
+          cause: successfulFilePaths,
+        });
       }
       const results = await Promise.all(insertions);
       //calculate distance from address
@@ -174,7 +182,7 @@ const PostListing = () => {
       }
 
       const { data, error } = await supabase
-        .from('listings')
+        .from("listings")
         .insert([
           {
             user_id: userId,
@@ -191,20 +199,23 @@ const PostListing = () => {
             duration_notes: formData.durationNotes,
             image_paths: filePaths,
           },
-
         ])
         .select()
         .single();
 
       if (error) {
-        throw new Error(error.message, { cause: successfulUploads.map((imgResp: ImageResponse) => imgResp.data?.path) });
+        throw new Error(error.message, {
+          cause: successfulUploads.map(
+            (imgResp: ImageResponse) => imgResp.data?.path
+          ),
+        });
       }
 
       const imageCaptions = filePaths.map((path, index) => ({
         user_id: userId,
         image_path: path,
-        caption: formData.photoLabels[index] || '',
-      }))
+        caption: formData.photoLabels[index] || "",
+      }));
 
       const filteredImageCaptions = imageCaptions.filter((imageCaption) => imageCaption.caption != '');
 
@@ -225,11 +236,10 @@ const PostListing = () => {
 
     async function cleanupUploads(paths: string[]) {
       const supabase = createClient();
-      await supabase.storage.from('listing_images').remove(paths);
-      await supabase.from('images_captions').delete().in('image_path', paths);
+      await supabase.storage.from("listing_images").remove(paths);
+      await supabase.from("images_captions").delete().in("image_path", paths);
     }
-
-  }
+  };
 
   const handlePreviewClick = () => {
     // Convert File objects to URLs for storage
@@ -250,62 +260,84 @@ const PostListing = () => {
   
   const renderComponent = () => {
     switch (selectedCategory) {
-      case 'title':
-        return <TitleDescription
-          formData={formData}
-          setFormData={setFormData}
-          onNext={handleNextCategory}
-        />;
-      case 'pricing':
-        return <Pricing
-          formData={formData}
-          setFormData={setFormData}
-          onNext={handleNextCategory}
-          onBack={handlePreviousCategory}
-        />;
-      case 'location':
-        return <Location
-          formData={formData}
-          setFormData={setFormData}
-          onNext={handleNextCategory}
-          onBack={handlePreviousCategory}
-        />;
-      case 'duration':
-        return <Duration
-          formData={formData}
-          setFormData={setFormData}
-          onNext={handleNextCategory}
-          onBack={handlePreviousCategory}
-        />;
-      case 'photos':
-        return <Photos
-          formData={formData}
-          setFormData={setFormData}
-          onNext={handleNextCategory}
-          onBack={handlePreviousCategory}
-        />;
-      case 'duration':
-        return <Duration
-          formData={formData}
-          setFormData={setFormData}
-          onNext={handleNextCategory}
-          onBack={handlePreviousCategory}
-        />;
-      case 'photos':
-        return <Photos
-          formData={formData}
-          setFormData={setFormData}
-          onNext={handleNextCategory}
-          onBack={handlePreviousCategory}
-        />;
-      case 'profile':
-        return <Profile formData={formData} setFormData={setFormData} onBack={handlePreviousCategory} onPost={handleSubmit}/>;
+      case "title":
+        return (
+          <TitleDescription
+            formData={formData}
+            setFormData={setFormData}
+            onNext={handleNextCategory}
+          />
+        );
+      case "pricing":
+        return (
+          <Pricing
+            formData={formData}
+            setFormData={setFormData}
+            onNext={handleNextCategory}
+            onBack={handlePreviousCategory}
+          />
+        );
+      case "location":
+        return (
+          <Location
+            formData={formData}
+            setFormData={setFormData}
+            onNext={handleNextCategory}
+            onBack={handlePreviousCategory}
+          />
+        );
+      case "duration":
+        return (
+          <Duration
+            formData={formData}
+            setFormData={setFormData}
+            onNext={handleNextCategory}
+            onBack={handlePreviousCategory}
+          />
+        );
+      case "photos":
+        return (
+          <Photos
+            formData={formData}
+            setFormData={setFormData}
+            onNext={handleNextCategory}
+            onBack={handlePreviousCategory}
+          />
+        );
+      case "duration":
+        return (
+          <Duration
+            formData={formData}
+            setFormData={setFormData}
+            onNext={handleNextCategory}
+            onBack={handlePreviousCategory}
+          />
+        );
+      case "photos":
+        return (
+          <Photos
+            formData={formData}
+            setFormData={setFormData}
+            onNext={handleNextCategory}
+            onBack={handlePreviousCategory}
+          />
+        );
+      case "profile":
+        return (
+          <Profile
+            formData={formData}
+            setFormData={setFormData}
+            onBack={handlePreviousCategory}
+          />
+        );
       default:
-        return <TitleDescription
-          formData={formData}
-          setFormData={setFormData}
-          onNext={handleNextCategory}
-        />;
+        return (
+          <TitleDescription
+            formData={formData}
+            setFormData={setFormData}
+            onNext={handleNextCategory}
+          />
+        );
     }
   };
 
@@ -343,14 +375,18 @@ const PostListing = () => {
   ], [formData]);
 
   const handleNextCategory = () => {
-    const currentIndex = categories.findIndex(cat => cat.id === selectedCategory);
+    const currentIndex = categories.findIndex(
+      (cat) => cat.id === selectedCategory
+    );
     if (currentIndex < categories.length - 1) {
       setSelectedCategory(categories[currentIndex + 1].id);
     }
   };
 
   const handlePreviousCategory = () => {
-    const currentIndex = categories.findIndex(cat => cat.id === selectedCategory);
+    const currentIndex = categories.findIndex(
+      (cat) => cat.id === selectedCategory
+    );
     if (currentIndex > 0) {
       setSelectedCategory(categories[currentIndex - 1].id);
     }
@@ -376,34 +412,50 @@ const PostListing = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex gap-16">
+      <div className="container mx-auto px-4 py-8 mt-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex gap-24">
             {/* Sidebar */}
-            <div className='fixed'>
-              <div className="w-64 pr-16 h-svh">
-                <h1 className="text-2xl font-bold mb-10">Listing Editor</h1>
-                <div className="space-y-2">
+            <div className="fixed">
+              <div className="w-80 pr-16 h-svh">
+                <h1 className="text-2xl font-semibold mb-8">Listing Editor</h1>
+                <div className="space-y-3">
                   {categories.map((category) => (
                     <div
                       key={category.id}
-                      className={`flex items-center p-3 rounded-xl cursor-pointer ${selectedCategory === category.id
-                        ? 'text-[#FF7439] border-[#FF7439] border bg-orange-50'
-                        : 'text-gray-500'
-                        }`}
+                      className={`flex items-center p-3 rounded-xl cursor-pointer w-full ${
+                        selectedCategory === category.id
+                          ? "text-[#FF7439] border-[#FF7439] border bg-orange-50"
+                          : "text-gray-500"
+                      }`}
                       onClick={() => setSelectedCategory(category.id)}
                     >
-                      <div className="mr-2">
-                        <CategoryStatusIndicator selected={selectedCategory === category.id} completed={category.completed} />
+                      <div className="mr-3">
+                        <CategoryStatusIndicator
+                          selected={selectedCategory === category.id}
+                          completed={category.completed}
+                        />
                       </div>
                       {category.name}
                     </div>
                   ))}
+                  {/* Post Button */}
+                  <div className="flex items-center justify-center pt-12">
+                  <Button
+                    className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
+                      isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
+                    }`}
+                    disabled={!isComplete}
+                  >
+                    <p>Post</p>
+                  </Button>
+                  </div>
                 </div>
               </div>
             </div>
+            <div className="mt-8"></div>
             {/* Form Content */}
-            <div className="flex-1 ml-64 pl-16 border-l border-gray-500">
+            <div className="flex-1 ml-[16rem] pl-16 border-l border-gray-500">
               {renderComponent()}
             </div>
           </div>
@@ -412,6 +464,5 @@ const PostListing = () => {
     </div>
   );
 };
-
 
 export default PostListing;
