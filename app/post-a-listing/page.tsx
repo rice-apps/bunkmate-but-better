@@ -366,8 +366,15 @@ const PostListing = () => {
                       {category.name}
                     </div>
                   ))}
-                  {/* Post Button */}
-                  <div className="flex items-center justify-center pt-12">
+
+                  {/* Bottom Buttons */}
+                  <div className="flex items-center justify-center pt-12 gap-4">
+                    <Button
+                      className={"w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"}
+                      onClick={() => resetFormData()}
+                    >
+                      <p>Clear All</p>
+                    </Button>
                     <Button
                       className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
                         isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"

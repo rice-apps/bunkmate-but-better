@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Textarea} from "@/components/ui/textarea";
 import PreviewButton from "./PreviewButton";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
 
 // Location Component
 const Location = ({
@@ -19,15 +19,12 @@ const Location = ({
   const isComplete = Boolean(formData.address);
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, address: e.target.value });
+    setFormData({...formData, address: e.target.value});
   };
 
-  const handleLocationNotesChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setFormData({ ...formData, locationNotes: e.target.value });
+  const handleLocationNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData({...formData, locationNotes: e.target.value});
   };
-
 
   return (
     <div>
@@ -38,17 +35,12 @@ const Location = ({
 
         <PreviewButton formData={formData} />
       </div>
-      <h2 className="text-sm font-bold">
-        Add details about where your listing is.
-      </h2>
+      <h2 className="text-sm font-bold">Add details about where your listing is.</h2>
 
       <div>
         <h2 className="text-2xl font-medium mb-2 mt-10">Address</h2>
         <p className="text-gray-400 text-sm mb-5">
-          Use the following format:{" "}
-          <span className="text-gray-600">
-            123 Sammy Blvd, Houston, TX 77005
-          </span>
+          Use the following format: <span className="text-gray-600">123 Sammy Blvd, Houston, TX 77005</span>
         </p>
         <div className="relative">
           <Input
@@ -63,8 +55,8 @@ const Location = ({
       <div>
         <h2 className="text-2xl font-medium mb-2">Special Notes</h2>
         <p className="text-gray-400 text-sm mb-5">
-          <span className="text-gray-500 font-semibold">This is optional!</span>{" "}
-          You can include information relevant to location.{" "}
+          <span className="text-gray-500 font-semibold">This is optional!</span> You can include information relevant to
+          location.{" "}
         </p>
         <div className="relative">
           <Textarea
@@ -77,16 +69,14 @@ const Location = ({
           />
           <div className="flex justify-end text-sm mt-2 text-gray-400">
             <span>
-              <span className="font-semibold text-gray-500">
-                {formData.locationNotes.length}
-              </span>
+              <span className="font-semibold text-gray-500">{formData.locationNotes.length}</span>
               /500 characters
             </span>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col pt-10">
         <div className="flex justify-between">
           <Button
             className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"

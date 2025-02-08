@@ -115,14 +115,14 @@ const Photos = ({
                     <p className="text-sm text-gray-500 mt-2">{5 - formData.photos.length} more required</p>
                   )}
                 </div>
-                <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
+                <input type="file" multiple accept="image/*" className="hidden" onChange={handlePhotoUpload} />
               </div>
             </label>
           )}
         </div>
       </div>
 
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col pt-10">
         <div className="flex justify-between">
           <Button
             className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"
