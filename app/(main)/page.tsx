@@ -10,6 +10,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import LoadingCircle from "@/components/LoadingCircle";
 import LoadingCard from "@/components/LoadingCard";
 import { motion } from "framer-motion";
+import { FcFeedback } from "react-icons/fc";
+import { MdChatBubble } from "react-icons/md";
 
 interface Listing {
   address: string;
@@ -198,6 +200,25 @@ export default function Index() {
             )}
         </div>
       </motion.main>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className="fixed bottom-8 right-8 z-50"
+      >
+        <motion.a
+          href="https://9uy5o8dl8l3.typeform.com/to/fRbwnf6u"
+          target="_blank"
+          rel="noopener noreferrer"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Button className="bg-[#FF7439] hover:bg-[#FF7439]/90 text-white font-semibold px-6 py-3 rounded-full shadow-lg flex items-center space-x-1">
+            <MdChatBubble />
+            <p>Give Feedback</p>
+          </Button>
+        </motion.a>
+      </motion.div>
     </>
   );
 }
