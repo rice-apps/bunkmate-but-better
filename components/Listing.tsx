@@ -1,8 +1,9 @@
-"use client";
-import React, {useState, useEffect} from "react";
-import Image from "next/image";
-import {FaHeart} from "react-icons/fa6";
-import {getImagePublicUrl} from "@/utils/supabase/client";
+'use client'
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { FaHeart } from 'react-icons/fa6';
+import { getImagePublicUrl } from "@/utils/supabase/client";
+import { motion } from "framer-motion";
 
 interface ListingData {
   id: number;
@@ -132,28 +133,51 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
   };
 
   return (
-    <div className="w-full px-10">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className='w-full px-20'
+    >
       {/* Header Section */}
-      <div className="mb-6 w-full">
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="mb-6 w-full"
+      >
         <div className="flex items-center mb-2">
           <h1 className="text-4xl font-semibold">{data.title}</h1>
-          <FaHeart
-            className="ml-3 cursor-pointer w-6 h-6 hover:scale-105 duration-300"
-            fill={isFavorited ? "#FF7439" : "gray"}
-            onClick={toggleFavorite}
-          />
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <FaHeart 
+              className="ml-3 cursor-pointer w-6 h-6 duration-300" 
+              fill={isFavorited ? "#FF7439" : "gray"}
+              onClick={toggleFavorite} 
+            />
+          </motion.div>
         </div>
         <p className="text-gray-600">
           {`${formatDateRange(data.start_date, data.end_date)}  • $${data.price.toLocaleString()} / month`}
           {data.priceNotes && ` - ${data.priceNotes}`}
         </p>
-      </div>
+      </motion.div>
 
       {/* Image Gallery */}
-      <div className="relative w-full h-[500px] grid grid-cols-1 lg:grid-cols-8 gap-2 mb-8">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="relative w-full h-[500px] grid grid-cols-1 lg:grid-cols-8 gap-2 mb-8"
+      >
         {images.map((image, index) => (
-          <div
+          <motion.div
             key={index}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 * (index + 1) }}
             className={`relative overflow-hidden rounded-lg cursor-pointer ${image.span} ${
               index === 0 ? "" : "hidden lg:block sm:hidden md:hidden"
             }`}
@@ -166,23 +190,30 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
               className="object-cover hover:scale-105 transition-transform duration-300"
               priority={index === 0}
             />
-          </div>
+          </motion.div>
         ))}
 
         {/* View All Button */}
-        <button
+        <motion.button 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => openDialog(0)}
           className="absolute bottom-4 right-4 py-2 px-4 bg-white text-black border border-white rounded-lg hover:bg-transparent hover:text-white transition-colors"
         >
           View All
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {/* Image Dialog */}
       {isDialogOpen && images.length > 0 && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
-          <button
-            onClick={closeDialog}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 flex -top-5 items-center justify-center bg-black bg-opacity-75 z-50"
+        >
+          <button 
+            onClick={closeDialog} 
             className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors"
             aria-label="Close gallery"
           >
@@ -195,20 +226,34 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
           >
             <span className="text-5xl">&lt;</span>
           </button>
-
-          <div className="w-3/4 md:w-3/4 lg:w-1/2 h-3/4 relative mb-17.5">
-            <Image
-              src={images[currentImageIndex].src}
-              fill={true}
+          
+          <motion.div 
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="w-3/4 md:w-3/4 lg:w-1/2 h-3/4 relative mb-17.5"
+          >
+            <Image 
+              src={images[currentImageIndex].src} 
+              fill={true} 
               alt={`${data.title} - Image ${currentImageIndex + 1}`}
               className="object-cover rounded-lg"
             />
-          </div>
+          </motion.div>
 
-          <div className="text-white absolute bottom-8">
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className='text-white absolute bottom-14'
+          >
             <p className="text-center font-semibold">{data.title}</p>
-            {getCaption(currentImageIndex) && <p className="text-center">{getCaption(currentImageIndex)}</p>}
-          </div>
+            {getCaption(currentImageIndex) && (
+              <p className="text-center">
+                {getCaption(currentImageIndex)}
+              </p>
+            )}
+          </motion.div>
 
           <button
             onClick={handleNext}
@@ -217,9 +262,9 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
           >
             <span className="text-5xl">&gt;</span>
           </button>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

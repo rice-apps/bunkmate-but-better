@@ -2,6 +2,8 @@ import Image from 'next/image'
 import React, { useState } from 'react'
 import { FaPhoneAlt } from 'react-icons/fa'
 import { IoMail } from 'react-icons/io5'
+import { getImagePublicUrl } from '@/utils/supabase/client'
+import { motion } from 'framer-motion'
 
 interface MeetSubleaserProps {
   data: {
@@ -11,6 +13,7 @@ interface MeetSubleaserProps {
       email?: string;
       avatar_url?: string;
       is_rice_student?: boolean;
+      profile_image_path?: string;
     };
   };
 }
@@ -30,20 +33,54 @@ const MeetSubleaser: React.FC<MeetSubleaserProps> = ({ data }) => {
     }
   };
 
+  const getProfileImage = () => {
+    if (data.user?.profile_image_path) {
+      return getImagePublicUrl('profiles', data.user.profile_image_path);
+    }
+    return data.user?.avatar_url || '/profile_pic.jpeg';
+  };
+
   return (
-    <main className='flex flex-col gap-[20px] w-full h-full justify-center items-center'>
-      <h1 className='text-xl sm:text-2xl font-semibold'>Meet the subleaser.</h1>
-      <div className='rounded-lg p-5 py-6 pb-14 flex flex-col gap-[19px] border shadow-lg'>
+    <motion.main 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className='flex flex-col gap-[20px] w-full h-full justify-center items-center'
+    >
+      <motion.h1 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className='text-xl sm:text-2xl font-semibold'
+      >
+        Meet the subleaser.
+      </motion.h1>
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.3 }}
+        className='rounded-lg p-5 py-6 pb-14 flex flex-col gap-[19px] border shadow-lg'
+      >
         <div className='p-5 flex flex-col sm:flex-row gap-[42.7px]'>
-          <div className='relative w-32 h-32 overflow-hidden mx-auto sm:mx-0 rounded-full'>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4 }}
+            className='relative w-32 h-32 flex-shrink-0 overflow-hidden mx-auto sm:mx-0 rounded-full'
+          >
             <Image 
-              src={data.user?.avatar_url || '/profile_pic.jpeg'} 
+              src={getProfileImage()} 
               fill={true}
               alt='profile pic' 
               className='object-cover'
             /> 
-          </div>
-          <div className='flex flex-col'>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className='flex flex-col'
+          >
             <div className='flex flex-col pb-4 border-b mb-4'>
               <h1 className='text-lg font-semibold mb-[2.27px] mr-14 sm:mr-20'>
                 {data.user?.full_name || 'Anonymous'}
@@ -73,33 +110,42 @@ const MeetSubleaser: React.FC<MeetSubleaserProps> = ({ data }) => {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         </div>
-        <div className='flex flex-row items-center gap-[20px] ml-5'>
-          <button 
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className='flex flex-row items-center gap-[20px] ml-5'
+        >
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => handleCopy('phone')}
-            className='rounded-lg px-3 py-2 bg-[#FF7439] flex flex-row items-center gap-2 hover:scale-105 hover:cursor-pointer duration-300'
+            className='rounded-lg px-3 py-2 bg-[#FF7439] flex flex-row items-center gap-2 hover:cursor-pointer duration-300'
           >
             <FaPhoneAlt className='w-4 h-4' fill='white'/>
             <p className='text-xs font-medium text-white'>
               {copyStatus === 'phone' ? 'Copied!' : 'Copy Phone'}
             </p>
-          </button>
+          </motion.button>
 
           {data.user?.email && (
-            <button 
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => handleCopy('email')}
-              className='rounded-lg px-3 py-2 bg-[#FF7439] flex flex-row items-center gap-2 hover:scale-105 hover:cursor-pointer duration-300'
+              className='rounded-lg px-3 py-2 bg-[#FF7439] flex flex-row items-center gap-2 hover:cursor-pointer duration-300'
             >
               <IoMail className='w-4 h-4' fill='white'/>
               <p className='text-xs font-medium text-white'>
                 {copyStatus === 'email' ? 'Copied!' : 'Copy Email'}
               </p>
-            </button>
+            </motion.button>
           )}
-        </div>
-      </div>
-    </main>
+        </motion.div>
+      </motion.div>
+    </motion.main>
   )
 }
 
