@@ -162,7 +162,7 @@ const Navbar = () => {
 
       {/* ===== Right Section of Nav Bar */}
       {/* Post a Listing */}
-      <div className='flex justify-center items-center hide-icons:flex hide-icons:flex-row gap-[25px] place-items-center'>
+      <div className='justify-center items-center hidden hide-icons:flex hide-icons:flex-row gap-[25px] place-items-center'>
         <Link href='/post-a-listing'>
           <button className="py-2 px-7 bg-[#FF7439] hover:bg-[#BB5529] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-105 whitespace-nowrap">
             <p className="text-[15px] text-white font-semibold">Post a Listing</p>
