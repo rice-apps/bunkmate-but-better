@@ -36,7 +36,9 @@ interface ListingProps {
     price: number;
     location: string;
     imagePaths: string[];
-    captions: string[];
+    captions: {
+      [key: number]: string;
+    };
     loadImages: boolean;
     description: string;
     phoneNumber: string;
@@ -51,7 +53,7 @@ interface ListingProps {
   };
 }
 
-const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
+const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
@@ -62,7 +64,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
       // Transform the image paths into our gallery format
       const transformedImages = data.imagePaths.map((path, index) => ({
         src: getImagePublicUrl("listing_images", path),
-        span: index === 0 ? "col-span-4 row-span-4" : "col-span-2 row-span-2"
+        span: index === 0 ? "col-span-4 row-span-4" : "col-span-2 row-span-2",
       }));
 
       // If we have less than 5 images, pad with default images
@@ -71,14 +73,14 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
         "/modern_house.jpeg",
         "/cherry_house.jpeg",
         "/hobbit_house.jpeg",
-        "/modern_house.jpeg"
+        "/modern_house.jpeg",
       ];
 
       const paddedImages = [...transformedImages];
       for (let i = transformedImages.length; i < 5; i++) {
         paddedImages.push({
           src: defaultImages[i],
-          span: i === 0 ? "col-span-4 row-span-4" : "col-span-2 row-span-2"
+          span: i === 0 ? "col-span-4 row-span-4" : "col-span-2 row-span-2",
         });
       }
 
@@ -86,7 +88,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
     } else if (!data?.loadImages) {
       const transformedImages = data.imagePaths.map((path, index) => ({
         src: path,
-        span: index === 0 ? "col-span-4 row-span-4" : "col-span-2 row-span-2"
+        span: index === 0 ? "col-span-4 row-span-4" : "col-span-2 row-span-2",
       }));
 
       setImages(transformedImages);
@@ -101,13 +103,11 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
   const closeDialog = () => setDialogOpen(false);
 
   const handleNext = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    setCurrentImageIndex(prevIndex => (prevIndex + 1) % images.length);
   };
 
   const handlePrev = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
+    setCurrentImageIndex(prevIndex => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
   };
 
   const toggleFavorite = () => {
@@ -117,21 +117,19 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
 
   const formatDateRange = (startDate: string, endDate: string) => {
     const formatDate = (dateString: string) => {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric'
+      return new Date(dateString).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
       });
     };
-  
+
     return `${formatDate(startDate)} - ${formatDate(endDate)}`;
   };
 
   // Helper function to safely get caption
   const getCaption = (index: number): string => {
-    return data.captions && Array.isArray(data.captions) && data.captions[index] 
-      ? data.captions[index] 
-      : '';
+    return data.captions && Array.isArray(data.captions) && data.captions[index] ? data.captions[index] : "";
   };
 
   return (
@@ -181,15 +179,15 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 * (index + 1) }}
             className={`relative overflow-hidden rounded-lg cursor-pointer ${image.span} ${
-              index === 0 ? '' : 'hidden lg:block sm:hidden md:hidden'
+              index === 0 ? "" : "hidden lg:block sm:hidden md:hidden"
             }`}
             onClick={() => openDialog(index)}
           >
-            <Image 
-              src={image.src} 
-              fill={true} 
+            <Image
+              src={image.src}
+              fill={true}
               alt={`${data.title} - Image ${index + 1}`}
-              className="object-cover hover:scale-105 transition-transform duration-300" 
+              className="object-cover hover:scale-105 transition-transform duration-300"
               priority={index === 0}
             />
           </motion.div>
@@ -221,14 +219,14 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
           >
             <span className="text-4xl">×</span>
           </button>
-          <button 
-            onClick={handlePrev} 
+          <button
+            onClick={handlePrev}
             className="absolute left-12 text-white hover:text-gray-300 transition-colors"
             aria-label="Previous image"
           >
             <span className="text-5xl">&lt;</span>
           </button>
-
+          
           <motion.div 
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
@@ -239,7 +237,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
               src={images[currentImageIndex].src} 
               fill={true} 
               alt={`${data.title} - Image ${currentImageIndex + 1}`}
-              className="object-cover rounded-lg" 
+              className="object-cover rounded-lg"
             />
           </motion.div>
 
@@ -257,8 +255,8 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
             )}
           </motion.div>
 
-          <button 
-            onClick={handleNext} 
+          <button
+            onClick={handleNext}
             className="absolute right-12 text-white hover:text-gray-300 transition-colors"
             aria-label="Next image"
           >

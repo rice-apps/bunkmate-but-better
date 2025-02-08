@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Textarea} from "@/components/ui/textarea";
+import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
-import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
 
 // Pricing Component
 const Pricing = ({
@@ -22,14 +22,12 @@ const Pricing = ({
     const value = e.target.value;
     // Ensure the rent is a positive number
     if (Number(value) >= 0 || value === "") {
-      setFormData({ ...formData, price: value });
+      setFormData({...formData, price: value});
     }
   };
 
-  const handlePriceNotesChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setFormData({ ...formData, priceNotes: e.target.value });
+  const handlePriceNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData({...formData, priceNotes: e.target.value});
   };
 
   return (
@@ -41,15 +39,11 @@ const Pricing = ({
 
         <PreviewButton formData={formData} />
       </div>
-      <h2 className="text-sm font-bold">
-        Add details about all things money here.{" "}
-      </h2>
+      <h2 className="text-sm font-bold">Add details about all things money here. </h2>
 
       <div>
         <h2 className="text-2xl font-medium mb-2 mt-10">Monthly Rent</h2>
-        <span className="text-sm text-gray-400 mb-5 block">
-          Please add rent here.
-        </span>
+        <span className="text-sm text-gray-400 mb-5 block">Please add rent here.</span>
         <div className="relative">
           <span className="absolute left-3 top-[8px]">$</span>
           <Input
@@ -70,9 +64,8 @@ const Pricing = ({
       <div>
         <h2 className="text-2xl font-medium mb-2 mt-10">Special Notes</h2>
         <p className="text-sm text-gray-400 mb-5">
-          <span className="font-semibold text-gray-500">This is optional!</span>{" "}
-          You can include information such as any breaks in your lease, or
-          variable payment per month.{" "}
+          <span className="font-semibold text-gray-500">This is optional!</span> You can include information such as any
+          breaks in your lease, or variable payment per month.{" "}
         </p>
         <div className="relative">
           <Textarea
@@ -82,29 +75,19 @@ const Pricing = ({
             maxLength={500}
             className="min-h-[150px] rounded-xl border border-gray-200 resize-none placeholder:text-gray-400 py-3"
           />
-          <div className="flex justify-between mt-5 text-sm text-gray-400 mb-10">
-            <span
-              className={
-                formData.priceNotes.length >= 100
-                  ? "text-green-500"
-                  : "text-gray-400"
-              }
-            >
-              {formData.priceNotes.length >= 100
-                ? "✓ Minimum reached"
-                : "Minimum 100 characters"}
+          <div className="flex justify-between mt-5 text-sm text-gray-400">
+            <span className={formData.priceNotes.length >= 100 ? "text-green-500" : "text-gray-400"}>
+              {formData.priceNotes.length >= 100 ? "✓ Minimum reached" : "Minimum 100 characters"}
             </span>
             <span>
-              <span className="text-gray-500 font-semibold">
-                {formData.priceNotes.length}
-              </span>
+              <span className="text-gray-500 font-semibold">{formData.priceNotes.length}</span>
               /500 characters
             </span>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col pt-10">
         <div className="flex justify-between">
           <Button
             className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"

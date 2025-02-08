@@ -36,6 +36,7 @@ interface ConsolidatedFormData {
   photoLabels: string[];
   imagePaths: string[];
   phone: string;
+  loadImages: boolean;  // Add this property
 
   // User data
   userId: string;
@@ -85,6 +86,7 @@ const EditListing = () => {
     userEmail: '',
     userProfileImagePath: null,
     affiliation: '',
+    loadImages: true,  // Add this
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -153,9 +155,10 @@ const EditListing = () => {
             durationNotes: listingData.duration_notes || '',
             address: listingData.address || '',
             locationNotes: listingData.location_notes || '',
-            photos: [],
+            photos: [],  // Keep this empty for new uploads
             photoLabels: [],
-            imagePaths: listingData.image_paths || [],
+            imagePaths: listingData.image_paths || [],  // Store existing image paths here
+            loadImages: true,
 
             // User data
             userId: listingData.user_id,
