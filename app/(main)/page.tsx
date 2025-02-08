@@ -9,6 +9,7 @@ import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import LoadingCircle from "@/components/LoadingCircle";
 import LoadingCard from "@/components/LoadingCard";
+import { motion } from "framer-motion";
 
 interface Listing {
   address: string;
@@ -142,23 +143,44 @@ export default function Index() {
   );
 
   const renderError = () => (
-    <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="flex flex-col items-center justify-center min-h-[50vh] space-y-4"
+    >
       <p className="text-red-500">{error}</p>
-      <Button onClick={() => window.location.reload()}>
-        Try Again
-      </Button>
-    </div>
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <Button onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
+      </motion.div>
+    </motion.div>
   );
 
   return (
     <>
-      <main className="container mx-auto px-4 py-8">
+      <motion.main 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="container mx-auto px-4 py-8"
+      >
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {isLoading ? renderLoadingState() : error ? renderError() :
             (
               <>
-                {listings && listings.map((listing) => (
-                  <div key={listing.id} className="w-full">
+                {listings && listings.map((listing, index) => (
+                  <motion.div 
+                    key={listing.id} 
+                    className="w-full"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                  >
                     <ListingCard
                       postId={listing.id.toString()}
                       name={listing.title}
@@ -170,12 +192,12 @@ export default function Index() {
                       ownListing={false}
                       isFavorited={listing.id in favorites}
                     />
-                  </div>
+                  </motion.div>
                 ))}
               </>
             )}
         </div>
-      </main>
+      </motion.main>
     </>
   );
 }
