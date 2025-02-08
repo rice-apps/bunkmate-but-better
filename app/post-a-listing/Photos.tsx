@@ -134,7 +134,7 @@ const Photos = ({
         </div>
       </div>
 
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col space-y-2 mt-10">
         <div className="flex justify-between">
           <Button
             className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"

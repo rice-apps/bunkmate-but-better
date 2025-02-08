@@ -146,7 +146,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
           />
         </div>
         <p className="text-gray-600">
-          {`${data.location}  • ${formatDateRange(data.start_date, data.end_date)}  • $${data.price.toLocaleString()} / month`}
+          {`${formatDateRange(data.start_date, data.end_date)}  • $${data.price.toLocaleString()} / month`}
           {data.priceNotes && ` - ${data.priceNotes}`}
         </p>
       </div>

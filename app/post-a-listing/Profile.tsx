@@ -128,7 +128,7 @@ const Profile = ({ formData, setFormData, onBack}: {
         </div>
         <PreviewButton formData={formData} />
       </div>
-      <h2 className="mb-2 text-sm text-[#222222] font-bold whitespace">
+      <h2 className="mb-2 text-sm text-[#222222] font-bold whitespace mt-2">
         Below is your current profile information. If you want to change this
         information, go to the{" "}
         <Link href="/profile-section" className="font-bold text-[#FF7439]">
@@ -136,7 +136,7 @@ const Profile = ({ formData, setFormData, onBack}: {
         </Link>
         .
       </h2>
-      <div className="grid grid-cols-[1fr_2fr] items-start gap-4 pl-8">
+      <div className="grid grid-cols-[1fr_2fr] items-start gap-4 pl-8 mt-10 mb-10">
         <div>
           <h2 className="text-[1.25rem] font-medium mb-4">Profile Picture</h2>
           {profile.image ? (
@@ -158,7 +158,7 @@ const Profile = ({ formData, setFormData, onBack}: {
         </div>
       </div>
       <hr></hr>
-      <div>
+      <div className="mt-10">
         <p className="mb-4 text-sm text-[#222222] font-bold">
           Input your information below.
         </p>
@@ -167,7 +167,7 @@ const Profile = ({ formData, setFormData, onBack}: {
           listing connect with you.
         </p>
       </div>
-      <div>
+      <div className="mt-10">
         <h2 className="text-[1.25rem] font-medium mb-2">Rice Affiliation</h2>
         <p className="text-sm text-gray-400 mb-6">
           Below, select the option that applies to you:
@@ -223,10 +223,10 @@ const Profile = ({ formData, setFormData, onBack}: {
         </div>
       </div>
       <div>
-        <div>
+        <div className="mt-10">
           <h2 className="text-[1.25rem] font-medium mb-2 mt-4">Phone Number</h2>
-          <p className="mb-4 text-sm text-gray-400 mb-6">
-            Use the number you’d like to be contacted with.
+          <p className="text-sm text-gray-400 mb-6">
+            Use the number you&apos;d like to be contacted with.
           </p>
           <div>
             <Input
@@ -256,7 +256,7 @@ const Profile = ({ formData, setFormData, onBack}: {
           <p>Back</p>
         </Button>
         <Button
-          className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
+          className={`w-[5.3rem] rounded-lg px-6 flex items-center shadow-lg ${
             isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
           }`}
           disabled={!isComplete}
