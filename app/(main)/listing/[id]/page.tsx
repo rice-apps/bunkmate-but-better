@@ -127,7 +127,7 @@ const ListingPage = () => {
   
     return `${formatDate(startDate)} - ${formatDate(endDate)}`;
   };
-  console.log(listing);
+  
   return (
     <>
       <Listing 
