@@ -1,23 +1,18 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { PostListingFormContext } from "@/providers/PostListingFormProvider";
-import { createClient } from "@/utils/supabase/client";
+import {Button} from "@/components/ui/button";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {PostListingFormContext} from "@/providers/PostListingFormProvider";
+import {createClient} from "@/utils/supabase/client";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useContext, useMemo, useState } from "react";
-import { CgProfile } from "react-icons/cg";
-import { FaHeart, FaPlus, FaTimes } from "react-icons/fa";
-import { MdHome } from "react-icons/md";
-import { RxHamburgerMenu } from "react-icons/rx";
-import { v4 } from "uuid";
+import {useRouter} from "next/navigation";
+import {useContext, useMemo, useState} from "react";
+import {CgProfile} from "react-icons/cg";
+import {FaHeart, FaPlus, FaTimes} from "react-icons/fa";
+import {MdHome} from "react-icons/md";
+import {RxHamburgerMenu} from "react-icons/rx";
+import {v4} from "uuid";
 import CategoryStatusIndicator from "./CategoryStatusIndicator";
 import Duration from "./Duration";
 import Location from "./Location";
@@ -347,16 +342,16 @@ const PostListing = () => {
       <nav className="bg-white top-0 z-10 fixed w-full">
         <div className="my-10 md:px-8 items-center lg:px-20 xl:px-20 flex flex-row place-items-center w-screen justify-between">
           {/* Logo */}
-          <button className='hidden hide-logo:flex justify-center'>
-            <Link href='/' className='flex flex-row gap-[8.33] place-items-center'>
+          <button className="hidden hide-logo:flex justify-center">
+            <Link href="/" className="flex flex-row gap-[8.33] place-items-center">
               <Image src="/bunkmate_logo.png" alt="Bunkmate Logo" width={35} height={35} />
               <p className="ml-4 text-[30px] text-[#FF7439] font-semibold">bunkmate</p>
             </Link>
           </button>
 
           {/* Right Section Icons */}
-          <div className='flex justify-center items-center hidden hide-icons:flex hide-icons:flex-row gap-[25px] place-items-center'>
-            <Link href='/favorites' className="py-0 flex items-center">
+          <div className="flex justify-center items-center hidden hide-icons:flex hide-icons:flex-row gap-[25px] place-items-center">
+            <Link href="/favorites" className="py-0 flex items-center">
               <button>
                 <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[29px] h-[30px]" />
               </button>
@@ -370,13 +365,13 @@ const PostListing = () => {
 
               <DropdownMenuContent>
                 <DropdownMenuItem className="flex justify-center">
-                  <Link href='/profile-section'>
-                    <p className='hover:text-[#FF7439] text-center'>Profile</p>
+                  <Link href="/profile-section">
+                    <p className="hover:text-[#FF7439] text-center">Profile</p>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="flex justify-center">
                   <button onClick={handleLogout}>
-                    <p className='hover:text-[#FF7439] text-center'>Logout</p>
+                    <p className="hover:text-[#FF7439] text-center">Logout</p>
                   </button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -384,9 +379,9 @@ const PostListing = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className='flex hide-icons:hidden z-100 ml-auto mr-5'>
+          <div className="flex hide-icons:hidden z-100 ml-auto mr-5">
             <button onClick={() => setIsOpen(true)}>
-              <RxHamburgerMenu className='w-[35px] h-[35px]' color={"#FF7439"} />
+              <RxHamburgerMenu className="w-[35px] h-[35px]" color={"#FF7439"} />
             </button>
           </div>
 
@@ -394,28 +389,25 @@ const PostListing = () => {
           {isOpen && (
             <div className="fixed top-0 right-0 h-full w-full bg-[#FF7439] z-[150] transition-transform duration-300 flex flex-row">
               <div className="p-4 pl-10 text-white space-y-6 flex flex-col text-[18px] mt-12 justify-left">
-                <Link href='/' className="flex place-items-center">
-                  <MdHome className='mr-5' />
+                <Link href="/" className="flex place-items-center">
+                  <MdHome className="mr-5" />
                   <button>Home</button>
                 </Link>
-                <Link href='/post-a-listing' className="flex place-items-center">
-                  <FaPlus className='mr-5' />
+                <Link href="/post-a-listing" className="flex place-items-center">
+                  <FaPlus className="mr-5" />
                   <button>Post a Listing</button>
                 </Link>
-                <Link href='/favorites' className="flex">
-                  <FaHeart className='mr-5' />
+                <Link href="/favorites" className="flex">
+                  <FaHeart className="mr-5" />
                   <button>Favorite Listings</button>
                 </Link>
-                <Link href='/profile-section' className="flex place-items-center">
-                  <CgProfile className='mr-5' />
+                <Link href="/profile-section" className="flex place-items-center">
+                  <CgProfile className="mr-5" />
                   <button>Your Profile</button>
                 </Link>
               </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="absolute top-[55px] right-[35px] text-white text-2xl"
-              >
-                <FaTimes className='w-[28px] h-[28px]' />
+              <button onClick={() => setIsOpen(false)} className="absolute top-[55px] right-[35px] text-white text-2xl">
+                <FaTimes className="w-[28px] h-[28px]" />
               </button>
             </div>
           )}
@@ -427,17 +419,15 @@ const PostListing = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row gap-8 md:gap-24">
             {/* Mobile Sidebar Toggle */}
-            <button 
+            <button
               className="md:hidden flex items-center w-fit mb-4 bg-[#FF7439] text-white py-2 px-4 rounded-full"
               onClick={toggleSidebar}
             >
-              <span>{isSidebarOpen ? 'Close' : 'Expand'} Categories</span>
+              <span>{isSidebarOpen ? "Close" : "Expand"} Categories</span>
             </button>
 
             {/* Responsive Sidebar */}
-            <div className={`${
-              isSidebarOpen ? 'block' : 'hidden'
-            } md:block md:fixed w-full md:w-80`}>
+            <div className={`${isSidebarOpen ? "block" : "hidden"} md:block md:fixed w-full md:w-80`}>
               <div className="w-full md:w-80 pr-0 md:pr-16 h-auto md:h-svh mb-8 md:mb-0">
                 <h1 className="text-2xl font-semibold mb-8">Listing Editor</h1>
                 <div className="space-y-3">
@@ -467,7 +457,9 @@ const PostListing = () => {
                   {/* Bottom Buttons */}
                   <div className="flex items-center justify-center pt-12 gap-4">
                     <Button
-                      className={"w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"}
+                      className={
+                        "w-[5.3rem] rounded-lg px-6 flex items-center border border-[#FF7439] bg-white text-[#FF7439] hover:bg-[#FF7439] hover:text-white"
+                      }
                       onClick={() => resetFormData()}
                     >
                       <p>Clear All</p>
@@ -487,9 +479,7 @@ const PostListing = () => {
             </div>
 
             {/* Form Content */}
-            <div className="flex-1 md:ml-80 md:pl-16 md:border-l border-gray-500">
-              {renderComponent()}
-            </div>
+            <div className="flex-1 md:ml-80 md:pl-16 md:border-l border-gray-500">{renderComponent()}</div>
           </div>
         </div>
       </div>
