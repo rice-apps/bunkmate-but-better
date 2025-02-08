@@ -1,16 +1,11 @@
 "use client";
 
-import {useContext, useEffect, useState} from "react";
-import Image from "next/image";
-import {format} from "date-fns";
-import {Button} from "@/components/ui/button";
-import {ChevronLeft, ChevronRight, MapPin, Calendar, Phone, Mail} from "lucide-react";
-import {useRouter, useSearchParams} from "next/navigation";
-import MeetSubleaser from "@/components/MeetSubleaser";
-import ListingDescription from "@/components/ListingDescription";
 import Listing from "@/components/Listing";
-import {createClient} from "@/utils/supabase/client";
+import ListingDescription from "@/components/ListingDescription";
+import MeetSubleaser from "@/components/MeetSubleaser";
 import {PostListingFormContext} from "@/providers/PostListingFormProvider";
+import {createClient} from "@/utils/supabase/client";
+import {useContext, useEffect, useState} from "react";
 
 interface UserData {
   id: string;
@@ -103,7 +98,9 @@ const PreviewPage = () => {
               end_date: formData.endDate,
               durationNotes: formData.durationNotes,
               distance: "2 miles away",
-              location: formData.address
+              location: formData.address,
+              bed_num: formData.bed_num,
+              bath_num: formData.bath_num,
             }}
           />
         </div>

@@ -37,6 +37,8 @@ interface ListingDescriptionProps {
     end_date: string;
     durationNotes: string;
     distance?: string;
+    bed_num: number;
+    bath_num: number;
   };
 }
 
@@ -79,6 +81,13 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
         className="border-t pt-6"
       >
         <div className="space-y-6">
+          <DescriptionItem 
+            icon={<img src="/bed.svg" alt="Duration Icon" className="w-[40px] h-[40px]" />}
+            title="# of Beds and Bathrooms"
+            description={`${data.bed_num} beds, ${data.bath_num} bathrooms`}
+            delay={0.5}
+          />
+
           <DescriptionItem 
             icon={<img src="/solar_dollar-linear.svg" alt="Duration Icon" className="w-[40px] h-[40px]" />}
             title="Cost per month"
