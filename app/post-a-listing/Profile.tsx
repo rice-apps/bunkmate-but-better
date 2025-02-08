@@ -72,6 +72,7 @@ const Profile = ({ formData, setFormData, onBack}: {
       formData.startDate &&
       formData.endDate &&
       formData.photos.length >= 5 &&
+      formData.photos.length <= 20 &&
       formData.phone
   );
 
@@ -122,13 +123,13 @@ const Profile = ({ formData, setFormData, onBack}: {
 
   return (
     <div>
-      <div className="flex flex-row justify-between mr-10">
+      <div className="flex flex-row justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Profile</h1>
+          <h1 className="text-2xl font-semibold mb-3">Profile</h1>
         </div>
         <PreviewButton formData={formData} />
       </div>
-      <h2 className="mb-2 text-sm text-[#222222] font-bold whitespace mt-2">
+      <h2 className="mb-10 text-sm text-[#222222] font-bold whitespace">
         Below is your current profile information. If you want to change this
         information, go to the{" "}
         <Link href="/profile-section" className="font-bold text-[#FF7439]">
@@ -157,8 +158,8 @@ const Profile = ({ formData, setFormData, onBack}: {
           <p className="mb-6 text-sm text-gray-400">{profile ? profile.email : "netid@rice.edu"}</p>
         </div>
       </div>
-      <hr></hr>
-      <div className="mt-10">
+      <hr className="mt-10"></hr>
+      <div className="mt-8">
         <p className="mb-4 text-sm text-[#222222] font-bold">
           Input your information below.
         </p>
@@ -167,8 +168,8 @@ const Profile = ({ formData, setFormData, onBack}: {
           listing connect with you.
         </p>
       </div>
-      <div className="mt-10">
-        <h2 className="text-[1.25rem] font-medium mb-2">Rice Affiliation</h2>
+      <div>
+        <h2 className="text-[1.25rem] font-medium mb-2 mt-10">Rice Affiliation</h2>
         <p className="text-sm text-gray-400 mb-6">
           Below, select the option that applies to you:
         </p>
@@ -180,7 +181,7 @@ const Profile = ({ formData, setFormData, onBack}: {
             }
           >
             <div
-              className={`flex items-center w-[23rem] space-x-2 p-4 rounded-xl border-2 
+              className={`flex items-center w-[23rem] space-x-2 p-4 rounded-2xl border-2 
           ${
             formData.affiliation === "rice"
               ? "border-[#FF7439] bg-[#FF7439]/30"
@@ -200,7 +201,7 @@ const Profile = ({ formData, setFormData, onBack}: {
               </label>
             </div>
             <div
-              className={`flex items-center w-[23rem] space-x-2 p-4 rounded-xl border-2 
+              className={`flex items-center w-[23rem] space-x-2 p-4 rounded-2xl border-2 
           ${
             formData.affiliation === "alum"
               ? "border-[#FF7439] bg-[#FF7439]/30"
@@ -223,8 +224,8 @@ const Profile = ({ formData, setFormData, onBack}: {
         </div>
       </div>
       <div>
-        <div className="mt-10">
-          <h2 className="text-[1.25rem] font-medium mb-2 mt-4">Phone Number</h2>
+        <div>
+          <h2 className="text-[1.25rem] font-medium mb-2 mt-10">Phone Number</h2>
           <p className="text-sm text-gray-400 mb-6">
             Use the number you&apos;d like to be contacted with.
           </p>

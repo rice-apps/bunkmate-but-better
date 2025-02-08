@@ -16,13 +16,20 @@ const Photos = ({
   onBack: () => void;
 }) => {
   // Check if we have at least 5 photos
-  const isComplete = formData.photos.length >= 5;
+  const isComplete = Boolean(
+    formData.photos.length >= 5 && formData.photos.length <= 20
+  );
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newPhotos = Array.from(e.target.files);
-      const parsedPhotos = newPhotos.map((photo: File) => URL.createObjectURL(photo))
-      setFormData({ ...formData, photos: [...formData.photos, ...parsedPhotos] });
+      const parsedPhotos = newPhotos.map((photo: File) =>
+        URL.createObjectURL(photo)
+      );
+      setFormData({
+        ...formData,
+        photos: [...formData.photos, ...parsedPhotos],
+      });
     }
   };
 
@@ -46,27 +53,27 @@ const Photos = ({
 
   return (
     <div>
-      <div className="flex flex-row justify-between mr-10">
+      <div className="flex flex-row justify-between">
         <div>
           <h1 className="text-2xl font-semibold mb-3">Photos</h1>
         </div>
         <PreviewButton formData={formData} />
       </div>
-      <h2 className="text-sm font-[500] text-gray-800">
+      <h2 className="text-sm font-bold">
         Add photos and optional descriptions to your lease!{" "}
       </h2>
-      <p className="mb-6 text-gray-500 text-sm">
+      <h2 className="text-sm font-bold mt-5">
         You are required to upload at least 5 relevant photos to post your
         listing. Captions are optional but highly encouraged!
-      </p>
+      </h2>
 
       <div>
         <p
-          className={`mb-6 text-sm ${isComplete ? "text-green-500" : "text-red-500"}`}
+          className={`mb-10 mt-10 text-sm font-bold ${isComplete ? "text-green-500" : "text-red-500"}`}
         >
           {isComplete
             ? "✓ Required photos uploaded"
-            : `You are required to upload ${5 - formData.photos.length} more photo${formData.photos.length === 4 ? "" : "s"} to post your listing.`}
+            : `You still need to upload at least ${5 - formData.photos.length} more photo${formData.photos.length === 4 ? "" : "s"}!`}
         </p>
 
         <div className="grid grid-cols-3 gap-4">
@@ -122,20 +129,22 @@ const Photos = ({
                     </p>
                   )}
                 </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handlePhotoUpload}
-                />
+                <div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePhotoUpload}
+                  />
+                </div>
               </div>
             </label>
           )}
         </div>
       </div>
 
-      <div className="flex flex-col space-y-2 mt-10">
-        <div className="flex justify-between">
+      <div className="flex flex-col space-y-2">
+        <div className="flex justify-between mt-10 mb-10">
           <Button
             className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"
             onClick={onBack}

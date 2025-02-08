@@ -31,7 +31,7 @@ const Location = ({
 
   return (
     <div>
-      <div className="flex flex-row justify-between mr-10">
+      <div className="flex flex-row justify-between">
         <div>
           <h1 className="text-2xl font-semibold mb-3">Location</h1>
         </div>
@@ -60,8 +60,8 @@ const Location = ({
         </div>
       </div>
 
-      <div className="mt-10">
-        <h2 className="text-2xl font-medium mb-2">Special Notes</h2>
+      <div>
+        <h2 className="text-2xl font-medium mb-2 mt-10">Special Notes</h2>
         <p className="text-gray-400 text-sm mb-5">
           <span className="text-gray-500 font-semibold">This is optional!</span>{" "}
           You can include information relevant to location.{" "}
@@ -73,11 +73,23 @@ const Location = ({
             Estimated bike ride duration."
             value={formData.locationNotes}
             onChange={handleLocationNotesChange}
+            maxLength={500}
             className="min-h-[150px] rounded-xl border border-gray-200 resize-none placeholder:text-gray-400 py-3"
           />
-          <div className="flex justify-end text-sm mt-2 text-gray-400">
+          <div className="flex justify-between mt-5 text-sm text-gray-400 mb-10">
+            <span
+              className={
+                formData.locationNotes.length >= 100
+                  ? "text-green-500"
+                  : "text-gray-400"
+              }
+            >
+              {formData.locationNotes.length >= 100
+                ? "✓ Minimum reached"
+                : "Minimum 100 characters"}
+            </span>
             <span>
-              <span className="font-semibold text-gray-500">
+              <span className="text-gray-500 font-semibold">
                 {formData.locationNotes.length}
               </span>
               /500 characters

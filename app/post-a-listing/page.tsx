@@ -98,7 +98,7 @@ const PostListing = () => {
     formData.phone
   );
 
-  const handleSubmit = async (e: MouseEvent) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const supabase = createClient();
     const userId = (await supabase.auth.getUser()).data.user?.id;
@@ -357,7 +357,7 @@ const PostListing = () => {
       {
         id: "photos",
         name: "Photos",
-        completed: formData.photos.length >= 1,
+        completed: Boolean(formData.photos.length >= 5 && formData.photos.length <= 20),
       },
       {
         id: "profile",
