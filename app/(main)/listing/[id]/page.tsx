@@ -151,7 +151,7 @@ const ListingPage = () => {
         } : null
       }} 
     />
-    <div className='flex flex-col lg:flex-row w-full mt-4 justify-between mb-10 px-14 gap-10'>
+    <div className='flex flex-col lg:flex-row w-full mt-4 justify-between mb-10 gap-10'>
       <div className='lg:w-1/2 xl:w-2/3'>
         <ListingDescription 
           data={{

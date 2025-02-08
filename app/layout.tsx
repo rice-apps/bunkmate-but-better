@@ -30,7 +30,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="min-h-screen flex flex-col items-center">
+          <main className="min-h-screen flex flex-col items-center" style={{width: "90%", margin: "0 auto"}}>
             {children}
           </main>
         </ThemeProvider>

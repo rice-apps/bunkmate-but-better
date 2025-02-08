@@ -160,12 +160,12 @@ export default function Index() {
 
   return (
     <>
-      <main className="container mx-auto px-4 pb-8">
+      <main className="pb-8 w-full">
         <div className="flex flex-col items-center">
           <Navbar />
 
           {profile && (
-            <main className="flex flex-col sm:gap-[20px] w-full h-full items-left mb-20 ml-5">
+            <main className="flex flex-col sm:gap-[20px] w-full h-full items-left mb-20">
               <div className="flex flex-col text-left sm:items-start gap-4">
                 <h1 className="text-left text-3xl font-semibold">Profile</h1>
                 <h1 className="text-left text-sm mb-2">

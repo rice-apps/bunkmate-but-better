@@ -25,6 +25,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Navbar from "@/components/Navbar";
 
 interface FormData {
   title: string;
@@ -400,86 +401,10 @@ const PostListing = () => {
 
   return (
     <div className="min-h-screen w-full bg-white">
-      <nav className="bg-white top-0 z-10 fixed w-full">
-        <div className="my-10 md:px-8 items-center lg:px-20 xl:px-20 flex flex-row place-items-center w-screen justify-between">
-          {/* Logo */}
-          <button className='hidden hide-logo:flex justify-center'>
-            <Link href='/' className='flex flex-row gap-[8.33] place-items-center'>
-              <Image src="/bunkmate_logo.png" alt="Bunkmate Logo" width={35} height={35} />
-              <p className="ml-4 text-[30px] text-[#FF7439] font-semibold">bunkmate</p>
-            </Link>
-          </button>
-
-          {/* Right Section Icons */}
-          <div className='flex justify-center items-center hidden hide-icons:flex hide-icons:flex-row gap-[25px] place-items-center'>
-            <Link href='/favorites' className="py-0 flex items-center">
-              <button>
-                <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[29px] h-[30px]" />
-              </button>
-            </Link>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button>
-                  <CgProfile className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[30px] h-[30px]" />
-                </button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent>
-                <DropdownMenuItem className="flex justify-center">
-                  <Link href='/profile-section'>
-                    <p className='hover:text-[#FF7439] text-center'>Profile</p>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex justify-center">
-                  <button onClick={handleLogout}>
-                    <p className='hover:text-[#FF7439] text-center'>Logout</p>
-                  </button>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className='flex hide-icons:hidden z-100 ml-auto mr-5'>
-            <button onClick={() => setIsOpen(true)}>
-              <RxHamburgerMenu className='w-[35px] h-[35px]' color={"#FF7439"} />
-            </button>
-          </div>
-
-          {/* Mobile Menu */}
-          {isOpen && (
-            <div className="fixed top-0 right-0 h-full w-full bg-[#FF7439] z-[150] transition-transform duration-300 flex flex-row">
-              <div className="p-4 pl-10 text-white space-y-6 flex flex-col text-[18px] mt-12 justify-left">
-                <Link href='/' className="flex place-items-center">
-                  <MdHome className='mr-5' />
-                  <button>Home</button>
-                </Link>
-                <Link href='/post-a-listing' className="flex place-items-center">
-                  <FaPlus className='mr-5' />
-                  <button>Post a Listing</button>
-                </Link>
-                <Link href='/favorites' className="flex">
-                  <FaHeart className='mr-5' />
-                  <button>Favorite Listings</button>
-                </Link>
-                <Link href='/profile-section' className="flex place-items-center">
-                  <CgProfile className='mr-5' />
-                  <button>Your Profile</button>
-                </Link>
-              </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="absolute top-[55px] right-[35px] text-white text-2xl"
-              >
-                <FaTimes className='w-[28px] h-[28px]' />
-              </button>
-            </div>
-          )}
-        </div>
-      </nav>
+      < Navbar includeFilter={false} includePostBtn={false}/>
 
       {/* Main Content */}
-      <div className={`container mx-auto px-4 py-8 mt-32 relative `}>
+      <div className={`container mx-auto px-4 py-8 relative `}>
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row gap-8 md:gap-24">
             {/* Mobile Sidebar Toggle */}

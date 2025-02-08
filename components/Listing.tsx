@@ -134,7 +134,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
   };
 
   return (
-    <div className='w-full px-10'>
+    <div className='w-full'>
       {/* Header Section */}
       <div className="mb-6 w-full">
         <div className="flex items-center mb-2">
@@ -153,7 +153,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
 
       {/* Image Gallery */}
       <div className="relative w-full h-[500px] grid grid-cols-1 lg:grid-cols-8 gap-2 mb-8">
-        {images.map((image, index) => (
+        {images.slice(0,5).map((image, index) => (
           <div
             key={index}
             className={`relative overflow-hidden rounded-lg cursor-pointer ${image.span} ${
@@ -174,7 +174,7 @@ const Listing: React.FC<ListingProps> = ({ data }: ListingProps) => {
         {/* View All Button */}
         <button 
           onClick={() => openDialog(0)}
-          className="absolute bottom-4 right-4 py-2 px-4 bg-white text-black border border-white rounded-lg hover:bg-transparent hover:text-white transition-colors"
+          className="absolute bottom-4 right-4 py-2 px-4 bg-black bg-opacity-50 text-white rounded-lg hover:bg-black hover:bg-opacity-70 hover:text-white transition-colors"
         >
           View All
         </button>
