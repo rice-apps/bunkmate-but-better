@@ -58,12 +58,15 @@ import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 //   );
 // }
 
-const Profile = ({ formData, setFormData, onBack}: {
+const Profile = ({
+  formData,
+  setFormData,
+  onBack,
+}: {
   formData: any;
   setFormData: any;
   onBack: () => void;
 }) => {
-
   const isComplete = Boolean(
     formData.title.length >= 1 &&
       formData.description.length >= 100 &&
@@ -76,6 +79,31 @@ const Profile = ({ formData, setFormData, onBack}: {
       formData.phone
   );
 
+  const formatPhoneNumber = (value: string): string => {
+    // Remove all non-numeric characters except `+`
+    let phoneDigits = value.replace(/[^\d]/g, "");
+
+    // If input is empty or only "+", return empty
+    if (phoneDigits === "") return "";
+    if (phoneDigits === "1") return ""; // Allow clearing the whole field
+
+    // Ensure the number starts with "+1" but allow full deletion
+    if (!phoneDigits.startsWith("1")) {
+      phoneDigits = `1${phoneDigits}`;
+    }
+
+    // Extract the number part excluding "1"
+    let number = phoneDigits.replace("1", "").slice(0, 10); // Limit to 10 digits
+
+    let formatted = "+1"; // Always start with "+1" unless it's being cleared
+
+    if (number.length > 0) formatted += ` (${number.slice(0, 3)}`;
+    if (number.length >= 4) formatted += `) ${number.slice(3, 6)}`;
+    if (number.length >= 7) formatted += `-${number.slice(6, 10)}`;
+
+    return formatted.trim(); // Remove any accidental trailing spaces
+  };
+
   const supabase = createClient();
 
   const [profile, setProfile] = useState({
@@ -83,7 +111,7 @@ const Profile = ({ formData, setFormData, onBack}: {
     email: "",
     phone: "",
     image: "",
-  })
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -147,15 +175,20 @@ const Profile = ({ formData, setFormData, onBack}: {
               className="w-28 h-28 bg-gray-100 border border-gray-300 rounded-full text-gray-500"
             />
           ) : (
-          <div className="flex items-center justify-center w-28 h-28 bg-gray-100 border border-gray-300 rounded-full text-gray-500">
-            profile pic
-          </div>)}
+            <div className="flex items-center justify-center w-28 h-28 bg-gray-100 border border-gray-300 rounded-full text-gray-500">
+              profile pic
+            </div>
+          )}
         </div>
         <div>
           <h2 className="text-[1.25rem] font-medium mb-4">Name</h2>
-          <p className="mb-6 text-sm text-gray-400">{profile ? profile.username : "First Last"}</p>
+          <p className="mb-6 text-sm text-gray-400">
+            {profile ? profile.username : "First Last"}
+          </p>
           <h2 className="text-[1.25rem] font-medium mb-4">Email address</h2>
-          <p className="mb-6 text-sm text-gray-400">{profile ? profile.email : "netid@rice.edu"}</p>
+          <p className="mb-6 text-sm text-gray-400">
+            {profile ? profile.email : "netid@rice.edu"}
+          </p>
         </div>
       </div>
       <hr className="mt-10"></hr>
@@ -169,7 +202,9 @@ const Profile = ({ formData, setFormData, onBack}: {
         </p>
       </div>
       <div>
-        <h2 className="text-[1.25rem] font-medium mb-2 mt-10">Rice Affiliation</h2>
+        <h2 className="text-[1.25rem] font-medium mb-2 mt-10">
+          Rice Affiliation
+        </h2>
         <p className="text-sm text-gray-400 mb-6">
           Below, select the option that applies to you:
         </p>
@@ -225,7 +260,9 @@ const Profile = ({ formData, setFormData, onBack}: {
       </div>
       <div>
         <div>
-          <h2 className="text-[1.25rem] font-medium mb-2 mt-10">Phone Number</h2>
+          <h2 className="text-[1.25rem] font-medium mb-2 mt-10">
+            Phone Number
+          </h2>
           <p className="text-sm text-gray-400 mb-6">
             Use the number you&apos;d like to be contacted with.
           </p>
@@ -236,12 +273,11 @@ const Profile = ({ formData, setFormData, onBack}: {
               value={formData.phone}
               onChange={(e) => {
                 const value = e.target.value;
-                if (/^\+?[0-9\s()-]*$/.test(value)) {
-                  setFormData({ ...formData, phone: value });
-                }
+                // Format the phone number as the user types
+                const formattedValue = formatPhoneNumber(value);
+                setFormData({ ...formData, phone: formattedValue });
               }}
-              maxLength={15}
-              // className="p-4 rounded-xl border border-[#B5B5B5]"
+              maxLength={17}
               className="h-15 p-4 rounded-xl border border-[#B5B5B5]"
             />
           </div>

@@ -23,6 +23,13 @@ const Photos = ({
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newPhotos = Array.from(e.target.files);
+      
+      // Check if the total number of images would exceed 20
+      if (formData.photos.length + newPhotos.length > 20) {
+        alert("You can only upload up to 20 images.");
+        return;
+      }
+
       const parsedPhotos = newPhotos.map((photo: File) =>
         URL.createObjectURL(photo)
       );
@@ -63,15 +70,15 @@ const Photos = ({
         Add photos and optional descriptions to your lease!{" "}
       </h2>
       <h2 className="text-sm font-bold mt-5">
-        You are required to upload at least 5 relevant photos to post your
+        You are required to upload at least 5 (and at most 20) relevant photos to post your
         listing. Captions are optional but highly encouraged!
       </h2>
 
       <div>
         <p
-          className={`mb-10 mt-10 text-sm font-bold ${isComplete ? "text-green-500" : "text-red-500"}`}
+          className={`mb-10 mt-10 text-sm font-bold ${formData.photos.length ? "text-green-500" : "text-red-500"}`}
         >
-          {isComplete
+          {formData.photos.length >= 5
             ? "✓ Required photos uploaded"
             : `You still need to upload at least ${5 - formData.photos.length} more photo${formData.photos.length === 4 ? "" : "s"}!`}
         </p>
@@ -110,7 +117,7 @@ const Photos = ({
             </div>
           ))}
 
-          {formData.photos.length >= 0 && (
+          {formData.photos.length >= 0 && formData.photos.length < 20 && (
             <label className="cursor-pointer">
               <div
                 className={`aspect-square rounded-xl border-2 border-dashed flex items-center justify-center ${
@@ -132,6 +139,7 @@ const Photos = ({
                 <div>
                   <input
                     type="file"
+                    multiple
                     accept="image/*"
                     className="hidden"
                     onChange={handlePhotoUpload}

@@ -55,7 +55,7 @@ const Pricing = ({
           <Input
             type="number"
             placeholder="0"
-            value={formData.price}
+            value={formData.price === 0 ? "" : formData.price}
             onChange={handlePriceChange}
             className={`w-full rounded-xl border border-gray-200 pl-7`}
           />
