@@ -6,8 +6,6 @@ import Link from "next/link";
 import {useEffect, useState} from "react";
 import {FaChevronLeft} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
-import { FaChevronLeft } from "react-icons/fa6";
-import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import Image from "next/image";
 
 

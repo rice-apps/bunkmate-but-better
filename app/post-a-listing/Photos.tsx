@@ -1,10 +1,10 @@
-import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import PreviewButton from "./PreviewButton";
-import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
-import {FormDataType} from "./page";
-import {Dispatch, SetStateAction} from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { FormDataType } from "./page";
+import { Dispatch, SetStateAction } from "react";
 
 const Photos = ({
   formData,
@@ -35,10 +35,10 @@ const Photos = ({
   const handleRemovePhoto = (indexToRemove: number) => {
     const newPhotos = formData.photos.filter((_: any, index: number) => index !== indexToRemove);
     const newRawPhotos = formData.rawPhotos.filter((_: any, index: number) => index !== indexToRemove);
-    const newLabels = {...formData.photoLabels};
+    const newLabels = { ...formData.photoLabels };
     delete newLabels[indexToRemove];
     // Reindex the remaining labels
-    const reindexedLabels: {[key: number]: string} = {};
+    const reindexedLabels: { [key: number]: string } = {};
     Object.values(newLabels).forEach((label, index) => {
       reindexedLabels[index] = label as string;
     });
@@ -94,7 +94,7 @@ const Photos = ({
                     ...formData.photoLabels,
                     [index]: e.target.value,
                   };
-                  setFormData({...formData, photoLabels: newLabels});
+                  setFormData({ ...formData, photoLabels: newLabels });
                 }}
               />
             </div>
@@ -103,9 +103,8 @@ const Photos = ({
           {formData.photos.length >= 0 && (
             <label className="cursor-pointer">
               <div
-                className={`aspect-square rounded-xl border-2 border-dashed flex items-center justify-center ${
-                  isComplete ? "border-green-500" : "border-gray-300 hover:border-gray-400"
-                }`}
+                className={`aspect-square rounded-xl border-2 border-dashed flex items-center justify-center ${isComplete ? "border-green-500" : "border-gray-300 hover:border-gray-400"
+                  }`}
               >
                 <div className="flex flex-col items-center text-center">
                   <span className="flex items-center justify-center w-8 h-8 bg-gray-300 rounded-full text-white text-[35px] font-[200]">
@@ -132,9 +131,8 @@ const Photos = ({
             <p>Back</p>
           </Button>
           <Button
-            className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
-              isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
-            }`}
+            className={`w-[5.3rem] rounded-lg px-6 flex items-center ${isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
+              }`}
             onClick={onNext}
             disabled={!isComplete}
           >

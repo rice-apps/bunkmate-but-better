@@ -32,11 +32,14 @@ interface ConsolidatedFormData {
   durationNotes: string;
   address: string;
   locationNotes: string;
-  photos: File[];
+  photos: string[];
   photoLabels: string[];
   imagePaths: string[];
+  rawPhotos: File[];
   phone: string;
   loadImages: boolean;  // Add this property
+  bed_num: number;
+  bath_num: number;
 
   // User data
   userId: string;
@@ -80,6 +83,9 @@ const EditListing = () => {
     photos: [],
     photoLabels: [],
     imagePaths: [],
+    rawPhotos: [],
+    bed_num: 0,
+    bath_num: 0,
     phone: '',
     userId: '',
     userName: '',
@@ -157,8 +163,11 @@ const EditListing = () => {
             locationNotes: listingData.location_notes || '',
             photos: [],  // Keep this empty for new uploads
             photoLabels: [],
+            rawPhotos: [],  // Keep this empty for new uploads
             imagePaths: listingData.image_paths || [],  // Store existing image paths here
             loadImages: true,
+            bed_num: listingData.bed_num || 0,
+            bath_num: listingData.bath_num || 0,
 
             // User data
             userId: listingData.user_id,
@@ -239,6 +248,8 @@ const EditListing = () => {
           address: formData.address,
           location_notes: formData.locationNotes,
           // image_paths: filePaths, // Commented out for now
+          bed_num: formData.bed_num,
+          bath_num: formData.bath_num,
         })
         .eq('id', listingId);
 
