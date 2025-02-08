@@ -458,7 +458,7 @@ const PostListing = () => {
                   <div className="flex items-center justify-center pt-12 gap-4">
                     <Button
                       className={
-                        "w-[5.3rem] rounded-lg px-6 flex items-center border border-[#FF7439] bg-white text-[#FF7439] hover:bg-[#FF7439] hover:text-white"
+                        "w-[5.3rem] rounded-lg px-6 flex items-center border border-red-500 bg-white text-red-500 hover:bg-red-500 hover:text-white"
                       }
                       onClick={() => resetFormData()}
                     >
