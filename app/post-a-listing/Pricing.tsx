@@ -34,7 +34,7 @@ const Pricing = ({
 
   return (
     <div>
-      <div className="flex flex-row justify-between mr-10">
+      <div className="flex flex-row justify-between">
         <div>
           <h1 className="text-2xl font-semibold mb-3">Pricing</h1>
         </div>
