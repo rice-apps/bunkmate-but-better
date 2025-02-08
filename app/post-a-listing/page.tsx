@@ -12,11 +12,30 @@ import {FaHeart} from "react-icons/fa";
 import {v4} from "uuid";
 import CategoryStatusIndicator from "./CategoryStatusIndicator";
 import Duration from "./Duration";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { FaHeart } from "react-icons/fa";
+import { CgProfile } from "react-icons/cg";
+import { RxHamburgerMenu } from "react-icons/rx";
+import { FaTimes, FaPlus } from "react-icons/fa";
+import { MdHome } from "react-icons/md";
+import TitleDescription from "./TitleDescription";
+import Pricing from "./Pricing";
 import Location from "./Location";
 import Photos from "./Photos";
 import Pricing from "./Pricing";
 import Profile from "./Profile";
 import TitleDescription from "./TitleDescription";
+import { createClient } from "@/utils/supabase/client";
+import { v4 } from "uuid";
+import Duration from "./Duration";
+import CategoryStatusIndicator from "./CategoryStatusIndicator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export interface FormDataType {
   title: string;
@@ -58,6 +77,8 @@ const PostListing = () => {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("title");
   const {formData, setFormData, resetFormData} = useContext(PostListingFormContext);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   const isComplete = Boolean(
     formData.title.length >= 1 &&
@@ -320,31 +341,115 @@ const PostListing = () => {
     }
   };
 
+  const supabase = createClient();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    // Redirect to Sign-in page
+    router.push("/sign-in");
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <div className="min-h-screen w-full bg-white">
-      {/* Navbar */}
-      <nav className="bg-white top-0 z-10 h-16 fixed w-full">
-        <div className="container mx-auto px-10 py-4 flex justify-between items-center">
-          <Link href="/">
-            <div className="flex items-center space-x-2">
-              <Image src="/bunkmate_logo.png" alt="Bunkmate" width={32} height={32} />
-              <span className="text-2xl text-[#FF7439] font-semibold">bunkmate</span>
-            </div>
-          </Link>
-          <div className="flex items-center space-x-4">
-            <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 hover:cursor-pointer transition-transform duration-150 w-[35px] h-[31px]" />
-            <CgProfile className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 hover:cursor-pointer transition-transform duration-150 w-[35px] h-[31px]" />
+      <nav className="bg-white top-0 z-10 fixed w-full">
+        <div className="my-10 md:px-8 items-center lg:px-20 xl:px-20 flex flex-row place-items-center w-screen justify-between">
+          {/* Logo */}
+          <button className='hidden hide-logo:flex justify-center'>
+            <Link href='/' className='flex flex-row gap-[8.33] place-items-center'>
+              <Image src="/bunkmate_logo.png" alt="Bunkmate Logo" width={35} height={35} />
+              <p className="ml-4 text-[30px] text-[#FF7439] font-semibold">bunkmate</p>
+            </Link>
+          </button>
+
+          {/* Right Section Icons */}
+          <div className='flex justify-center items-center hidden hide-icons:flex hide-icons:flex-row gap-[25px] place-items-center'>
+            <Link href='/favorites' className="py-0 flex items-center">
+              <button>
+                <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[29px] h-[30px]" />
+              </button>
+            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button>
+                  <CgProfile className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[30px] h-[30px]" />
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent>
+                <DropdownMenuItem className="flex justify-center">
+                  <Link href='/profile-section'>
+                    <p className='hover:text-[#FF7439] text-center'>Profile</p>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="flex justify-center">
+                  <button onClick={handleLogout}>
+                    <p className='hover:text-[#FF7439] text-center'>Logout</p>
+                  </button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
+
+          {/* Mobile Menu Button */}
+          <div className='flex hide-icons:hidden z-100 ml-auto mr-5'>
+            <button onClick={() => setIsOpen(true)}>
+              <RxHamburgerMenu className='w-[35px] h-[35px]' color={"#FF7439"} />
+            </button>
+          </div>
+
+          {/* Mobile Menu */}
+          {isOpen && (
+            <div className="fixed top-0 right-0 h-full w-full bg-[#FF7439] z-[150] transition-transform duration-300 flex flex-row">
+              <div className="p-4 pl-10 text-white space-y-6 flex flex-col text-[18px] mt-12 justify-left">
+                <Link href='/' className="flex place-items-center">
+                  <MdHome className='mr-5' />
+                  <button>Home</button>
+                </Link>
+                <Link href='/post-a-listing' className="flex place-items-center">
+                  <FaPlus className='mr-5' />
+                  <button>Post a Listing</button>
+                </Link>
+                <Link href='/favorites' className="flex">
+                  <FaHeart className='mr-5' />
+                  <button>Favorite Listings</button>
+                </Link>
+                <Link href='/profile-section' className="flex place-items-center">
+                  <CgProfile className='mr-5' />
+                  <button>Your Profile</button>
+                </Link>
+              </div>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="absolute top-[55px] right-[35px] text-white text-2xl"
+              >
+                <FaTimes className='w-[28px] h-[28px]' />
+              </button>
+            </div>
+          )}
         </div>
       </nav>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 mt-16">
+      <div className={`container mx-auto px-4 py-8 mt-32 relative `}>
         <div className="max-w-7xl mx-auto">
-          <div className="flex gap-24">
-            {/* Sidebar */}
-            <div className="fixed">
-              <div className="w-80 pr-16 h-svh">
+          <div className="flex flex-col md:flex-row gap-8 md:gap-24">
+            {/* Mobile Sidebar Toggle */}
+            <button 
+              className="md:hidden flex items-center w-fit mb-4 bg-[#FF7439] text-white py-2 px-4 rounded-full"
+              onClick={toggleSidebar}
+            >
+              <span>{isSidebarOpen ? 'Close' : 'Expand'} Categories</span>
+            </button>
+
+            {/* Responsive Sidebar */}
+            <div className={`${
+              isSidebarOpen ? 'block' : 'hidden'
+            } md:block md:fixed w-full md:w-80`}>
+              <div className="w-full md:w-80 pr-0 md:pr-16 h-auto md:h-svh mb-8 md:mb-0">
                 <h1 className="text-2xl font-semibold mb-8">Listing Editor</h1>
                 <div className="space-y-3">
                   {categories.map(category => (
@@ -355,7 +460,10 @@ const PostListing = () => {
                           ? "text-[#FF7439] border-[#FF7439] border bg-orange-50"
                           : "text-gray-500"
                       }`}
-                      onClick={() => setSelectedCategory(category.id)}
+                      onClick={() => {
+                        setSelectedCategory(category.id);
+                        setSidebarOpen(false); // Close sidebar on mobile after selection
+                      }}
                     >
                       <div className="mr-3">
                         <CategoryStatusIndicator
@@ -388,9 +496,11 @@ const PostListing = () => {
                 </div>
               </div>
             </div>
-            <div className="mt-8"></div>
+
             {/* Form Content */}
-            <div className="flex-1 ml-[16rem] pl-16 border-l border-gray-500">{renderComponent()}</div>
+            <div className="flex-1 md:ml-80 md:pl-16 md:border-l border-gray-500">
+              {renderComponent()}
+            </div>
           </div>
         </div>
       </div>

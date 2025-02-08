@@ -52,7 +52,7 @@ const Location = ({
         </div>
       </div>
 
-      <div>
+      <div className="mt-10">
         <h2 className="text-2xl font-medium mb-2">Special Notes</h2>
         <p className="text-gray-400 text-sm mb-5">
           <span className="text-gray-500 font-semibold">This is optional!</span> You can include information relevant to

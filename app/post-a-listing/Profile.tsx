@@ -118,14 +118,15 @@ const Profile = ({formData, setFormData, onBack}: {formData: any; setFormData: a
         </div>
         <PreviewButton formData={formData} />
       </div>
-      <h2 className="mb-2 text-sm text-[#222222] font-bold whitespace">
-        Below is your current profile information. If you want to change this information, go to the{" "}
+      <h2 className="mb-2 text-sm text-[#222222] font-bold whitespace mt-2">
+        Below is your current profile information. If you want to change this
+        information, go to the{" "}
         <Link href="/profile-section" className="font-bold text-[#FF7439]">
           Profiles Section
         </Link>
         .
       </h2>
-      <div className="grid grid-cols-[1fr_2fr] items-start gap-4 pl-8">
+      <div className="grid grid-cols-[1fr_2fr] items-start gap-4 pl-8 mt-10 mb-10">
         <div>
           <h2 className="text-[1.25rem] font-medium mb-4">Profile Picture</h2>
           {profile.image ? (
@@ -148,13 +149,14 @@ const Profile = ({formData, setFormData, onBack}: {formData: any; setFormData: a
         </div>
       </div>
       <hr></hr>
-      <div>
+      
+      <div className="mt-10">
         <p className="mb-4 text-sm text-[#222222] font-bold">Input your information below.</p>
         <p className="mb-4 text-sm text-[#222222] font-bold">
           These will be displayed and used to help people interested in your listing connect with you.
         </p>
       </div>
-      <div>
+      <div className="mt-10">
         <h2 className="text-[1.25rem] font-medium mb-2">Rice Affiliation</h2>
         <p className="text-sm text-gray-400 mb-6">Below, select the option that applies to you:</p>
         <div className="space-y-8">
@@ -190,9 +192,11 @@ const Profile = ({formData, setFormData, onBack}: {formData: any; setFormData: a
         </div>
       </div>
       <div>
-        <div>
+        <div className="mt-10">
           <h2 className="text-[1.25rem] font-medium mb-2 mt-4">Phone Number</h2>
-          <p className="mb-4 text-sm text-gray-400 mb-6">Use the number you’d like to be contacted with.</p>
+          <p className="text-sm text-gray-400 mb-6">
+            Use the number you&apos;d like to be contacted with.
+          </p>
           <div>
             <Input
               type="tel"
@@ -221,7 +225,7 @@ const Profile = ({formData, setFormData, onBack}: {formData: any; setFormData: a
           <p>Back</p>
         </Button>
         <Button
-          className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
+          className={`w-[5.3rem] rounded-lg px-6 flex items-center shadow-lg ${
             isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
           }`}
           disabled={!isComplete}
