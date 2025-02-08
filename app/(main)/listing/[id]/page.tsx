@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Listing from '@/components/Listing';
 import ListingDescription from '@/components/ListingDescription';
 import MeetSubleaser from '@/components/MeetSubleaser';
-import { createClient } from "@/utils/supabase/client";
+import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { PostgrestError } from '@supabase/supabase-js';
 
 interface UserData {
@@ -151,7 +151,7 @@ const ListingPage = () => {
         } : null
       }} 
     />
-    <div className='flex flex-col lg:flex-row w-full mt-4 justify-between mb-10 px-14 gap-10'>
+    <div className='flex flex-col lg:flex-row w-full mt-4 justify-between mb-10 px-20 gap-10'>
       <div className='lg:w-1/2 xl:w-2/3'>
         <ListingDescription 
           data={{
@@ -173,7 +173,8 @@ const ListingPage = () => {
               user: listing.user ? {
                 full_name: listing.user.name,
                 email: listing.user.email,
-                avatar_url: listing.user.profile_image_path || undefined,
+                profile_image_path: listing.user.profile_image_path || undefined,
+                avatar_url: listing.user.profile_image_path ? getImagePublicUrl("profiles", listing.user.profile_image_path) : undefined,
                 is_rice_student: listing.user.affiliation === 'Rice Student'
               } : undefined
             }} 
