@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { BsArrowUpCircleFill } from "react-icons/bs";
 import LoadingCard from '@/components/LoadingCard';
 import { Button } from '@/components/ui/button';
+import { motion } from "framer-motion";
 
 
 interface Listing {
@@ -21,140 +22,6 @@ interface Listing {
   renterType: "Rice Student" | string;
   isFavorite: boolean;
 };
-// const listings: Listing[] = [
-//   {
-//     id: "1",
-//     title: "Life Tower",
-//     distance: "1.2 miles away",
-//     dates: "August - May",
-//     price: 1350,
-//     location: "Houston, TX",
-//     imageUrl: "/cherry_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "2",
-//     title: "The Nest on Dryden jawiojeiwoajeiwo",
-//     distance: "0.7 miles away",
-//     dates: "August - May",
-//     price: 1400,
-//     location: "Houston, TX",
-//     imageUrl: "/hobbit_house.jpeg",
-//     renterType: "Not Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "3",
-//     title: "The Nest on Dryden",
-//     distance: "0.7 miles away",
-//     dates: "August - May",
-//     price: 1400,
-//     location: "Houston, TX",
-//     imageUrl: "/hobbit_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "4",
-//     title: "Modern Villa",
-//     distance: "2.5 miles away",
-//     dates: "June - July",
-//     price: 2000,
-//     location: "Austin, TX",
-//     imageUrl: "/cherry_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "5",
-//     title: "Cozy Apartment",
-//     distance: "0.5 miles away",
-//     dates: "Year-round",
-//     price: 1200,
-//     location: "Houston, TX",
-//     imageUrl: "/cherry_house.jpeg",
-//     renterType: "Not Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "6",
-//     title: "Sunny Condo",
-//     distance: "1.8 miles away",
-//     dates: "August - May",
-//     price: 1450,
-//     location: "Houston, TX",
-//     imageUrl: "/cherry_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "7",
-//     title: "Downtown Loft",
-//     distance: "0.9 miles away",
-//     dates: "June - December",
-//     price: 1550,
-//     location: "Dallas, TX",
-//     imageUrl: "/cherry_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "8",
-//     title: "Luxury Penthouse",
-//     distance: "5.0 miles away",
-//     dates: "Year-round",
-//     price: 3500,
-//     location: "Houston, TX",
-//     imageUrl: "/cherry_house.jpeg",
-//     renterType: "Not Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "9",
-//     title: "Suburban Home",
-//     distance: "10.0 miles away",
-//     dates: "August - May",
-//     price: 1800,
-//     location: "Katy, TX",
-//     imageUrl: "/cherry_house.jpeg",
-//     renterType: "Not Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "10",
-//     title: "Beach House",
-//     distance: "30.0 miles away",
-//     dates: "Summer only",
-//     price: 2500,
-//     location: "Galveston, TX",
-//     imageUrl: "/cherry_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "11",
-//     title: "Studio Apartment",
-//     distance: "0.3 miles away",
-//     dates: "Year-round",
-//     price: 950,
-//     location: "Houston, TX",
-//     imageUrl: "/cherry_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: true,
-//   },
-//   {
-//     id: "12",
-//     title: "Elegant Townhouse",
-//     distance: "3.0 miles away",
-//     dates: "August - May",
-//     price: 1600,
-//     location: "Houston, TX",
-//     imageUrl: "/cherry_house.jpeg",
-//     renterType: "Rice Student",
-//     isFavorite: true,
-//   },
-// ];
 
 interface Favorite {
   listing_id: number;
@@ -230,21 +97,6 @@ export default function Favorites() {
           };
         }) || []);
 
-        // Convert the list of favorites to an object for faster lookups.
-        // const favoritesObject: { [key: number]: boolean } = {};
-        // favorites?.forEach((favorite: Favorite) => {
-        //   favoritesObject[favorite.listing_id] = true;
-        // });
-
-        // setFavorites(favoritesObject);
-
-        // const { data, error } = await supabase
-        //   .from('listings')
-        //   .select()
-        //   .order('created_at', { ascending: false });
-
-        // if (error) throw error;
-        // setListings(data);
       }
       catch (error) {
         console.error(error);
@@ -274,18 +126,62 @@ export default function Favorites() {
 
   const renderError = () => (
     <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
-      <p className="text-red-500">{error}</p>
-      <Button onClick={() => window.location.reload()}>
-        Try Again
-      </Button>
+      <motion.p 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-red-500"
+      >
+        {error}
+      </motion.p>
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <Button onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
+      </motion.div>
     </div>
   );
 
+  const renderNoFavorites = () => (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="flex flex-col items-center justify-center w-screen min-h-[50vh] space-y-6 text-center px-4"
+    >
+      <motion.p 
+        className="text-gray-500 text-xl font-medium"
+        animate={{ scale: [1, 1.02, 1] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
+        You haven't favorited any listings yet.
+      </motion.p>
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <Button 
+          onClick={() => router.push('/')}
+          className="bg-[#FF7439] hover:bg-[#FF7439]/90 text-white px-8 py-3 rounded-full text-lg shadow-lg transition-all duration-300"
+        >
+          Browse Listings
+        </Button>
+      </motion.div>
+    </motion.div>
+  );
+
   return (
-    <div className = "mb-20">
+    <div className="mb-20">
       <Navbar />
       <div className="container mx-auto px-4 py-0">
-        <div className="flex justify-between items-center mb-6">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex justify-between items-center mb-6"
+        >
           <h1
             className="font-dm-sans text-[32px] font-bold leading-[41.66px] text-left"
             style={{
@@ -295,14 +191,18 @@ export default function Favorites() {
           >
             Your Favorite Listings
           </h1>
-
-        </div>
+        </motion.div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {isLoading ? renderLoadingState() : error ? renderError() :
-            (
-              <>
-              {listings && listings.map((listing) => (
-                <div key={listing.id} className="w-full">
+            listings && listings.length > 0 ? (
+              listings.map((listing, index) => (
+                <motion.div 
+                  key={listing.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="w-full"
+                >
                   <ListingCard
                     postId={listing.id.toString()}
                     name={listing.title}
@@ -314,19 +214,22 @@ export default function Favorites() {
                     ownListing={false}
                     isFavorited={true}
                   />
-                </div>
-              ))}
-              </>
-            )}
+                </motion.div>
+              ))
+            ) : renderNoFavorites()
+          }
         </div>
       </div>
-        {/* Scroll to Top Icon */}
-        <div
-          className="group fixed bottom-9 right-9 p-0.5 cursor-pointer rounded-full shadow-lg bg-[#FF7439] border-[#FF7439] hover:bg-white"
-          onClick={scrollToTop}
-        >
-          <BsArrowUpCircleFill className="w-16 h-16 text-white group-hover:text-[#FF7439]" />
-        </div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className="fixed bottom-9 right-9 p-0.5 cursor-pointer rounded-full shadow-lg bg-[#FF7439] border-[#FF7439] hover:bg-white transition-all duration-300"
+        onClick={scrollToTop}
+      >
+        <BsArrowUpCircleFill className="w-16 h-16 text-white group-hover:text-[#FF7439]" />
+      </motion.div>
     </div>
   );
 }

@@ -11,55 +11,6 @@ import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import Image from "next/image";
 
 
-// Profile Component
-
-// function UploadButton({
-//   formData,
-//   setFormData,
-// }: {
-//   formData: any;
-//   setFormData: any;
-// }) {
-//   const handleFileChange = (event: any) => {
-//     const file = event.target.files[0];
-//     if (file) {
-//       setFormData({ ...formData, profilePicture: file.name });
-//     }
-//   };
-
-//   const handleButtonClick = () => {
-//     const fileInput = document.getElementById("fileInput");
-//     if (fileInput) {
-//       (fileInput as HTMLInputElement).click();
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <button
-//         type="button"
-//         className="flex flex-col items-center justify-center w-32 h-32 bg-gray-100 border border-gray-300 rounded-full text-gray-600 hover:bg-gray-200"
-//         onClick={handleButtonClick}
-//       >
-//         <FiUpload className="text-5xl text-gray-500 mb-2 align-center" />
-//         <span className="text-sm text-gray-500 text-center">Upload File</span>
-//       </button>
-//       <input
-//         id="fileInput"
-//         type="file"
-//         className="hidden"
-//         onChange={handleFileChange}
-//       />
-//       {formData.profilePicture && (
-//         <p className="mt-2 text-sm text-gray-500">
-//           Selected file:{" "}
-//           <span className="font-medium">{formData.profilePicture}</span>
-//         </p>
-//       )}
-//     </div>
-//   );
-// }
-
 const Profile = ({ formData, setFormData, onBack}: {
   formData: any;
   setFormData: any;
@@ -90,31 +41,27 @@ const Profile = ({ formData, setFormData, onBack}: {
     const fetchUser = async () => {
       const user = await supabase.auth.getUser();
       if (user.data.user) {
-        supabase
+        const { data, error } = await supabase
           .from("users")
           .select()
           .eq("id", user.data.user.id)
-          .then((data) => {
-            if (data.error) {
-              console.error("Error fetching user");
-              return;
-            }
-            if (data.data.length === 0) {
-              console.error("No user");
-              return;
-            }
-            setProfile({
-              username: data.data[0].name,
-              email: data.data[0].email,
-              phone: data.data[0].phone,
-              image: data.data[0].profile_image_path
-                ? getImagePublicUrl(
-                    "profile_images",
-                    data.data[0].profile_image_path
-                  )
-                : user.data.user?.user_metadata.avatar_url,
-            });
+          .single();
+
+        if (error) {
+          console.error("Error fetching user");
+          return;
+        }
+
+        if (data) {
+          setProfile({
+            username: data.name,
+            email: data.email,
+            phone: data.phone,
+            image: data.profile_image_path
+              ? getImagePublicUrl("profiles", data.profile_image_path)
+              : user.data.user?.user_metadata.avatar_url,
           });
+        }
       } else {
         console.error("No user");
       }
@@ -145,7 +92,7 @@ const Profile = ({ formData, setFormData, onBack}: {
             <img
               src={profile.image}
               alt="profile pic"
-              className="w-28 h-28 bg-gray-100 border border-gray-300 rounded-full text-gray-500"
+              className="w-28 h-28 bg-gray-100 border border-gray-300 rounded-full text-gray-500 object-cover"
             />
           ) : (
           <div className="flex items-center justify-center w-28 h-28 bg-gray-100 border border-gray-300 rounded-full text-gray-500">
