@@ -1,41 +1,30 @@
 "use client";
 
-import {Button} from "@/components/ui/button";
-import {PostListingFormContext} from "@/providers/PostListingFormProvider";
-import {createClient} from "@/utils/supabase/client";
-import Image from "next/image";
-import Link from "next/link";
-import {useRouter} from "next/navigation";
-import {useContext, useMemo, useState} from "react";
-import {CgProfile} from "react-icons/cg";
-import {FaHeart} from "react-icons/fa";
-import {v4} from "uuid";
-import CategoryStatusIndicator from "./CategoryStatusIndicator";
-import Duration from "./Duration";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { FaHeart } from "react-icons/fa";
-import { CgProfile } from "react-icons/cg";
-import { RxHamburgerMenu } from "react-icons/rx";
-import { FaTimes, FaPlus } from "react-icons/fa";
-import { MdHome } from "react-icons/md";
-import TitleDescription from "./TitleDescription";
-import Pricing from "./Pricing";
-import Location from "./Location";
-import Photos from "./Photos";
-import Pricing from "./Pricing";
-import Profile from "./Profile";
-import TitleDescription from "./TitleDescription";
-import { createClient } from "@/utils/supabase/client";
-import { v4 } from "uuid";
-import Duration from "./Duration";
-import CategoryStatusIndicator from "./CategoryStatusIndicator";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { PostListingFormContext } from "@/providers/PostListingFormProvider";
+import { createClient } from "@/utils/supabase/client";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useContext, useMemo, useState } from "react";
+import { CgProfile } from "react-icons/cg";
+import { FaHeart, FaPlus, FaTimes } from "react-icons/fa";
+import { MdHome } from "react-icons/md";
+import { RxHamburgerMenu } from "react-icons/rx";
+import { v4 } from "uuid";
+import CategoryStatusIndicator from "./CategoryStatusIndicator";
+import Duration from "./Duration";
+import Location from "./Location";
+import Photos from "./Photos";
+import Pricing from "./Pricing";
+import Profile from "./Profile";
+import TitleDescription from "./TitleDescription";
 
 export interface FormDataType {
   title: string;
