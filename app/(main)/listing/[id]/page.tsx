@@ -33,6 +33,8 @@ interface ListingData {
   title: string;
   user_id: string;
   user?: UserData;
+  bed_num: number;
+  bath_num: number;
 }
 
 const ListingPage = () => {
@@ -125,7 +127,7 @@ const ListingPage = () => {
   
     return `${formatDate(startDate)} - ${formatDate(endDate)}`;
   };
-
+  console.log(listing);
   return (
     <>
       <Listing 
@@ -162,7 +164,9 @@ const ListingPage = () => {
             start_date: listing.start_date,
             end_date: listing.end_date,
             durationNotes: listing.duration_notes,
-            distance: "2 miles away"
+            distance: "2 miles away",
+            bed_num: listing.bed_num,
+            bath_num: listing.bath_num
           }} 
         />
       </div>

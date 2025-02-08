@@ -103,7 +103,9 @@ const PreviewPage = () => {
               end_date: formData.endDate,
               durationNotes: formData.durationNotes,
               distance: "2 miles away",
-              location: formData.address
+              location: formData.address,
+              bed_num: formData.bed_num,
+              bath_num: formData.bath_num,
             }}
           />
         </div>
