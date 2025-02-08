@@ -15,13 +15,14 @@ import Location from './../../Location';
 import Photos from './../../Photos';
 import Profile from './../../Profile';
 
-import { createClient } from '@/utils/supabase/client';
+import { createClient, getImagePublicUrl } from '@/utils/supabase/client';
 import { v4 } from 'uuid';
 import Duration from './../../Duration';
 import CategoryStatusIndicator from './../../CategoryStatusIndicator';
 import LoadingCircle from '@/components/LoadingCircle';
 
-interface FormData {
+interface ConsolidatedFormData {
+  // Listing data
   title: string;
   description: string;
   price: number;
@@ -33,8 +34,15 @@ interface FormData {
   locationNotes: string;
   photos: File[];
   photoLabels: string[];
-  affiliation: string;
+  imagePaths: string[];
   phone: string;
+
+  // User data
+  userId: string;
+  userName: string;
+  userEmail: string;
+  userProfileImagePath: string | null;
+  affiliation: string;
 }
 
 type ImageResponse = {
@@ -49,34 +57,8 @@ type ImageResponse = {
   error: any;
 }
 
-interface UserData {
-  id: string;
-  name: string;
-  email: string;
-  created_at: string;
-  phone: string | null;
-  profile_image_path: string | null;
-  affiliation: string | null;
-}
-
-interface ListingData {
-  address: string;
-  created_at: string;
-  description: string;
-  duration_notes: string;
-  end_date: string;
-  id: number;
-  image_paths: string[];
-  phone_number: string;
-  price: number;
-  price_notes: string;
-  start_date: string;
-  title: string;
-  user_id: string;
-  user?: UserData;
-}
-
 type ImagePromiseType = Promise<ImageResponse>
+
 
 // Main PostListing component
 const EditListing = () => {
@@ -84,7 +66,7 @@ const EditListing = () => {
   const params = useParams();
   const listingId = params.id as string;
   const [selectedCategory, setSelectedCategory] = useState('title');
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<ConsolidatedFormData>({
     title: '',
     description: '',
     price: 0,
@@ -96,27 +78,34 @@ const EditListing = () => {
     locationNotes: '',
     photos: [],
     photoLabels: [],
-    affiliation: 'rice',
+    imagePaths: [],
     phone: '',
+    userId: '',
+    userName: '',
+    userEmail: '',
+    userProfileImagePath: null,
+    affiliation: '',
   });
-  const [listing, setListing] = useState<ListingData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
-    let isMounted = true; // Flag to check if the component is mounted
+    let isMounted = true;
 
-    const fetchListing = async () => {
+    const fetchListingAndUser = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        if (!listingId) {
-          throw new Error('No listing ID provided');
-        }
+        // Get authenticated user first
+        const { data: authData } = await supabase.auth.getUser();
+        if (!authData.user) throw new Error('Not authenticated');
 
-        const { data, error: queryError } = await supabase
+        if (!listingId) throw new Error('No listing ID provided');
+
+        // Fetch listing data
+        const { data: listingData, error: queryError } = await supabase
           .from('listings')
           .select(`
             *,
@@ -134,122 +123,168 @@ const EditListing = () => {
           .single();
 
         if (queryError) throw queryError;
-        if (!data) throw new Error('No listing found');
+        if (!listingData) throw new Error('No listing found');
 
-        console.log('Fetched data:', data); // Debugging
+        // Verify user owns this listing
+        if (listingData.user_id !== authData.user.id) {
+          // If not, route to profile-section
+          router.push('/profile-section');
+          return;
+        }
+
+        // Fetch current user data
+        const { data: userData, error: userError } = await supabase
+          .from("users")
+          .select()
+          .eq("id", authData.user.id)
+          .single();
+
+        if (userError) throw userError;
 
         if (isMounted) {
-          // setListing(data); // Update listing state
-
-          // Update formData only if the component is still mounted
           setFormData({
-            title: data.title || '',
-            description: data.description || '',
-            price: data.price || 0,
-            priceNotes: data.price_notes || '',
-            startDate: data.start_date || '',
-            endDate: data.end_date || '',
-            durationNotes: data.duration_notes || '',
-            address: data.address || '',
-            locationNotes: '',
+            // Listing data
+            title: listingData.title || '',
+            description: listingData.description || '',
+            price: listingData.price || 0,
+            priceNotes: listingData.price_notes || '',
+            startDate: listingData.start_date || '',
+            endDate: listingData.end_date || '',
+            durationNotes: listingData.duration_notes || '',
+            address: listingData.address || '',
+            locationNotes: listingData.location_notes || '',
             photos: [],
-            photoLabels: data.image_paths || [],
-            affiliation: data.user?.affiliation || '',
-            phone: data.phone_number || data.user?.phone || '',
+            photoLabels: [],
+            imagePaths: listingData.image_paths || [],
+
+            // User data
+            userId: listingData.user_id,
+            userName: userData.name || '',
+            phone: userData.phone || listingData.phone_number || listingData.user?.phone || '',
+            userEmail: userData.email || '',
+            userProfileImagePath: userData.profile_image_path
+              ? getImagePublicUrl("profile_images", userData.profile_image_path)
+              : authData.user.user_metadata.avatar_url,
+            affiliation: userData.affiliation || '',
           });
         }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load listing';
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load data';
         if (isMounted) setError(errorMessage);
-        console.warn('Error fetching listing:', err);
+        console.warn('Error fetching data:', err);
+        router.push('/profile-section'); // Route back on any error
       } finally {
         if (isMounted) setIsLoading(false);
       }
     };
 
-    fetchListing();
+    fetchListingAndUser();
 
     return () => {
-      isMounted = false; // Cleanup to prevent updates on unmounted components
+      isMounted = false;
     };
   }, [listingId, supabase]);
 
-  const handleSubmit = async (e: MouseEvent) => {
+  const isComplete = Boolean(
+    formData.title.length >= 1 &&
+    formData.description.length >= 100 &&
+    formData.price &&
+    formData.address &&
+    formData.startDate &&
+    formData.endDate &&
+    //formData.photos.length >= 5 &&
+    formData.phone
+  );
+
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const userId = (await supabase.auth.getUser()).data.user?.id;
-    const insertions: ImagePromiseType[] = [];
+    // const userId = (await supabase.auth.getUser()).data.user?.id;
+    // const insertions: ImagePromiseType[] = [];
 
-    // Cache the name of our file paths.
-    const filePaths: string[] = [];
+    // // Cache the name of our file paths.
+    // const filePaths: string[] = [];
 
-    formData.photos.forEach((photo) => {
-      const filePath = `${userId}/${v4()}`;
-      const insertion = supabase.storage.from('listing_images').upload(filePath, photo);
-      insertions.push(insertion);
-      filePaths.push(filePath);
-    });
+    // formData.photos.forEach((photo) => {
+    //   const filePath = `${userId}/${v4()}`;
+    //   const insertion = supabase.storage.from('listing_images').upload(filePath, photo);
+    //   insertions.push(insertion);
+    //   filePaths.push(filePath);
+    // });
 
     try {
-      const imageUploads = await Promise.all(insertions);
-      const successfulUploads = imageUploads.filter((imageUploads) => imageUploads.data);
-      if (successfulUploads.length != filePaths.length) {
-        const successfulFilePaths = successfulUploads.map((imgResp: ImageResponse) => imgResp.data?.path);
-        throw new Error('Some image(s) failed to upload', { cause: successfulFilePaths });
-      }
+      // // Handle image uploads
+      // const imageUploads = await Promise.all(insertions);
+      // const successfulUploads = imageUploads.filter((imageUploads) => imageUploads.data);
+      // if (successfulUploads.length != filePaths.length) {
+      //   const successfulFilePaths = successfulUploads.map((imgResp: ImageResponse) => imgResp.data?.path);
+      //   throw new Error('Some image(s) failed to upload', { cause: successfulFilePaths });
+      // }
 
-      const { data, error } = await supabase
+      // Update the listing
+      const { error: updateError } = await supabase
         .from('listings')
-        .insert([
-          {
-            user_id: userId,
-            phone_number: formData.phone,
-            title: formData.title,
-            description: formData.description,
-            price: formData.price,
-            price_notes: formData.priceNotes,
-            start_date: formData.startDate,
-            end_date: formData.endDate,
-            duration_notes: formData.durationNotes,
-            address: formData.address,
-            image_paths: filePaths,
-          },
-        ])
-        .select()
-        .single();
+        .update({
+          phone_number: formData.phone,
+          title: formData.title,
+          description: formData.description,
+          price: formData.price,
+          price_notes: formData.priceNotes,
+          start_date: formData.startDate,
+          end_date: formData.endDate,
+          duration_notes: formData.durationNotes,
+          address: formData.address,
+          location_notes: formData.locationNotes,
+          // image_paths: filePaths, // Commented out for now
+        })
+        .eq('id', listingId);
 
-      if (error) {
-        throw new Error(error.message, { cause: successfulUploads.map((imgResp: ImageResponse) => imgResp.data?.path) });
+      if (updateError) {
+        throw new Error(`Failed to update listing: ${updateError.message}`);
       }
 
-      const imageCaptions = filePaths.map((path, index) => ({
-        user_id: userId,
-        image_path: path,
-        caption: formData.photoLabels[index] || '',
-      }))
+      // // Handle image captions
+      // const imageCaptions = filePaths.map((path, index) => ({
+      //   user_id: userId,
+      //   image_path: path,
+      //   caption: formData.photoLabels[index] || '',
+      // }))
 
-      const { error: captionError } = await supabase
-        .from('images_captions')
-        .insert(imageCaptions)
-        .select();
-      if (captionError) {
-        throw new Error(captionError.message, { cause: filePaths });
+      // const { error: captionError } = await supabase
+      //   .from('images_captions')
+      //   .insert(imageCaptions)
+      //   .select();
+      // if (captionError) {
+      //   throw new Error(captionError.message, { cause: filePaths });
+      // }
+
+      // Update user affiliation if changed
+      const { error: userError } = await supabase
+        .from('users')
+        .update({
+          affiliation: formData.affiliation,
+        })
+        .eq('id', formData.userId);
+
+      if (userError) {
+        throw new Error(`Failed to update user: ${userError.message}`);
       }
 
-      router.push('/listing');
+      // Redirect on success
+      router.push('/profile-section');
     }
     catch (error: any) {
       //revert all uploads
       console.error(error.message);
-      await cleanupUploads(error.cause);
+      // await cleanupUploads(error.cause);
     }
 
-    async function cleanupUploads(paths: string[]) {
-      const supabase = createClient();
-      await supabase.storage.from('listing_images').remove(paths);
-      await supabase.from('images_captions').delete().in('image_path', paths);
-    }
-  }
+    // async function cleanupUploads(paths: string[]) {
+    //   const supabase = createClient();
+    //   await supabase.storage.from('listing_images').remove(paths);
+    //   await supabase.from('images_captions').delete().in('image_path', paths);
+    // }
+  };
 
   const renderComponent = () => {
     switch (selectedCategory) {
@@ -395,6 +430,18 @@ const EditListing = () => {
                       {category.name}
                     </div>
                   ))}
+                  {/* Post Button */}
+                  <div className="flex items-center justify-center pt-12">
+                    <Button
+                      className={`w-[5.3rem] rounded-lg px-6 flex items-center ${isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
+                        }`}
+                      disabled={!isComplete}
+                      onClick={handleSubmit}
+                    >
+                      <p>Save</p>
+                    </Button>
+                  </div>
+
                 </div>
               </div>
             </div>

@@ -8,6 +8,8 @@ import Link from "next/link";
 import PreviewButton from "./PreviewButton";
 import { FaChevronLeft } from "react-icons/fa6";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
+import Image from "next/image";
+
 
 // Profile Component
 
@@ -182,15 +184,15 @@ const Profile = ({ formData, setFormData, onBack}: {
             <div
               className={`flex items-center w-[23rem] space-x-2 p-4 rounded-xl border-2 
           ${
-            formData.affiliation === "rice"
+            formData.affiliation === "student"
               ? "border-[#FF7439] bg-[#FF7439]/30"
               : "border-[#B5B5B5] bg-gray-50"
           }`}
             >
               <RadioGroupItem
-                value="rice"
+                value="student"
                 className={`content-none border-2 rounded-full w-4 h-4 ${
-                  formData.affiliation === "rice"
+                  formData.affiliation === "student"
                     ? "border-none bg-[#FF7439]"
                     : "border-[#777777] bg-white"
                 }`}
