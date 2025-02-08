@@ -138,6 +138,7 @@ const ListingPage = () => {
         price: listing.price,
         location: listing.address,
         imagePaths: listing.image_paths,
+        loadImages: true,
         description: listing.description,
         phoneNumber: listing.phone_number,
         durationNotes: listing.duration_notes,
@@ -154,6 +155,7 @@ const ListingPage = () => {
       <div className='lg:w-1/2 xl:w-2/3'>
         <ListingDescription 
           data={{
+            location: listing.address,
             description: listing.description,
             price: listing.price,
             priceNotes: listing.price_notes,
@@ -171,7 +173,7 @@ const ListingPage = () => {
               user: listing.user ? {
                 full_name: listing.user.name,
                 email: listing.user.email,
-                avatar_url: listing.user.profile_image_path,
+                avatar_url: listing.user.profile_image_path || undefined,
                 is_rice_student: listing.user.affiliation === 'Rice Student'
               } : undefined
             }} 
