@@ -149,7 +149,7 @@ export default function Favorites() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col items-center justify-center w-screen min-h-[50vh] space-y-6 text-center px-4"
+      className="flex flex-col items-center justify-center w-full min-h-[50vh] space-y-6 text-center px-4 col-span-full"
     >
       <motion.p 
         className="text-gray-500 text-xl font-medium"
@@ -173,9 +173,9 @@ export default function Favorites() {
   );
 
   return (
-    <div className="mb-20">
+    <div className="mb-20 w-full">
       <Navbar />
-      <div className="container mx-auto px-4 py-0">
+      <div className="container mx-auto px-4 py-0 w-full">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -192,7 +192,7 @@ export default function Favorites() {
             Your Favorite Listings
           </h1>
         </motion.div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 w-full`}>
           {isLoading ? renderLoadingState() : error ? renderError() :
             listings && listings.length > 0 ? (
               listings.map((listing, index) => (
