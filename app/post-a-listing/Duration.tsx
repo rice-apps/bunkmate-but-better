@@ -1,19 +1,14 @@
 "use client";
 
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import {Button} from "@/components/ui/button";
+import {Calendar} from "@/components/ui/calendar";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {Textarea} from "@/components/ui/textarea";
+import {cn} from "@/lib/utils";
+import {format} from "date-fns";
+import {CalendarIcon} from "lucide-react";
+import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
 const Duration = ({
   formData,
@@ -50,16 +45,12 @@ const Duration = ({
         </div>
         <PreviewButton formData={formData} />
       </div>
-      <h2 className="text-sm font-bold">
-        Set the start and end dates of your lease here.{" "}
-      </h2>
+      <h2 className="text-sm font-bold">Set the start and end dates of your lease here. </h2>
 
       <div className="flex justify-between mt-10">
         <div className="w-[49%]">
           <h2 className="text-2xl font-medium mb-2">Start Date</h2>
-          <span className="text-sm text-gray-400 mb-5 block">
-            Required: Please select a start date
-          </span>
+          <span className="text-sm text-gray-400 mb-5 block">Required: Please select a start date</span>
           <div className="relative">
             <Popover>
               <PopoverTrigger asChild>
@@ -67,28 +58,20 @@ const Duration = ({
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal rounded-xl py-6",
-                    !formData.startDate && "text-muted-foreground"
+                    !formData.startDate && "text-muted-foreground",
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.startDate ? (
-                    format(new Date(formData.startDate), "PPP")
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
+                  {formData.startDate ? format(new Date(formData.startDate), "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  selected={
-                    formData.startDate
-                      ? new Date(formData.startDate)
-                      : undefined
-                  }
+                  selected={formData.startDate ? new Date(formData.startDate) : undefined}
                   onSelect={handleStartDateSelect}
                   initialFocus
-                  disabled={(date) => date < new Date()}
+                  disabled={date => date < new Date()}
                 />
               </PopoverContent>
             </Popover>
@@ -97,9 +80,7 @@ const Duration = ({
 
         <div className="w-[49%]">
           <h2 className="text-2xl font-medium mb-2">End Date</h2>
-          <span className="text-sm text-gray-400 mb-5 block">
-            Required: Please select an end date
-          </span>
+          <span className="text-sm text-gray-400 mb-5 block">Required: Please select an end date</span>
           <div className="relative">
             <Popover>
               <PopoverTrigger asChild>
@@ -107,29 +88,20 @@ const Duration = ({
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal rounded-xl py-6",
-                    !formData.endDate && "text-muted-foreground"
+                    !formData.endDate && "text-muted-foreground",
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.endDate ? (
-                    format(new Date(formData.endDate), "PPP")
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
+                  {formData.endDate ? format(new Date(formData.endDate), "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  selected={
-                    formData.endDate ? new Date(formData.endDate) : undefined
-                  }
+                  selected={formData.endDate ? new Date(formData.endDate) : undefined}
                   onSelect={handleEndDateSelect}
                   initialFocus
-                  disabled={(date) =>
-                    date < new Date() ||
-                    (formData.startDate && date < new Date(formData.startDate))
-                  }
+                  disabled={date => date < new Date() || (formData.startDate && date < new Date(formData.startDate))}
                 />
               </PopoverContent>
             </Popover>
@@ -140,32 +112,27 @@ const Duration = ({
       <div className="mt-10">
         <h2 className="text-2xl font-medium mb-2">Special Notes</h2>
         <p className="text-gray-400 text-sm mb-5">
-          <span className="text-gray-500 font-semibold">This is optional!</span>{" "}
-          You can include information such as flexible durations or move-in
-          dates.{" "}
+          <span className="text-gray-500 font-semibold">This is optional!</span> You can include information such as
+          flexible durations or move-in dates.{" "}
         </p>
 
         <div className="relative">
           <Textarea
             placeholder="Ex: Flexible with move-in/move-out dates. Early move-in possible."
             value={formData.durationNotes}
-            onChange={(e) =>
-              setFormData({ ...formData, durationNotes: e.target.value })
-            }
+            onChange={e => setFormData({...formData, durationNotes: e.target.value})}
             className="min-h-[150px] rounded-xl border border-gray-200 resize-none placeholder:text-gray-400 py-3"
           />
           <div className="flex justify-end text-sm mt-2 text-gray-400">
             <span>
-              <span className="text-gray-500 font-semibold">
-                {formData.durationNotes.length}
-              </span>
+              <span className="text-gray-500 font-semibold">{formData.durationNotes.length}</span>
               /500 characters
             </span>
           </div>
         </div>
       </div>
-
-      <div className="flex flex-col space-y-2 mt-10">
+      
+      <div className="flex flex-col pt-10">
         <div className="flex justify-between">
           <Button
             className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"

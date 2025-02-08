@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Textarea} from "@/components/ui/textarea";
 import PreviewButton from "./PreviewButton";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { useState } from "react";
@@ -18,7 +18,7 @@ const Location = ({
   onBack: () => void;
 }) => {
   const isComplete = Boolean(formData.address);
-
+  
   const [addressOption, setAddressOption] = useState<any>(null);
 
   const handleSelect = (value: any) => {
@@ -28,13 +28,9 @@ const Location = ({
     }
   };
 
-  const handleLocationNotesChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setFormData({ ...formData, locationNotes: e.target.value });
+  const handleLocationNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData({...formData, locationNotes: e.target.value});
   };
-
-  console.log(formData)
 
   return (
     <div>
@@ -45,9 +41,7 @@ const Location = ({
 
         <PreviewButton formData={formData} />
       </div>
-      <h2 className="text-sm font-bold">
-        Add details about where your listing is.
-      </h2>
+      <h2 className="text-sm font-bold">Add details about where your listing is.</h2>
 
       <div>
         <h2 className="text-2xl font-medium mb-2 mt-10">Address</h2>
@@ -93,16 +87,14 @@ const Location = ({
           />
           <div className="flex justify-end text-sm mt-2 text-gray-400">
             <span>
-              <span className="font-semibold text-gray-500">
-                {formData.locationNotes.length}
-              </span>
+              <span className="font-semibold text-gray-500">{formData.locationNotes.length}</span>
               /500 characters
             </span>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col space-y-2 mt-10">
+      <div className="flex flex-col pt-10">
         <div className="flex justify-between">
           <Button
             className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"

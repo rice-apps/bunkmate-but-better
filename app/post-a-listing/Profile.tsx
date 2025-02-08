@@ -1,13 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { FiUpload } from "react-icons/fi";
-import { useEffect, useState } from "react";
-import ProfilePictureModal from "./ProfilePictureModal";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
+import {createClient, getImagePublicUrl} from "@/utils/supabase/client";
 import Link from "next/link";
+import {useEffect, useState} from "react";
+import {FaChevronLeft} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
-import { FaChevronLeft } from "react-icons/fa6";
-import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 
 const Profile = ({ formData, setFormData, onBack}: {
   formData: any;
@@ -23,7 +21,7 @@ const Profile = ({ formData, setFormData, onBack}: {
       formData.startDate &&
       formData.endDate &&
       formData.photos.length >= 5 &&
-      formData.phone
+      formData.phone,
   );
 
   const supabase = createClient();
@@ -33,7 +31,7 @@ const Profile = ({ formData, setFormData, onBack}: {
     email: "",
     phone: "",
     image: "",
-  })
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -93,9 +91,10 @@ const Profile = ({ formData, setFormData, onBack}: {
               className="w-28 h-28 bg-gray-100 border border-gray-300 rounded-full text-gray-500 object-cover"
             />
           ) : (
-          <div className="flex items-center justify-center w-28 h-28 bg-gray-100 border border-gray-300 rounded-full text-gray-500">
-            profile pic
-          </div>)}
+            <div className="flex items-center justify-center w-28 h-28 bg-gray-100 border border-gray-300 rounded-full text-gray-500">
+              profile pic
+            </div>
+          )}
         </div>
         <div>
           <h2 className="text-[1.25rem] font-medium mb-4">Name</h2>
@@ -105,66 +104,44 @@ const Profile = ({ formData, setFormData, onBack}: {
         </div>
       </div>
       <hr></hr>
+      
       <div className="mt-10">
+        <p className="mb-4 text-sm text-[#222222] font-bold">Input your information below.</p>
         <p className="mb-4 text-sm text-[#222222] font-bold">
-          Input your information below.
-        </p>
-        <p className="mb-4 text-sm text-[#222222] font-bold">
-          These will be displayed and used to help people interested in your
-          listing connect with you.
+          These will be displayed and used to help people interested in your listing connect with you.
         </p>
       </div>
       <div className="mt-10">
         <h2 className="text-[1.25rem] font-medium mb-2">Rice Affiliation</h2>
-        <p className="text-sm text-gray-400 mb-6">
-          Below, select the option that applies to you:
-        </p>
+        <p className="text-sm text-gray-400 mb-6">Below, select the option that applies to you:</p>
         <div className="space-y-8">
           <RadioGroup
             value={formData.affiliation}
-            onValueChange={(value) =>
-              setFormData({ ...formData, affiliation: value })
-            }
+            onValueChange={value => setFormData({...formData, affiliation: value})}
           >
             <div
               className={`flex items-center w-[23rem] space-x-2 p-4 rounded-xl border-2 
-          ${
-            formData.affiliation === "rice"
-              ? "border-[#FF7439] bg-[#FF7439]/30"
-              : "border-[#B5B5B5] bg-gray-50"
-          }`}
+          ${formData.affiliation === "rice" ? "border-[#FF7439] bg-[#FF7439]/30" : "border-[#B5B5B5] bg-gray-50"}`}
             >
               <RadioGroupItem
                 value="rice"
                 className={`content-none border-2 rounded-full w-4 h-4 ${
-                  formData.affiliation === "rice"
-                    ? "border-none bg-[#FF7439]"
-                    : "border-[#777777] bg-white"
+                  formData.affiliation === "rice" ? "border-none bg-[#FF7439]" : "border-[#777777] bg-white"
                 }`}
               />
-              <label className="text-sm text-[#777777] font-medium">
-                I am a Rice student
-              </label>
+              <label className="text-sm text-[#777777] font-medium">I am a Rice student</label>
             </div>
             <div
               className={`flex items-center w-[23rem] space-x-2 p-4 rounded-xl border-2 
-          ${
-            formData.affiliation === "alum"
-              ? "border-[#FF7439] bg-[#FF7439]/30"
-              : "border-[#B5B5B5] bg-gray-50"
-          }`}
+          ${formData.affiliation === "alum" ? "border-[#FF7439] bg-[#FF7439]/30" : "border-[#B5B5B5] bg-gray-50"}`}
             >
               <RadioGroupItem
                 value="alum"
                 className={`content-none border-2 rounded-full w-4 h-4 ${
-                  formData.affiliation === "alum"
-                    ? "border-none bg-[#FF7439]"
-                    : "border-[#777777] bg-white"
+                  formData.affiliation === "alum" ? "border-none bg-[#FF7439]" : "border-[#777777] bg-white"
                 }`}
               />
-              <label className="text-sm text-[#777777] font-medium">
-                I am a Rice alum
-              </label>
+              <label className="text-sm text-[#777777] font-medium">I am a Rice alum</label>
             </div>
           </RadioGroup>
         </div>
@@ -180,10 +157,10 @@ const Profile = ({ formData, setFormData, onBack}: {
               type="tel"
               placeholder="+1 (123) 456-7890"
               value={formData.phone}
-              onChange={(e) => {
+              onChange={e => {
                 const value = e.target.value;
                 if (/^\+?[0-9\s()-]*$/.test(value)) {
-                  setFormData({ ...formData, phone: value });
+                  setFormData({...formData, phone: value});
                 }
               }}
               maxLength={15}
@@ -194,7 +171,7 @@ const Profile = ({ formData, setFormData, onBack}: {
         </div>
       </div>
 
-      <div className="flex justify-between pt-12">
+      <div className="flex justify-between pt-10">
         <Button
           className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"
           onClick={onBack}
