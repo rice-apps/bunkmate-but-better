@@ -73,8 +73,8 @@ const config = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       screens: {
-        "rahul": "1190px",
-        "eric": "950px",
+        "hide-logo": "1350px",
+        "hide-icons": "1100px",
       }
     },
   },

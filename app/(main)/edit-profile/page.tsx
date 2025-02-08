@@ -1,27 +1,26 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Upload, PencilIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import Cropper from 'react-easy-crop';
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
+import { v4 as uuidv4 } from 'uuid';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 const EditProfile = () => {
+  const router = useRouter();
   const supabase = createClient();
-  const [selectedFile, setSelectedFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const [isCropping, setIsCropping] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [isHovered, setIsHovered] = useState(false);
-  const router = useRouter();
+  const [currentProfileImagePath, setCurrentProfileImagePath] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -29,54 +28,57 @@ const EditProfile = () => {
     lastName: '',
     email: '',
     phone: '',
-    riceAffiliation: 'student',
+    riceAffiliation: null as 'student' | 'alumni' | null,
     profileImage: ''
   });
 
-  // Fetch user data on component mount
   useEffect(() => {
-    const fetchUserData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+    const fetchUser = async () => {
+      const user = await supabase.auth.getUser();
+      if (user.data.user) {
         const { data, error } = await supabase
-          .from('users')
+          .from("users")
           .select()
-          .eq('id', user.id)
+          .eq("id", user.data.user.id)
           .single();
-          
+
         if (error) {
-          console.error('Error fetching user data:', error);
+          console.error("Error fetching user:", error);
           return;
         }
 
         if (data) {
-          const [firstName, lastName] = (data.name || '').split(' ');
-          setFormData({
-            firstName: firstName || '',
-            lastName: lastName || '',
-            email: data.email || '',
+          // Split name into first and last name
+          const [firstName = '', lastName = ''] = data.name ? data.name.split(' ') : ['', ''];
+          
+          setFormData(prev => ({
+            ...prev,
+            firstName,
+            lastName,
+            email: data.email,
             phone: data.phone || '',
-            riceAffiliation: 'student',
-            profileImage: data.profile_image_path || ''
-          });
+            riceAffiliation: data.affiliation
+          }));
 
-          // Set the profile image URL
+          // Set profile image and store current path
           if (data.profile_image_path) {
-            const imageUrl = getImagePublicUrl('profile_images', data.profile_image_path);
+            setCurrentProfileImagePath(data.profile_image_path);
+            const imageUrl = getImagePublicUrl(
+              "profiles",
+              data.profile_image_path
+            );
             setProfileImageUrl(imageUrl);
-            setSelectedFile(imageUrl);
-          } else if (user.user_metadata?.avatar_url) {
-            setProfileImageUrl(user.user_metadata.avatar_url);
-            setSelectedFile(user.user_metadata.avatar_url);
+          } else if (user.data.user?.user_metadata.avatar_url) {
+            setProfileImageUrl(user.data.user.user_metadata.avatar_url);
           }
         }
       }
     };
 
-    fetchUserData();
+    fetchUser();
   }, []);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -84,99 +86,199 @@ const EditProfile = () => {
     }));
   };
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setSelectedFile(reader.result);
-        setIsCropping(true);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
-
-  const createCroppedImage = async () => {
-    try {
-      const image = new Image();
-      image.src = selectedFile;
-      await new Promise((resolve) => {
-        image.onload = resolve;
-      });
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      
-      canvas.width = croppedAreaPixels.width;
-      canvas.height = croppedAreaPixels.height;
-
-      ctx.drawImage(
-        image,
-        croppedAreaPixels.x,
-        croppedAreaPixels.y,
-        croppedAreaPixels.width,
-        croppedAreaPixels.height,
-        0,
-        0,
-        croppedAreaPixels.width,
-        croppedAreaPixels.height
-      );
-
-      const croppedImageUrl = canvas.toDataURL('image/jpeg');
-      setSelectedFile(croppedImageUrl);
-      setProfileImageUrl(croppedImageUrl);
-      setIsCropping(false);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   const handleSave = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      setIsSaving(true);
+      const user = await supabase.auth.getUser();
+      
+      if (!user.data.user) {
+        console.error('No authenticated user found');
+        return;
+      }
 
-    const updates = {
-      id: user.id,
-      name: `${formData.firstName} ${formData.lastName}`.trim(),
-      email: formData.email,
-      phone: formData.phone,
-    };
+      // Combine first and last name
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
 
-    const { error } = await supabase
-      .from('users')
-      .upsert(updates);
+      const { error } = await supabase
+        .from('users')
+        .update({ 
+          name: fullName,
+          phone: formData.phone,
+        })
+        .eq('id', user.data.user.id);
 
-    if (error) {
+      if (error) {
+        console.error('Error updating profile:', error);
+        return;
+      }
+
       router.push('/profile-section');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    router.push('/profile-section');
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      if (!e.target.files || e.target.files.length === 0) return;
+      
+      setIsUploading(true);
+  
+      const file = e.target.files[0];
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) {
+        console.error('No authenticated user found');
+        return;
+      }
+  
+      // Delete previous profile image if it exists
+      if (currentProfileImagePath) {
+        const { error: deleteError } = await supabase.storage
+          .from('profiles')
+          .remove([currentProfileImagePath]);
+        
+        if (deleteError) {
+          console.error('Error deleting previous image:', deleteError);
+        }
+      }
+
+      // Upload new image to Supabase Storage
+      const fileName = `${user.data.user.id}/${uuidv4()}.${file.name.split('.').pop()}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('profiles')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+  
+      if (uploadError) {
+        console.error('Error uploading image:', uploadError);
+        return;
+      }
+  
+      // Update user profile with new image path
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ profile_image_path: fileName })
+        .eq('id', user.data.user.id);
+
+      if (updateError) {
+        console.error('Error updating profile:', updateError);
+        return;
+      }
+
+      // Get the updated user data to get the new profile image
+      const { data: updatedUser, error: fetchError } = await supabase
+        .from('users')
+        .select('profile_image_path')
+        .eq('id', user.data.user.id)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching updated user:', fetchError);
+        return;
+      }
+
+      // Update UI with new image URL and store new path
+      if (updatedUser.profile_image_path) {
+        setCurrentProfileImagePath(updatedUser.profile_image_path);
+        const imageUrl = getImagePublicUrl('profiles', updatedUser.profile_image_path);
+        setProfileImageUrl(imageUrl);
+      }
+
+      setIsModalOpen(false);
+
+    } catch (error) {
+      console.error('Error processing image:', error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
   return (
-    <main className='w-full h-full max-w-[1200px]'>
-      <h1 className='text-3xl font-semibold'>Profile Editor</h1>
-      <p className='mt-4 text-gray-600'>Welcome to your profile editor! Here, you can edit your personal information. </p>
+    <motion.main 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className='w-full h-full px-20'
+    >
+      <motion.h1 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className='text-3xl font-semibold'
+      >
+        Profile Editor
+      </motion.h1>
+      <motion.p 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className='mt-4 text-gray-600'
+      >
+        Welcome to your profile editor! Here, you can edit your personal information.
+      </motion.p>
 
-      <div className='w-full flex justify-between items-center mt-14'>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className='w-full flex justify-between items-center mt-14'
+      >
         <h2 className='text-2xl font-medium'>Your Profile Information</h2>
-        <button 
-          onClick={handleSave}
-          className='px-6 py-2 rounded-lg bg-[#FF7439] hover:bg-[#FF7439]/80 hover:cursor-pointer hover:scale-105 transition duration-300'
-        >
-          <p className='text-white font-medium'>Save</p>
-        </button>
-      </div>
+        <div className='flex space-x-4'>
+          <button 
+            onClick={handleCancel}
+            className='px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 hover:cursor-pointer hover:scale-105 transition duration-300'
+          >
+            <p className='font-medium'>Cancel</p>
+          </button>
+          <button 
+            onClick={handleSave}
+            disabled={isSaving}
+            className='px-6 py-2 rounded-lg bg-[#FF7439] hover:bg-[#FF7439]/80 hover:cursor-pointer hover:scale-105 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
+          >
+            <p className='text-white font-medium'>{isSaving ? 'Saving...' : 'Save'}</p>
+          </button>
+        </div>
+      </motion.div>
 
-      <div className='flex flex-row w-full h-full space-x-5 mt-14 mb-20'>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className='flex flex-row w-full h-full space-x-5 mt-14 mb-20'
+      >
         <div className='w-1/3 h-full'>
-          <h2 className='text-2xl font-medium'>Profile Picture</h2>
-          <p className='mt-2 text-gray-400 text-sm'>Upload your profile picture.</p>
-          <p className='text-gray-400 text-sm'>Please make sure your face is recognizable! </p>
+          <motion.h2 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.6 }}
+            className='text-2xl font-medium'
+          >
+            Profile Picture
+          </motion.h2>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <p className='mt-2 text-gray-400 text-sm'>Upload your profile picture.</p>
+            <p className='text-gray-400 text-sm'>Please make sure your face is recognizable! </p>
+          </motion.div>
 
-          <div className='mt-8 w-40 h-40 relative'>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8 }}
+            className='mt-8 w-40 h-40 relative'
+          >
             <div
               onClick={() => setIsModalOpen(true)}
               onMouseEnter={() => setIsHovered(true)}
@@ -201,31 +303,48 @@ const EditProfile = () => {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
 
           {/* Rice Affiliation */}
-          <div className='mt-20'>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className='mt-20'
+          >
             <h2 className='text-2xl font-medium'>Rice Affiliation</h2>
             <p className='mt-2 text-gray-400 text-sm'>Below, select the option that applies to you:</p>
             
             <RadioGroup 
-              className="mt-8 space-y-4 w-3/5"
-              value={formData.riceAffiliation}
-              onValueChange={(value) => handleInputChange({ target: { name: 'riceAffiliation', value } })}
+              className="mt-8 space-y-1 w-3/5"
+              value={formData.riceAffiliation || undefined}
             >
               <div className="flex items-center space-x-2 border rounded-lg justify-center py-3">
-                <RadioGroupItem value="student" id="student" />
+                <RadioGroupItem 
+                  value="student" 
+                  id="student"
+                  className="text-[#FF7439] border-[#FF7439] data-[state=checked]:bg-[#FF7439] data-[state=checked]:text-white"
+                />
                 <Label htmlFor="student" className="text-sm">I am a Rice Student</Label>
               </div>
               <div className="flex items-center space-x-2 border rounded-lg justify-center py-3">
-                <RadioGroupItem value="alumni" id="alumni" />
+                <RadioGroupItem 
+                  value="alumni" 
+                  id="alumni"
+                  className="text-[#FF7439] border-[#FF7439] data-[state=checked]:bg-[#FF7439] data-[state=checked]:text-white"
+                />
                 <Label htmlFor="alumni" className="text-sm">I am a Rice alumni</Label>
               </div>
             </RadioGroup>
-          </div>
+          </motion.div>
         </div>
 
-        <div className='w-2/3 h-full mb-20'>
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1 }}
+          className='w-2/3 h-full mb-20'
+        >
           {/* Name Fields */}
           <h2 className='text-2xl font-medium'>Name</h2>
           <p className='mt-2 text-gray-400 text-sm'>If Rice Student: Make sure this matches the name on your Rice Student ID.</p>
@@ -249,13 +368,14 @@ const EditProfile = () => {
 
           {/* Email Field */}
           <h2 className='text-2xl font-medium mt-20'>Email Address</h2>
-          <p className='mt-2 text-gray-400 text-sm'>Use the address you'd like to be contacted with.</p>
+          <p className='mt-2 text-gray-400 text-sm'>This is the email address you signed up with. <br /> If you would like to use a new email address, please create a new account!</p>
           <Input 
             name="email"
             value={formData.email}
             onChange={handleInputChange}
             placeholder="Email Address" 
             className='w-full rounded-xl mt-8 border border-gray-200' 
+            disabled
           />
 
           {/* Phone Number Field */}
@@ -268,123 +388,60 @@ const EditProfile = () => {
             placeholder="+1 (xxx) xxx-xxxx" 
             className='w-full rounded-xl mt-8 border border-gray-200' 
           />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      {/* Image Cropping Modal */}
+      {/* Image Upload Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogContent className={`max-w-md ${isCropping ? 'max-h-[700px]' : ''}`}>
-              <DialogHeader>
-                <DialogTitle>Profile Picture</DialogTitle>
-              </DialogHeader>
-              <div className="p-6">
-                <p className="text-sm text-gray-500 text-center mb-8">
-                  Upload your profile picture. Please make sure your face is recognizable!
-                </p>
-                
-                {isCropping ? (
-                  <div className="relative h-80 mb-6">
-                    <Cropper
-                      image={selectedFile}
-                      crop={crop}
-                      zoom={zoom}
-                      aspect={1}
-                      onCropChange={setCrop}
-                      onZoomChange={setZoom}
-                      onCropComplete={onCropComplete}
-                      cropShape="round"
-                      showGrid={false}
-                    />
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Profile Picture</DialogTitle>
+          </DialogHeader>
+          <div className="p-6">
+            <p className="text-sm text-gray-500 text-center mb-8">
+              Upload your profile picture. Please make sure your face is recognizable!
+            </p>
+            
+            <div className="w-32 h-32 mx-auto mb-6">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                id="profile-upload"
+                onChange={handleFileUpload}
+                disabled={isUploading}
+              />
+              <label
+                htmlFor="profile-upload"
+                className={`w-full h-full rounded-full border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors bg-gray-50 ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {isUploading ? (
+                  <div className="flex flex-col items-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-400"></div>
+                    <span className="mt-2 text-sm text-gray-500">Uploading...</span>
                   </div>
                 ) : (
-                  <div className="w-32 h-32 mx-auto mb-6">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      id="profile-upload"
-                    />
-                    <label
-                      htmlFor="profile-upload"
-                      className={`w-full h-full rounded-full border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors ${
-                        selectedFile ? 'bg-gray-100' : 'bg-gray-50'
-                      }`}
-                    >
-                      {selectedFile ? (
-                        <img
-                          src={selectedFile}
-                          alt="Profile preview"
-                          className="w-full h-full rounded-full object-cover"
-                        />
-                      ) : (
-                        <>
-                          <Upload className="w-8 h-8 text-gray-400" />
-                          <span className="mt-2 text-sm text-gray-500">Upload File</span>
-                        </>
-                      )}
-                    </label>
-                  </div>
+                  <>
+                    <Upload className="w-8 h-8 text-gray-400" />
+                    <span className="mt-2 text-sm text-gray-500">Upload File</span>
+                  </>
                 )}
+              </label>
+            </div>
 
-                <div className="flex justify-center space-x-4">
-                  {isCropping ? (
-                    <>
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsCropping(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={createCroppedImage}
-                        className="bg-gray-600 hover:bg-gray-700 text-white"
-                      >
-                        Crop Image
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          document.getElementById('profile-upload').click();
-                        }}
-                      >
-                        Change
-                      </Button>
-                      <Button
-                      onClick={() => {
-                        setProfileImageUrl(selectedFile);
-                        setIsModalOpen(false);
-                      }}
-                      className="bg-gray-600 hover:bg-gray-700 text-white"
-                    >
-                      Done
-                    </Button>
-                    </>
-                  )}
-                </div>
-
-                {isCropping && (
-                  <div className="mt-4">
-                    <label className="text-sm text-gray-500 block mb-2">Zoom</label>
-                    <input
-                      type="range"
-                      value={zoom}
-                      min={1}
-                      max={3}
-                      step={0.1}
-                      aria-labelledby="Zoom"
-                      onChange={(e) => setZoom(parseFloat(e.target.value))}
-                      className="w-full"
-                    />
-                  </div>
-                )}
-              </div>
-            </DialogContent>
-          </Dialog>
-    </main>
+            <div className="flex justify-center space-x-4">
+              <Button
+                variant="outline"
+                onClick={() => setIsModalOpen(false)}
+                disabled={isUploading}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </motion.main>
   );
 };
 
