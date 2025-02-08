@@ -56,7 +56,7 @@ const Duration = ({
 
       <div className="flex justify-between mt-10">
         <div className="w-[49%]">
-          <h2 className="text-2xl font-medium mb-2 mt-10">Start Date</h2>
+          <h2 className="text-2xl font-medium mb-2">Start Date</h2>
           <span className="text-sm text-gray-400 mb-5 block">
             Required: Please select a start date
           </span>
@@ -96,7 +96,7 @@ const Duration = ({
         </div>
 
         <div className="w-[49%]">
-          <h2 className="text-2xl font-medium mb-2 mt-10">End Date</h2>
+          <h2 className="text-2xl font-medium mb-2">End Date</h2>
           <span className="text-sm text-gray-400 mb-5 block">
             Required: Please select an end date
           </span>

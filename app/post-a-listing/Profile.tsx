@@ -80,28 +80,22 @@ const Profile = ({
   );
 
   const formatPhoneNumber = (value: string): string => {
-    // Remove all non-numeric characters except `+`
-    let phoneDigits = value.replace(/[^\d]/g, "");
-
-    // If input is empty or only "+", return empty
+    // Remove all non-numeric characters
+    let phoneDigits = value.replace(/\D/g, "");
+  
+    // If input is empty, return an empty string
     if (phoneDigits === "") return "";
-    if (phoneDigits === "1") return ""; // Allow clearing the whole field
-
-    // Ensure the number starts with "+1" but allow full deletion
-    if (!phoneDigits.startsWith("1")) {
-      phoneDigits = `1${phoneDigits}`;
-    }
-
-    // Extract the number part excluding "1"
-    let number = phoneDigits.replace("1", "").slice(0, 10); // Limit to 10 digits
-
-    let formatted = "+1"; // Always start with "+1" unless it's being cleared
-
-    if (number.length > 0) formatted += ` (${number.slice(0, 3)}`;
-    if (number.length >= 4) formatted += `) ${number.slice(3, 6)}`;
-    if (number.length >= 7) formatted += `-${number.slice(6, 10)}`;
-
-    return formatted.trim(); // Remove any accidental trailing spaces
+  
+    // Limit to 10 digits (standard US phone number format)
+    phoneDigits = phoneDigits.slice(0, 10);
+  
+    let formatted = "";
+  
+    if (phoneDigits.length > 0) formatted += `(${phoneDigits.slice(0, 3)}`;
+    if (phoneDigits.length >= 4) formatted += `) ${phoneDigits.slice(3, 6)}`;
+    if (phoneDigits.length >= 7) formatted += `-${phoneDigits.slice(6, 10)}`;
+  
+    return formatted;
   };
 
   const supabase = createClient();
@@ -269,7 +263,7 @@ const Profile = ({
           <div>
             <Input
               type="tel"
-              placeholder="+1 (123) 456-7890"
+              placeholder="(123) 456-7890"
               value={formData.phone}
               onChange={(e) => {
                 const value = e.target.value;

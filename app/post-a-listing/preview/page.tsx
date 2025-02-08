@@ -111,6 +111,7 @@ return (
     <div className='lg:w-1/2 xl:w-2/3'>
       <ListingDescription 
         data={{
+          location: formData.address,
           description: formData.description,
           price: formData.price,
           priceNotes: formData.priceNotes,
