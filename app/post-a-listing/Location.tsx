@@ -1,10 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Textarea} from "@/components/ui/textarea";
 import PreviewButton from "./PreviewButton";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { useState } from "react";
+import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 
-// Location Component
 const Location = ({
   formData,
   setFormData,
@@ -17,17 +18,19 @@ const Location = ({
   onBack: () => void;
 }) => {
   const isComplete = Boolean(formData.address);
+  
+  const [addressOption, setAddressOption] = useState<any>(null);
 
-  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, address: e.target.value });
+  const handleSelect = (value: any) => {
+    if (value && value.label) {
+      setAddressOption(value);
+      setFormData({ ...formData, address: value.label });
+    }
   };
 
-  const handleLocationNotesChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setFormData({ ...formData, locationNotes: e.target.value });
+  const handleLocationNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData({...formData, locationNotes: e.target.value});
   };
-
 
   return (
     <div>
@@ -38,24 +41,33 @@ const Location = ({
 
         <PreviewButton formData={formData} />
       </div>
-      <h2 className="text-sm font-bold">
-        Add details about where your listing is.
-      </h2>
+      <h2 className="text-sm font-bold">Add details about where your listing is.</h2>
 
       <div>
         <h2 className="text-2xl font-medium mb-2 mt-10">Address</h2>
         <p className="text-gray-400 text-sm mb-5">
           Use the following format:{" "}
           <span className="text-gray-600">
-            123 Sammy Blvd, Houston, TX 77005
+            123 Sammy Blvd, Houston, TX
           </span>
         </p>
         <div className="relative">
-          <Input
-            placeholder="Ex: 123 Sammy Blvd, Houston, TX 77005"
-            value={formData.address}
-            onChange={handleAddressChange}
-            className={`w-full rounded-xl border border-gray-200 px-3 placeholder:text-gray-400 py-6`}
+          <GooglePlacesAutocomplete
+            apiKey={process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY}
+            selectProps={{
+              isClearable: true,
+              value: addressOption,
+              onChange: (value: any) => {
+                console.log("Selected value:", value);
+                if (value && value.label) {
+                  handleSelect(value);
+                } else {
+                  setAddressOption(null);
+                  setFormData({ ...formData, address: "" });
+                }
+              },
+              placeholder: "Ex: 123 Sammy Blvd, Houston, TX",
+            }}
           />
         </div>
       </div>
@@ -64,29 +76,25 @@ const Location = ({
         <h2 className="text-2xl font-medium mb-2">Special Notes</h2>
         <p className="text-gray-400 text-sm mb-5">
           <span className="text-gray-500 font-semibold">This is optional!</span>{" "}
-          You can include information relevant to location.{" "}
+          You can include information relevant to location.
         </p>
         <div className="relative">
           <Textarea
-            placeholder="Ex: Distance from Rice. 
-            Distance from Fondren Library. 
-            Estimated bike ride duration."
+            placeholder={`Ex: Distance from Rice. Distance from Fondren Library. Estimated bike ride duration.`}
             value={formData.locationNotes}
             onChange={handleLocationNotesChange}
             className="min-h-[150px] rounded-xl border border-gray-200 resize-none placeholder:text-gray-400 py-3"
           />
           <div className="flex justify-end text-sm mt-2 text-gray-400">
             <span>
-              <span className="font-semibold text-gray-500">
-                {formData.locationNotes.length}
-              </span>
+              <span className="font-semibold text-gray-500">{formData.locationNotes.length}</span>
               /500 characters
             </span>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col space-y-2 mt-10">
+      <div className="flex flex-col pt-10">
         <div className="flex justify-between">
           <Button
             className="w-[5.3rem] rounded-lg px-6 flex items-center bg-[#FF7439] hover:bg-[#FF7439]/90"
@@ -106,8 +114,6 @@ const Location = ({
             <FaChevronRight />
           </Button>
         </div>
-
-        {/* Completion status */}
       </div>
     </div>
   );

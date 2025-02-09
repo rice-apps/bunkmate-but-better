@@ -2,7 +2,7 @@
 
 import ListingCard from "@/components/ListingCard";
 import YourListingCard from "@/components/YourListingCard";
-
+import { motion } from 'framer-motion';
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
@@ -64,16 +64,17 @@ export default function Index() {
               console.error("No user");
               return;
             }
+
+            let profileImageUrl = user.data.user?.user_metadata.avatar_url;
+            if (data.data[0].profile_image_path) {
+              profileImageUrl = getImagePublicUrl('profiles', data.data[0].profile_image_path);
+            }
+
             setProfile({
               username: data.data[0].name,
               email: data.data[0].email,
               phone: data.data[0].phone,
-              image: data.data[0].profile_image_path
-                ? getImagePublicUrl(
-                    "profile_images",
-                    data.data[0].profile_image_path
-                  )
-                : user.data.user?.user_metadata.avatar_url,
+              image: profileImageUrl
             });
           });
         supabase
@@ -160,56 +161,90 @@ export default function Index() {
 
   return (
     <>
-      <main className="pb-8 w-full">
+      <motion.main 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="pb-8 w-full"
+      >
         <div className="flex flex-col items-center">
           <Navbar />
 
           {profile && (
-            <main className="flex flex-col sm:gap-[20px] w-full h-full items-left mb-20">
-              <div className="flex flex-col text-left sm:items-start gap-4">
+            <motion.main 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="flex flex-col sm:gap-[20px] w-full h-full items-left mb-20"
+            >
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="flex flex-col text-left sm:items-start gap-4"
+              >
                 <h1 className="text-left text-3xl font-semibold">Profile</h1>
                 <h1 className="text-left text-sm mb-2">
                   Welcome to your profile page! Here, you can access your
                   profile information, your favorites, and your listings.
                 </h1>
-              </div>
+              </motion.div>
               <div>
               <div className='flex flex-row justify-between mt-[3vh]'>
                 <h1 className="text-left text-[24px] text-#000000 font-medium">Your Profile Information</h1>
                 
                 <div className='flex flex-row gap-[20px]'>
                 <Link href='/edit-profile'>
-                  <button className="group mr-50mr-50 w-[200px] h-[43px] bg-[#F0F0F0] gap-[5.69px] hover:bg-[#777777] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-105">
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="group mr-50mr-50 w-[200px] h-[43px] bg-[#F0F0F0] gap-[5.69px] hover:bg-[#777777] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150"
+                  >
                     <RiPencilFill className="text-[#777777] group-hover:fill-[#F0F0F0]"/>
                     <p className="text-[16px] text-[#777777] group-hover:text-[#F0F0F0] font-600">EDIT PROFILE</p>
-                  </button>
+                  </motion.button>
                 </Link>
 
-                  <button onClick = {handleLogout} className="w-[160px] h-[43px] bg-[#CC3333] gap-[5.69px] hover:bg-[#990000] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-95">
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleLogout} 
+                    className="w-[160px] h-[43px] bg-[#CC3333] gap-[5.69px] hover:bg-[#990000] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150"
+                  >
                     <MdLogout className="text-[#FFFFFF]" />
-                    <p className="text-[16px] text-[#FFFFFF] font-600">Log out</p>
-                  </button>
+                    <p className="text-[16px] text-[#FFFFFF] font-600">LOG OUT</p>
+                  </motion.button>
                 </div>
 
               </div>
                 {/* <h1 className="text-left text-2xl font-medium mb-6">
                   Your Profile Information
                 </h1> */}
-                <div className="p-5 flex flex-col sm:flex-row sm:gap-[24vh]">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  className="p-5 flex flex-col sm:flex-row sm:gap-[24vh]"
+                >
                   {/* Profile Image and Rice Affiliate text */}
                   <div className="flex flex-col items-center sm:items-start gap-4 sm:gap-8">
                     <div className="flex flex-col gap-4">
                       <h1 className="text-lg sm:text-xl font-medium text-center sm:text-left">
                         Profile Picture
                       </h1>
-                      <div className="relative w-[18vh] h-[18vh] overflow-hidden rounded-full">
+                      <motion.div 
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        transition={{ duration: 0.5, delay: 0.5 }}
+                        className="relative w-[18vh] h-[18vh] overflow-hidden rounded-full"
+                      >
                         <Image
                           src={profile?.image || "/profile_pic.jpeg"}
                           fill={true}
                           alt="profile pic"
                           className="object-cover"
                         />
-                      </div>
+                      </motion.div>
                     </div>
                     <div className="flex flex-col">
                       <h1 className="text-lg font-medium">Rice Affiliation</h1>
@@ -227,33 +262,42 @@ export default function Index() {
                   </div>
 
                   {/* Additional Information */}
-                  <div className="flex flex-col">
+                  <motion.div 
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.6 }}
+                    className="flex flex-col"
+                  >
                     <div className="flex flex-col gap-4">
                       <div className="gap-4">
                         <h1 className="text-lg font-medium">Name</h1>
-                        <p className="text-lg">{profile?.username}</p>
+                        <p className="text-lg text-gray-400">{profile?.username}</p>
                       </div>
 
                       <div className="gap-4">
                         <h1 className="text-lg font-medium">Email Address</h1>
-                        <p className="text-lg">{profile?.email}</p>
+                        <p className="text-lg text-gray-400">{profile?.email}</p>
                       </div>
 
                       <div className="gap-4">
                         <h1 className="text-lg font-medium">Phone Number</h1>
-                        <p className="text-lg">{profile?.phone}</p>
+                        <p className="text-lg text-gray-400">{profile?.phone ? profile?.phone : 'Please enter your phone number in "Edit Profile"'}</p>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               </div>
 
-              <div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+              >
                 <h1 className="text-left text-2xl font-medium">
                   Favorite Listings
                 </h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-6">
-                  {favoritelistings.map((listing) => (
+                  {favoritelistings.length > 0 ? (favoritelistings.map((listing) => (
                     <div key={listing.id} className="transform scale-90">
                       <ListingCard
                         postId={listing.id}
@@ -267,11 +311,17 @@ export default function Index() {
                         ownListing={false}
                       />
                     </div>
-                  ))}
+                  ))) : (
+                    <div className="text-gray-400 italic mt-6">- No Favorites Yet!</div>
+                  )}
                 </div>
-              </div>
+              </motion.div>
 
-              <div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+              >
                 <h1 className="text-left text-2xl font-medium">
                   Your Listings
                 </h1>
@@ -292,13 +342,13 @@ export default function Index() {
                     </div>
                   ))}
                 </div>
-              </div>
-            </main>
+              </motion.div>
+            </motion.main>
           )}
 
           {!profile && <LoadingCircle />}
         </div>
-      </main>
+      </motion.main>
     </>
   );
 }

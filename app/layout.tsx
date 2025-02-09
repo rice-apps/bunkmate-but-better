@@ -1,11 +1,10 @@
-import { GeistSans } from "geist/font/sans";
-import { ThemeProvider } from "next-themes";
-import { DM_Sans } from "next/font/google";
+import {GeistSans} from "geist/font/sans";
+import {ThemeProvider} from "next-themes";
+import {DM_Sans} from "next/font/google";
 import "./globals.css";
+import PostListingFormProvider from "@/providers/PostListingFormProvider";
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+const defaultUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
@@ -13,26 +12,16 @@ export const metadata = {
   description: "Find Off-campus housing and subletters with ease using Bunkmate.",
 };
 
-const dmsans = DM_Sans({ subsets: ["latin"] });
+const dmsans = DM_Sans({subsets: ["latin"]});
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-
+export default async function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
       <body className={`${dmsans.className} bg-background text-foreground`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <main className="min-h-screen flex flex-col items-center" style={{width: "90%", margin: "0 auto"}}>
-            {children}
-          </main>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <PostListingFormProvider>
+            <main className="min-h-screen flex flex-col items-center" style={{width: "90%", margin: "0 auto"}}>{children}</main>
+          </PostListingFormProvider>
         </ThemeProvider>
       </body>
     </html>
