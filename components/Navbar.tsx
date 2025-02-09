@@ -85,7 +85,7 @@ const Navbar = ({includeFilter=true, includePostBtn=true}: NavbarProps) => {
   };
 
   return (
-    <div className='my-10 items-center flex flex-row place-items-center justify-between w-full'>
+    <div className='my-10 items-center flex flex-row place-items-center justify-between w-full h-[78px] '>
       {/* Logo */}
       <button className='hidden hide-logo:flex justify-center'>
         <Link href='/' className='flex flex-row gap-[8.33] place-items-center'>
@@ -94,7 +94,7 @@ const Navbar = ({includeFilter=true, includePostBtn=true}: NavbarProps) => {
         </Link>
       </button>
 
-      {includeFilter && <div className="min-h-[78px] max-w-[780px] flex h-16 border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3">
+      {includeFilter && <div className="max-w-[780px] flex h-full border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3">
         {/* Distance from Rice. */}
         <div className='ml-[10px] flex justify-center items-center flex-col border-r w-[212px]' >
           <div className = "text-left">
