@@ -30,7 +30,7 @@ export interface FormDataType {
   startDate: string;
   endDate: string;
   durationNotes: string;
-  address: string;
+  address: {label: string};
   locationNotes: string;
   photos: string[];
   rawPhotos: File[];
@@ -104,7 +104,7 @@ const PostListing = () => {
       }
 
       // Calculate distance from address to Rice University
-      const distance = await calculateDistance(formData.address);
+      const distance = await calculateDistance(formData.address.label);
       if (!distance) {
         throw new Error("Unable to validate address or calculate distance. Please check the address.");
       }
@@ -122,7 +122,7 @@ const PostListing = () => {
             start_date: formData.startDate,
             end_date: formData.endDate,
             duration_notes: formData.durationNotes,
-            address: formData.address,
+            address: formData.address.label,
             location_notes: formData.locationNotes,
             distance: distance,
             image_paths: filePaths,
@@ -343,8 +343,8 @@ const PostListing = () => {
       < Navbar includeFilter={false} includePostBtn={false}/>
 
       {/* Main Content */}
-      <div className={`container mx-auto px-4 py-8 relative `}>
-        <div className="max-w-7xl mx-auto">
+      <div className={`mx-auto relative `}>
+        <div className="mx-auto">
           <div className="flex flex-col md:flex-row gap-8 md:gap-24">
             {/* Mobile Sidebar Toggle */}
             <button
@@ -355,8 +355,8 @@ const PostListing = () => {
             </button>
 
             {/* Responsive Sidebar */}
-            <div className={`${isSidebarOpen ? "block" : "hidden"} md:block md:fixed w-full md:w-80`}>
-              <div className="w-full md:w-80 pr-0 md:pr-16 h-auto md:h-svh mb-8 md:mb-0">
+            <div className={`${isSidebarOpen ? "block" : "hidden"} md:block w-full md:w-80`}>
+              <div className="w-full md:w-80 pr-0 h-auto mb-8 md:mb-0">
                 <h1 className="text-2xl font-semibold mb-8">Listing Editor</h1>
                 <div className="space-y-3">
                   {categories.map(category => (
@@ -407,7 +407,7 @@ const PostListing = () => {
             </div>
 
             {/* Form Content */}
-            <div className="flex-1 md:ml-80 md:pl-16 md:border-l border-gray-500">{renderComponent()}</div>
+            <div className="flex-1 md:pl-16 md:border-l border-gray-500 pb-8 pr-8"  style={{height: "85vh", overflowY: "auto"}}>{renderComponent()}</div>
           </div>
         </div>
       </div>
