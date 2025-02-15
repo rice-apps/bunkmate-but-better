@@ -191,6 +191,7 @@ const EditListing = () => {
       }
 
       // Upload new photos if any
+      let uploadedPaths: string[] = [];
       if (formData.rawPhotos.length > 0) {
         formData.rawPhotos.forEach(photo => {
           const filePath = `${userId}/${v4()}`;
@@ -207,7 +208,7 @@ const EditListing = () => {
           }
 
           // Add new file paths to the existing ones
-          const uploadedPaths = successfulUploads.map(upload => upload.data!.path);
+          uploadedPaths = successfulUploads.map(upload => upload.data!.path);
           newImagePaths = [...formData.imagePaths, ...uploadedPaths];
         } catch (error) {
           console.error('Error uploading new images:', error);
@@ -239,22 +240,35 @@ const EditListing = () => {
         throw new Error(`Failed to update listing: ${updateError.message}`);
       }
 
-      // Handle image captions for new uploads
+      // Handle image captions for both existing and new images
       if (formData.photoLabels && Object.keys(formData.photoLabels).length > 0) {
-        const newCaptions = newImagePaths.map((path, index) => {
-          // Get caption from either existing (index + 100) or new (index)
-          const caption = formData.photoLabels[index + 100] || formData.photoLabels[index] || '';
-          return {
-            user_id: userId,
-            image_path: path,
-            caption: caption,
-          };
-        });
+        // Handle existing image captions (indexes 100+)
+        const existingImageCaptions = formData.imagePaths.map((path, index) => ({
+          user_id: userId,
+          image_path: path,
+          caption: formData.photoLabels[index + 100] || '',
+        })).filter(caption => caption.caption !== '');
 
-        if (newCaptions.length > 0) {
+        // Handle new image captions (regular indexes)
+        const newImageCaptions = uploadedPaths.map((path, index) => ({
+          user_id: userId,
+          image_path: path,
+          caption: formData.photoLabels[index] || '',  // Use regular index for new photos
+        })).filter(caption => caption.caption !== '');
+
+        const allCaptions = [...existingImageCaptions, ...newImageCaptions];
+
+        if (allCaptions.length > 0) {
+          // Delete any existing captions first to avoid conflicts
+          await supabase
+            .from('images_captions')
+            .delete()
+            .in('image_path', newImagePaths);
+
+          // Insert all captions
           const { error: captionError } = await supabase
             .from('images_captions')
-            .insert(newCaptions);
+            .insert(allCaptions);
 
           if (captionError) {
             console.error('Error updating captions:', captionError);
