@@ -176,7 +176,7 @@ export default function Favorites() {
   return (
     <div className="mb-20 w-[90%] mx-auto">
       <Navbar />
-      <div className="mx-auto py-0 w-full">
+      <div className="mx-auto py-0 w-full mt-4">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}

@@ -34,7 +34,7 @@ export default function SignIn() {
         <div className="relative z-20 p-12 flex flex-col h-full">
           {/* Logo Section */}
           <div className="flex items-center space-x-2 mb-16">
-            <div className="relative w-[40px] h-[40px]">
+            <div className="relative w-[25px] h-[25px]">
               <Image 
                 src="/bunkmate_logo.png"
                 alt="Bunkmate" 
@@ -42,23 +42,23 @@ export default function SignIn() {
                 className="brightness-0 invert object-contain"
               />
             </div>
-            <span className="text-2xl text-white font-semibold">bunkmate</span>
+            <span className="ml-4 text-2xl text-white font-semibold">bunkmate</span>
           </div>
           
           {/* Main Content */}
-          <div className="flex-1 flex flex-col gap-8">
+          <div className="mt-5 flex-1 flex flex-col gap-8">
             {/* Text Section */}
-            <div className="max-w-3xl">
-              <h1 className="text-4xl font-bold text-white mb-8">
-                Find Your Perfect Housing Match at Rice
-              </h1>
+            <div className="max-w-3xl text-center">
+              <h3 className="text-4xl font-bold text-white mb-3">
+                Find your perfect housing match at Rice.
+              </h3>
               <p className="text-xl text-white/90">
-                Connect with Rice students and find your ideal living space
+                Connect with Rice students & find your ideal living space!
               </p>
             </div>
 
             {/* Screenshot Container */}
-            <div className="w-full mt-8">
+            <div className="w-full mt-4">
               <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 shadow-2xl transform -rotate-2">
                 <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden">
                   <Image
@@ -101,10 +101,10 @@ export default function SignIn() {
           <div className="w-full max-w-lg space-y-8">
             <div className="text-center space-y-2">
               <h1 className="text-3xl font-bold tracking-tight">
-                Welcome to <span className="text-[#FF7439]">Bunkmate</span>
+                Welcome to <span className="text-[#FF7439]">bunkmate</span>
               </h1>
               <p className="text-gray-500">
-                Sign in to access your account
+                Please sign in through Google to access your account!
               </p>
             </div>
 
