@@ -19,12 +19,9 @@ const Location = ({
 }) => {
   const isComplete = Boolean(formData.address);
   
-  const [addressOption, setAddressOption] = useState<any>(null);
-
   const handleSelect = (value: any) => {
     if (value && value.label) {
-      setAddressOption(value);
-      setFormData({ ...formData, address: value.label });
+      setFormData({ ...formData, address: value });
     }
   };
 
@@ -56,14 +53,12 @@ const Location = ({
             apiKey={process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY}
             selectProps={{
               isClearable: true,
-              value: addressOption,
+              value: formData.address,
               onChange: (value: any) => {
-                console.log("Selected value:", value);
                 if (value && value.label) {
                   handleSelect(value);
                 } else {
-                  setAddressOption(null);
-                  setFormData({ ...formData, address: "" });
+                  setFormData({ ...formData, address: {label: ""} });
                 }
               },
               placeholder: "Ex: 123 Sammy Blvd, Houston, TX",

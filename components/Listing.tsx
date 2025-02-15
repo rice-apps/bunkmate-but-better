@@ -156,7 +156,7 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className='w-full px-20'
+      className='w-full'
     >
       {/* Header Section */}
       <motion.div 
@@ -217,7 +217,7 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => openDialog(0)}
-          className="absolute bottom-4 right-4 py-2 px-4 bg-white text-black border border-white rounded-lg hover:bg-transparent hover:text-white transition-colors"
+          className="absolute bottom-4 right-4 py-2 px-4 bg-black bg-opacity-50 text-white rounded-lg hover:bg-black hover:bg-opacity-70 hover:text-white transition-colors"
         >
           View All
         </motion.button>

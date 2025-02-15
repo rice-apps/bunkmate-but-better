@@ -165,7 +165,7 @@ export default function Index() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="container mx-auto px-4 pb-8"
+        className="pb-8 w-[90%] mx-auto"
       >
         <div className="flex flex-col items-center">
           <Navbar />
@@ -175,7 +175,7 @@ export default function Index() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex flex-col sm:gap-[20px] w-full h-full items-left mb-20 ml-5"
+              className="flex flex-col sm:gap-[20px] w-full h-full items-left mb-20"
             >
               <motion.div 
                 initial={{ opacity: 0, x: -20 }}
@@ -224,7 +224,7 @@ export default function Index() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
-                  className="p-5 flex flex-col sm:flex-row sm:gap-[24vh]"
+                  className=" flex flex-col sm:flex-row sm:gap-[24vh]"
                 >
                   {/* Profile Image and Rice Affiliate text */}
                   <div className="flex flex-col items-center sm:items-start gap-4 sm:gap-8">

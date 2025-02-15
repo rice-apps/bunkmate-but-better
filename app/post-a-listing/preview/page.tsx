@@ -69,7 +69,7 @@ const PreviewPage = () => {
           start_date: formData.startDate,
           end_date: formData.endDate, // Use the new format
           price: formData.price,
-          location: formData.address,
+          location: formData.address.label,
           imagePaths: formData.photos,
           captions: formData.photoLabels,
           loadImages: false,
@@ -87,7 +87,7 @@ const PreviewPage = () => {
             : null,
         }}
       />
-      <div className="flex flex-col lg:flex-row w-full mt-4 justify-between mb-10 px-14 gap-10">
+      <div className="flex flex-col lg:flex-row w-full mt-4 justify-between mb-10 gap-10">
         <div className="lg:w-1/2 xl:w-2/3">
           <ListingDescription
             data={{
@@ -98,7 +98,7 @@ const PreviewPage = () => {
               end_date: formData.endDate,
               durationNotes: formData.durationNotes,
               distance: "2 miles away",
-              location: formData.address,
+              location: formData.address.label,
               bed_num: formData.bed_num,
               bath_num: formData.bath_num,
             }}
