@@ -20,13 +20,14 @@ import { MdLogout } from "react-icons/md";
 type Listing = {
   id: string;
   title: string;
-  distance: string;
+  distance: number;
   dates: string;
   price: number;
   location: string;
   imageUrl: string;
   renterType: "Rice Student" | string;
   isFavorite: boolean;
+  image_paths: string[];
 };
 
 export default function Index() {
@@ -39,6 +40,7 @@ export default function Index() {
   } | null>();
   const [favoritelistings, setFavoriteListings] = useState<Listing[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
+  const [reload, setReload] = useState<boolean>(false);
 
   const handleLogout = async () => {
     console.log("LOGOUT CLICKED")
@@ -90,7 +92,8 @@ export default function Index() {
               end_date,
               price,
               image_paths,
-              address
+              address,
+              distance
               )
             `
           )
@@ -105,7 +108,7 @@ export default function Index() {
                 return {
                   id: favorite.listings.id,
                   title: favorite.listings.title,
-                  distance: "1.2 miles away",
+                  distance: favorite.listings.distance,
                   dates: `${new Date(favorite.listings.start_date).toLocaleDateString()} - ${new Date(favorite.listings.end_date).toLocaleDateString()}`,
                   price: favorite.listings.price,
                   location: favorite.listings.address,
@@ -115,6 +118,7 @@ export default function Index() {
                   ),
                   renterType: "Rice Student",
                   isFavorite: true,
+                  image_paths: favorite.listings.image_paths
                 };
               })
             );
@@ -134,7 +138,7 @@ export default function Index() {
                 return {
                   id: listing.id,
                   title: listing.title,
-                  distance: "1.2 miles away",
+                  distance: listing.distance,
                   dates: `${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`,
                   price: listing.price,
                   location: listing.address,
@@ -146,6 +150,7 @@ export default function Index() {
                     : "",
                   renterType: "Rice Student",
                   isFavorite: true,
+                  image_paths: listing.image_paths
                 };
               })
             );
@@ -155,7 +160,7 @@ export default function Index() {
       }
     };
     fetchUser();
-  }, []);
+  }, [reload]);
 
   const router = useRouter();
 
@@ -224,7 +229,7 @@ export default function Index() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
-                  className=" flex flex-col sm:flex-row sm:gap-[24vh]"
+                  className=" flex flex-col sm:flex-row sm:gap-[24vh] py-5"
                 >
                   {/* Profile Image and Rice Affiliate text */}
                   <div className="flex flex-col items-center sm:items-start gap-4 sm:gap-8">
@@ -293,12 +298,12 @@ export default function Index() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.7 }}
               >
-                <h1 className="text-left text-2xl font-medium">
+                <h1 className="text-left text-2xl font-medium mb-5">
                   Favorite Listings
                 </h1>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-6 gap-8">
                   {favoritelistings.length > 0 ? (favoritelistings.map((listing) => (
-                    <div key={listing.id} className="transform scale-90">
+                    <div key={listing.id}>
                       <ListingCard
                         postId={listing.id}
                         name={listing.title}
@@ -309,6 +314,7 @@ export default function Index() {
                         isRiceStudent={listing.renterType === "Rice Student"}
                         isFavorited={listing.isFavorite}
                         ownListing={false}
+                        imagePaths={listing.image_paths}
                       />
                     </div>
                   ))) : (
@@ -322,12 +328,12 @@ export default function Index() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.8 }}
               >
-                <h1 className="text-left text-2xl font-medium">
+                <h1 className="text-left text-2xl font-medium mb-5">
                   Your Listings
                 </h1>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                   {listings.map((listing) => (
-                    <div key={listing.id} className="transform scale-90 -gap-1">
+                    <div key={listing.id}>
                       <ListingCard
                         postId={listing.id}
                         name={listing.title}
@@ -338,6 +344,8 @@ export default function Index() {
                         isRiceStudent={listing.renterType === "Rice Student"}
                         isFavorited={listing.isFavorite}
                         ownListing={true}
+                        imagePaths={listing.image_paths}
+                        onDelete={() => setReload(!reload)}
                       />
                     </div>
                   ))}

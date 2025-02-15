@@ -1,10 +1,8 @@
 import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
-import PreviewButton from "./PreviewButton";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-import { useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
+import PreviewButton from "./PreviewButton";
 
 const Location = ({
   formData,
@@ -18,10 +16,10 @@ const Location = ({
   onBack: () => void;
 }) => {
   const isComplete = Boolean(formData.address);
-  
+
   const handleSelect = (value: any) => {
     if (value && value.label) {
-      setFormData({ ...formData, address: value });
+      setFormData({...formData, address: value});
     }
   };
 
@@ -43,25 +41,28 @@ const Location = ({
       <div>
         <h2 className="text-2xl font-medium mb-2 mt-10">Address</h2>
         <p className="text-gray-400 text-sm mb-5">
-          Use the following format:{" "}
-          <span className="text-gray-600">
-            123 Sammy Blvd, Houston, TX
-          </span>
+          Use the following format: <span className="text-gray-600">123 Sammy Blvd, Houston, TX</span>
         </p>
-        <div className="relative">
+        <div className="relative text-sm">
           <GooglePlacesAutocomplete
             apiKey={process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY}
             selectProps={{
               isClearable: true,
-              value: formData.address,
+              value: formData.address.label ? formData.address : null,
               onChange: (value: any) => {
                 if (value && value.label) {
                   handleSelect(value);
                 } else {
-                  setFormData({ ...formData, address: {label: ""} });
+                  setFormData({...formData, address: {label: ""}});
                 }
               },
               placeholder: "Ex: 123 Sammy Blvd, Houston, TX",
+              styles: {
+                placeholder: (provided: any) => ({
+                  ...provided,
+                  color: "#aaa", 
+                }),
+              },
             }}
           />
         </div>
@@ -70,8 +71,8 @@ const Location = ({
       <div className="mt-10">
         <h2 className="text-2xl font-medium mb-2">Special Notes</h2>
         <p className="text-gray-400 text-sm mb-5">
-          <span className="text-gray-500 font-semibold">This is optional!</span>{" "}
-          You can include information relevant to location.
+          <span className="text-gray-500 font-semibold">This is optional!</span> You can include information relevant to
+          location.
         </p>
         <div className="relative">
           <Textarea

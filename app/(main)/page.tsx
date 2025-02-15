@@ -16,6 +16,7 @@ import { MdChatBubble } from "react-icons/md";
 interface Listing {
   address: string;
   created_at: string;
+  distance: number;
   description: string;
   duration_notes: string;
   end_date: string;
@@ -75,7 +76,6 @@ export default function Index() {
         const startDate = (searchParams && searchParams.get('startDate') ? new Date(searchParams.get('startDate')!) : null);
         const endDate = (searchParams && searchParams.get('endDate') ? new Date(searchParams.get('endDate')!) : null);
         const distance = (searchParams && searchParams.get('distance')) || null;
-
 
         // Apply filters
         if (startDate) {
@@ -187,12 +187,13 @@ export default function Index() {
                       postId={listing.id.toString()}
                       name={listing.title}
                       imagePath={getImagePublicUrl("listing_images", (listing.image_paths[0]))}
-                      distance={"2 miles away"}
+                      distance={listing.distance}
                       duration={`${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`}
                       price={`$${listing.price} / month`}
                       isRiceStudent={true}
                       ownListing={false}
                       isFavorited={listing.id in favorites}
+                      imagePaths={listing.image_paths}
                     />
                   </motion.div>
                 ))}

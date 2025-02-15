@@ -6,6 +6,8 @@ import Link from "next/link";
 import {useEffect, useState} from "react";
 import {FaChevronLeft} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
+import Image from "next/image";
+
 
 const Profile = ({
   formData,
@@ -123,12 +125,18 @@ const Profile = ({
           >
             <div
               className={`flex items-center w-[23rem] space-x-2 p-4 rounded-xl border-2 
-          ${formData.affiliation === "rice" ? "border-[#FF7439] bg-[#FF7439]/30" : "border-[#B5B5B5] bg-gray-50"}`}
+          ${
+            formData.affiliation === "student"
+              ? "border-[#FF7439] bg-[#FF7439]/30"
+              : "border-[#B5B5B5] bg-gray-50"
+          }`}
             >
               <RadioGroupItem
-                value="rice"
+                value="student"
                 className={`content-none border-2 rounded-full w-4 h-4 ${
-                  formData.affiliation === "rice" ? "border-none bg-[#FF7439]" : "border-[#777777] bg-white"
+                  formData.affiliation === "student"
+                    ? "border-none bg-[#FF7439]"
+                    : "border-[#777777] bg-white"
                 }`}
               />
               <label className="text-sm text-[#777777] font-medium">I am a Rice student</label>

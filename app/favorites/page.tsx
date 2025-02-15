@@ -14,13 +14,14 @@ import { motion } from "framer-motion";
 interface Listing {
   id: string;
   title: string;
-  distance: string;
+  distance: number;
   dates: string;
   price: number;
   location: string;
   imageUrl: string;
   renterType: "Rice Student" | string;
   isFavorite: boolean;
+  image_paths: string[];
 };
 
 interface Favorite {
@@ -84,7 +85,7 @@ export default function Favorites() {
           return {
             id: favorite.listings.id,
             title: favorite.listings.title,
-            distance: "1.2 miles away",
+            distance: favorite.listings.distance,
             dates: `${new Date(favorite.listings.start_date).toLocaleDateString()} - ${new Date(favorite.listings.end_date).toLocaleDateString()}`,
             price: favorite.listings.price,
             location: favorite.listings.address,
@@ -94,6 +95,7 @@ export default function Favorites() {
             ),
             renterType: "Rice Student",
             isFavorite: true,
+            image_paths: favorite.listings.image_paths
           };
         }) || []);
 
@@ -208,12 +210,13 @@ export default function Favorites() {
                     postId={listing.id.toString()}
                     name={listing.title}
                     imagePath={listing.imageUrl}
-                    distance={"2 miles away"}
+                    distance={listing.distance}
                     duration={listing.dates}
                     price={`$${listing.price} / month`}
                     isRiceStudent={true}
                     ownListing={false}
                     isFavorited={true}
+                    imagePaths={listing.image_paths}
                   />
                 </motion.div>
               ))
