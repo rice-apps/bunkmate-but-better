@@ -3,9 +3,12 @@
 import Listing from "@/components/Listing";
 import ListingDescription from "@/components/ListingDescription";
 import MeetSubleaser from "@/components/MeetSubleaser";
-import {PostListingFormContext} from "@/providers/PostListingFormProvider";
-import {createClient} from "@/utils/supabase/client";
-import {useContext, useEffect, useState} from "react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { PostListingFormContext } from "@/providers/PostListingFormProvider";
+import { createClient } from "@/utils/supabase/client";
+import Link from "next/link";
+import { useContext, useEffect, useState } from "react";
 
 interface UserData {
   id: string;
@@ -20,6 +23,7 @@ const PreviewPage = () => {
   const supabase = createClient();
   const {formData} = useContext(PostListingFormContext);
   const [user, setUser] = useState<UserData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(true);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -69,6 +73,7 @@ const PreviewPage = () => {
               }
             : null,
         }}
+        isPreview
       />
       <div className="flex flex-col lg:flex-row w-full mt-4 justify-between mb-10 gap-10">
         <div className="lg:w-1/2 xl:w-2/3">
@@ -102,6 +107,42 @@ const PreviewPage = () => {
             }}
           />
         </div>
+
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogHeader>
+            <DialogTitle>Preview Dialog</DialogTitle>
+          </DialogHeader>
+          <DialogContent className="w-fit">
+            <div className="px-10 py-6 flex flex-col gap-6">
+              <h1 className="text-xl flex text-center items-center">
+                You're entering <p className="font-bold">&nbsp;Preview Mode</p>
+              </h1>
+
+              <p>Take a look at what your listing will look like once it’s posted.</p>
+              <p className="flex items-end whitespace-nowrap">
+                Click on the top right to go{" "}
+                <span className="text-[#777777] font-semibold">&nbsp;back to listing editor</span>.
+              </p>
+
+              <div className="flex justify-end space-x-4">
+                <Link href={`/post-a-listing`}>
+                  <Button
+                    variant="outline"
+                    className="rounded-lg px-6 flex items-center bg-white border border-[#777777] hover:bg-white/90 text-[#777777]"
+                  >
+                    Back to Editor
+                  </Button>
+                </Link>
+                <Button
+                  className="rounded-lg px-6 flex items-center bg-[#777777] hover:bg-[#777777]/90"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Go to Preview
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </>
   );

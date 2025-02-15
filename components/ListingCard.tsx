@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { IconContext } from "react-icons";
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
@@ -16,17 +16,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { createClient } from "@/utils/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
 interface CardProps {
   postId: string;
   name: string;
   imagePath: string;
-  distance: string;
+  distance: number;
   duration: string;
   price: string;
   isRiceStudent: boolean;
   isFavorited: boolean;
   ownListing: boolean;
+  imagePaths: string[];
+  onDelete?: () => void;
 }
 
 const ListingCard: React.FC<CardProps> = ({
@@ -39,9 +42,13 @@ const ListingCard: React.FC<CardProps> = ({
   isRiceStudent,
   isFavorited,
   ownListing,
+  imagePaths,
+  onDelete
 }) => {
   const [favorite, setFavorite] = useState(isFavorited);
   const router = useRouter();
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleAddOrRemoveFavorite = async (
     e: React.MouseEvent<HTMLButtonElement>
@@ -77,7 +84,49 @@ const ListingCard: React.FC<CardProps> = ({
     router.push(`/listing/${postId}`);
   };
 
+  const handleDelete = async () => {
+    setIsModalOpen(false);
+
+    const supabase = createClient();
+
+    try {
+      let response = await supabase.from('images_captions').delete().in('image_path', imagePaths);
+
+      if (response.status != 204) {
+        if (response.status == 403) {
+          throw new Error("Unauthorized access");
+        }
+        else if (response.status == 400) {
+          throw new Error("Unable to process request");
+        }
+      }
+
+      const { error } = await supabase.storage.from('listing_images').remove(imagePaths);
+
+      if (error != null) {
+        throw new Error(error.message);
+      }
+
+      response = await supabase.from('listings').delete().eq('id', postId);
+
+      if (response.status != 204) {
+        if (response.status == 403) {
+          throw new Error("Unauthrozied access");
+        }
+        else if (response.status == 400) {
+          throw new Error("Unable to process request");
+        }
+      }
+
+      onDelete && onDelete();
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
+    <>
     <div className="w-full cursor-pointer" onClick={handleCardClick}>
       <div className="relative overflow-hidden bg-white">
         {/* Image Container */}
@@ -140,6 +189,7 @@ const ListingCard: React.FC<CardProps> = ({
                     <DropdownMenuItem
                       key={"delete"}
                       className="flex justify-left group"
+                      onSelect={() => setIsModalOpen(true)}
                     >
                       <RiDeleteBinLine className="group-hover:text-[#FF7439]" />
                       <p className="group-hover:text-[#FF7439] text-left">
@@ -171,13 +221,41 @@ const ListingCard: React.FC<CardProps> = ({
             )}
           </div>
           <div className="space-y-1 text-gray-500 text-sm">
-            <p>{distance}</p>
+            <p>{distance} miles away from Rice</p>
             <p>{duration}</p>
             <p className="font-medium">{price}</p>
           </div>
         </div>
       </div>
     </div>
+    <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <DialogContent className="max-w-md p-8">
+        <DialogHeader>
+          <DialogTitle>You're about to delete your listing: {name}</DialogTitle>
+        </DialogHeader>
+        <div>
+          <p className="text-sm text-gray-500 mb-8">
+            Are you sure? <strong>{name}</strong> will be lost forever!
+          </p>
+
+          <div className="flex justify-end gap-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 };
 

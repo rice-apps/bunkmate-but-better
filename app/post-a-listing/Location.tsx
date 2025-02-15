@@ -43,7 +43,7 @@ const Location = ({
         <p className="text-gray-400 text-sm mb-5">
           Use the following format: <span className="text-gray-600">123 Sammy Blvd, Houston, TX</span>
         </p>
-        <div className="relative">
+        <div className="relative text-sm">
           <GooglePlacesAutocomplete
             apiKey={process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY}
             selectProps={{
@@ -57,6 +57,12 @@ const Location = ({
                 }
               },
               placeholder: "Ex: 123 Sammy Blvd, Houston, TX",
+              styles: {
+                placeholder: (provided: any) => ({
+                  ...provided,
+                  color: "#aaa", 
+                }),
+              },
             }}
           />
         </div>

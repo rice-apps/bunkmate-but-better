@@ -36,7 +36,7 @@ interface ListingDescriptionProps {
     start_date: string;
     end_date: string;
     durationNotes: string;
-    distance?: string;
+    distance?: number;
     bed_num: number;
     bath_num: number;
   };
@@ -105,7 +105,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
           <DescriptionItem 
             icon={<img src="/mdi_location.svg" alt="Duration Icon" className="w-[40px] h-[40px]" />}
             title="Distance from Rice"
-            description={data.distance || "Distance information not available"}
+            description={`${data.distance} miles away`}
             delay={0.7}
           />
         </div>

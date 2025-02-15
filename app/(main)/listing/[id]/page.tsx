@@ -34,6 +34,7 @@ interface ListingData {
   user?: UserData;
   bed_num: number;
   bath_num: number;
+  distance: number;
 }
 
 const ListingPage = () => {
@@ -181,7 +182,7 @@ const ListingPage = () => {
               start_date: listing.start_date,
               end_date: listing.end_date,
               durationNotes: listing.duration_notes,
-              distance: "2 miles away",
+              distance: listing.distance,
               bed_num: listing.bed_num,
               bath_num: listing.bath_num,
             }}
