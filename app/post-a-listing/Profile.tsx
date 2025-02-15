@@ -7,12 +7,19 @@ import {useEffect, useState} from "react";
 import {FaChevronLeft} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
 
-const Profile = ({ formData, setFormData, onBack}: {
+const Profile = ({
+  formData,
+  setFormData,
+  onBack,
+  handleSubmit,
+  isPosting,
+}: {
   formData: any;
   setFormData: any;
   onBack: () => void;
+  handleSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  isPosting: boolean;
 }) => {
-
   const isComplete = Boolean(
     formData.title.length >= 1 &&
       formData.description.length >= 100 &&
@@ -37,11 +44,7 @@ const Profile = ({ formData, setFormData, onBack}: {
     const fetchUser = async () => {
       const user = await supabase.auth.getUser();
       if (user.data.user) {
-        const { data, error } = await supabase
-          .from("users")
-          .select()
-          .eq("id", user.data.user.id)
-          .single();
+        const {data, error} = await supabase.from("users").select().eq("id", user.data.user.id).single();
 
         if (error) {
           console.error("Error fetching user");
@@ -74,8 +77,7 @@ const Profile = ({ formData, setFormData, onBack}: {
         <PreviewButton formData={formData} />
       </div>
       <h2 className="mb-2 text-sm text-[#222222] font-bold whitespace mt-2">
-        Below is your current profile information. If you want to change this
-        information, go to the{" "}
+        Below is your current profile information. If you want to change this information, go to the{" "}
         <Link href="/profile-section" className="font-bold text-[#FF7439]">
           Profiles Section
         </Link>
@@ -104,7 +106,7 @@ const Profile = ({ formData, setFormData, onBack}: {
         </div>
       </div>
       <hr></hr>
-      
+
       <div className="mt-10">
         <p className="mb-4 text-sm text-[#222222] font-bold">Input your information below.</p>
         <p className="mb-4 text-sm text-[#222222] font-bold">
@@ -149,9 +151,7 @@ const Profile = ({ formData, setFormData, onBack}: {
       <div>
         <div className="mt-10">
           <h2 className="text-[1.25rem] font-medium mb-2 mt-4">Phone Number</h2>
-          <p className="text-sm text-gray-400 mb-6">
-            Use the number you&apos;d like to be contacted with.
-          </p>
+          <p className="text-sm text-gray-400 mb-6">Use the number you&apos;d like to be contacted with.</p>
           <div>
             <Input
               type="tel"
@@ -183,7 +183,8 @@ const Profile = ({ formData, setFormData, onBack}: {
           className={`w-[5.3rem] rounded-lg px-6 flex items-center shadow-lg ${
             isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
           }`}
-          disabled={!isComplete}
+          disabled={!isComplete || isPosting}
+          onClick={e => handleSubmit(e)}
         >
           <p>Post</p>
         </Button>
