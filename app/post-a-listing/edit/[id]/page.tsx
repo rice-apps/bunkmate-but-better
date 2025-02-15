@@ -20,34 +20,8 @@ import { v4 } from 'uuid';
 import Duration from './../../Duration';
 import CategoryStatusIndicator from './../../CategoryStatusIndicator';
 import LoadingCircle from '@/components/LoadingCircle';
-
-interface ConsolidatedFormData {
-  // Listing data
-  title: string;
-  description: string;
-  price: number;
-  priceNotes: string;
-  startDate: string;
-  endDate: string;
-  durationNotes: string;
-  address: string;
-  locationNotes: string;
-  photos: string[];
-  photoLabels: string[];
-  imagePaths: string[];
-  rawPhotos: File[];
-  phone: string;
-  loadImages: boolean;  // Add this property
-  bed_num: number;
-  bath_num: number;
-
-  // User data
-  userId: string;
-  userName: string;
-  userEmail: string;
-  userProfileImagePath: string | null;
-  affiliation: string;
-}
+import { FormDataType } from '../../page';
+import { defaultFormData } from '@/providers/PostListingFormProvider';
 
 type ImageResponse = {
   data: {
@@ -70,30 +44,7 @@ const EditListing = () => {
   const params = useParams();
   const listingId = params.id as string;
   const [selectedCategory, setSelectedCategory] = useState('title');
-  const [formData, setFormData] = useState<ConsolidatedFormData>({
-    title: '',
-    description: '',
-    price: 0,
-    priceNotes: '',
-    startDate: '',
-    endDate: '',
-    durationNotes: '',
-    address: '',
-    locationNotes: '',
-    photos: [],
-    photoLabels: [],
-    imagePaths: [],
-    rawPhotos: [],
-    bed_num: 0,
-    bath_num: 0,
-    phone: '',
-    userId: '',
-    userName: '',
-    userEmail: '',
-    userProfileImagePath: null,
-    affiliation: '',
-    loadImages: true,  // Add this
-  });
+  const [formData, setFormData] = useState<FormDataType>(defaultFormData);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
@@ -161,23 +112,13 @@ const EditListing = () => {
             durationNotes: listingData.duration_notes || '',
             address: listingData.address || '',
             locationNotes: listingData.location_notes || '',
-            photos: [],  // Keep this empty for new uploads
-            photoLabels: [],
-            rawPhotos: [],  // Keep this empty for new uploads
-            imagePaths: listingData.image_paths || [],  // Store existing image paths here
-            loadImages: true,
+            photos: [],
+            rawPhotos: [],
+            photoLabels: {},
+            affiliation: userData.affiliation || '',
+            phone: listingData.phone_number || listingData.user?.phone || '',
             bed_num: listingData.bed_num || 0,
             bath_num: listingData.bath_num || 0,
-
-            // User data
-            userId: listingData.user_id,
-            userName: userData.name || '',
-            phone: userData.phone || listingData.phone_number || listingData.user?.phone || '',
-            userEmail: userData.email || '',
-            userProfileImagePath: userData.profile_image_path
-              ? getImagePublicUrl("profile_images", userData.profile_image_path)
-              : authData.user.user_metadata.avatar_url,
-            affiliation: userData.affiliation || '',
           });
         }
       } catch (err) {
@@ -273,12 +214,15 @@ const EditListing = () => {
       // }
 
       // Update user affiliation if changed
+      const { data: authData } = await supabase.auth.getUser();
+      if (!authData.user) throw new Error('Not authenticated');
+
       const { error: userError } = await supabase
         .from('users')
         .update({
           affiliation: formData.affiliation,
         })
-        .eq('id', formData.userId);
+        .eq('id', authData.user.id);
 
       if (userError) {
         throw new Error(`Failed to update user: ${userError.message}`);
