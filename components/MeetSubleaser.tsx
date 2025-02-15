@@ -82,7 +82,7 @@ const MeetSubleaser: React.FC<MeetSubleaserProps> = ({ data }) => {
             className='flex flex-col'
           >
             <div className='flex flex-col pb-4 border-b mb-4'>
-              <h1 className='text-[22px] font-semibold mb-[2.27px] mr-14 sm:mr-20'>
+              <h1 className='text-[22px] font-semibold mb-[2.27px] w-full sm:mr-20'>
                 {data.user?.full_name || 'Anonymous'}
               </h1>
               {data.user?.is_rice_student && (
