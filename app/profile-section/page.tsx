@@ -20,13 +20,14 @@ import { MdLogout } from "react-icons/md";
 type Listing = {
   id: string;
   title: string;
-  distance: string;
+  distance: number;
   dates: string;
   price: number;
   location: string;
   imageUrl: string;
   renterType: "Rice Student" | string;
   isFavorite: boolean;
+  image_paths: string[];
 };
 
 export default function Index() {
@@ -39,6 +40,7 @@ export default function Index() {
   } | null>();
   const [favoritelistings, setFavoriteListings] = useState<Listing[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
+  const [reload, setReload] = useState<boolean>(false);
 
   const handleLogout = async () => {
     console.log("LOGOUT CLICKED")
@@ -90,7 +92,8 @@ export default function Index() {
               end_date,
               price,
               image_paths,
-              address
+              address,
+              distance
               )
             `
           )
@@ -105,7 +108,7 @@ export default function Index() {
                 return {
                   id: favorite.listings.id,
                   title: favorite.listings.title,
-                  distance: "1.2 miles away",
+                  distance: favorite.listings.distance,
                   dates: `${new Date(favorite.listings.start_date).toLocaleDateString()} - ${new Date(favorite.listings.end_date).toLocaleDateString()}`,
                   price: favorite.listings.price,
                   location: favorite.listings.address,
@@ -115,6 +118,7 @@ export default function Index() {
                   ),
                   renterType: "Rice Student",
                   isFavorite: true,
+                  image_paths: favorite.listings.image_paths
                 };
               })
             );
@@ -134,7 +138,7 @@ export default function Index() {
                 return {
                   id: listing.id,
                   title: listing.title,
-                  distance: "1.2 miles away",
+                  distance: listing.distance,
                   dates: `${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`,
                   price: listing.price,
                   location: listing.address,
@@ -146,6 +150,7 @@ export default function Index() {
                     : "",
                   renterType: "Rice Student",
                   isFavorite: true,
+                  image_paths: listing.image_paths
                 };
               })
             );
@@ -155,7 +160,7 @@ export default function Index() {
       }
     };
     fetchUser();
-  }, []);
+  }, [reload]);
 
   const router = useRouter();
 
@@ -309,6 +314,7 @@ export default function Index() {
                         isRiceStudent={listing.renterType === "Rice Student"}
                         isFavorited={listing.isFavorite}
                         ownListing={false}
+                        imagePaths={listing.image_paths}
                       />
                     </div>
                   ))) : (
@@ -338,6 +344,8 @@ export default function Index() {
                         isRiceStudent={listing.renterType === "Rice Student"}
                         isFavorited={listing.isFavorite}
                         ownListing={true}
+                        imagePaths={listing.image_paths}
+                        onDelete={() => setReload(!reload)}
                       />
                     </div>
                   ))}
