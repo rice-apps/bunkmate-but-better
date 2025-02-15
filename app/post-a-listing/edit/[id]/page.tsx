@@ -298,7 +298,7 @@ const EditListing = () => {
         throw new Error(`Failed to update user: ${userError.message}`);
       }
 
-      router.push('/profile-section');
+      router.push(`/listing/${listingId}`);
     } catch (error: any) {
       console.error('Error updating listing:', error.message);
     } finally {
