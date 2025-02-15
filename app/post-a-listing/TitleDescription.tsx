@@ -1,9 +1,8 @@
-import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { FaChevronRight } from "react-icons/fa";
 import PreviewButton from "./PreviewButton";
-import {FaArrowRightArrowLeft} from "react-icons/fa6";
-import {FaChevronRight} from "react-icons/fa";
 
 const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => {
   const handleBedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,7 +23,7 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
         <div className="relative">
           <Input
             placeholder="Ex: 2"
-            value={formData.bed_num}
+            value={formData.bed_num == 0 ? "" : formData.bed_num}
             onChange={handleBedChange}
             type="number"
             className="w-full rounded-xl border-[1px] border-gray-300 placeholder:text-gray-400 py-6"
@@ -38,7 +37,7 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
         <div className="relative">
           <Input
             placeholder="Ex: 5"
-            value={formData.bath_num}
+            value={formData.bath_num == 0 ? "" : formData.bath_num}
             onChange={handleBathChange}
             type="number"
             className="w-full rounded-xl border-[1px] border-gray-300 placeholder:text-gray-400 py-6"
