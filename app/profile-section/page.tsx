@@ -224,7 +224,7 @@ export default function Index() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
-                  className=" flex flex-col sm:flex-row sm:gap-[24vh]"
+                  className=" flex flex-col sm:flex-row sm:gap-[24vh] py-5"
                 >
                   {/* Profile Image and Rice Affiliate text */}
                   <div className="flex flex-col items-center sm:items-start gap-4 sm:gap-8">
@@ -293,12 +293,12 @@ export default function Index() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.7 }}
               >
-                <h1 className="text-left text-2xl font-medium">
+                <h1 className="text-left text-2xl font-medium mb-5">
                   Favorite Listings
                 </h1>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-6 gap-8">
                   {favoritelistings.length > 0 ? (favoritelistings.map((listing) => (
-                    <div key={listing.id} className="transform scale-90">
+                    <div key={listing.id}>
                       <ListingCard
                         postId={listing.id}
                         name={listing.title}
@@ -322,12 +322,12 @@ export default function Index() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.8 }}
               >
-                <h1 className="text-left text-2xl font-medium">
+                <h1 className="text-left text-2xl font-medium mb-5">
                   Your Listings
                 </h1>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                   {listings.map((listing) => (
-                    <div key={listing.id} className="transform scale-90 -gap-1">
+                    <div key={listing.id}>
                       <ListingCard
                         postId={listing.id}
                         name={listing.title}

@@ -22,6 +22,7 @@ const Location = ({
   const handleSelect = (value: any) => {
     if (value && value.label) {
       setFormData({ ...formData, address: value });
+      console.log(value);
     }
   };
 
