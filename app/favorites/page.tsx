@@ -21,6 +21,7 @@ interface Listing {
   imageUrl: string;
   renterType: "Rice Student" | string;
   isFavorite: boolean;
+  image_paths: string[];
 };
 
 interface Favorite {
@@ -94,6 +95,7 @@ export default function Favorites() {
             ),
             renterType: "Rice Student",
             isFavorite: true,
+            image_paths: favorite.listings.image_paths
           };
         }) || []);
 
@@ -214,6 +216,7 @@ export default function Favorites() {
                     isRiceStudent={true}
                     ownListing={false}
                     isFavorited={true}
+                    imagePaths={listing.image_paths}
                   />
                 </motion.div>
               ))

@@ -193,6 +193,7 @@ export default function Index() {
                       isRiceStudent={true}
                       ownListing={false}
                       isFavorited={listing.id in favorites}
+                      imagePaths={listing.image_paths}
                     />
                   </motion.div>
                 ))}

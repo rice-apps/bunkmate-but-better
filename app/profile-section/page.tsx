@@ -27,6 +27,7 @@ type Listing = {
   imageUrl: string;
   renterType: "Rice Student" | string;
   isFavorite: boolean;
+  image_paths: string[];
 };
 
 export default function Index() {
@@ -39,6 +40,7 @@ export default function Index() {
   } | null>();
   const [favoritelistings, setFavoriteListings] = useState<Listing[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
+  const [reload, setReload] = useState<boolean>(false);
 
   const handleLogout = async () => {
     console.log("LOGOUT CLICKED")
@@ -115,6 +117,7 @@ export default function Index() {
                   ),
                   renterType: "Rice Student",
                   isFavorite: true,
+                  image_paths: favorite.listings.image_paths
                 };
               })
             );
@@ -146,6 +149,7 @@ export default function Index() {
                     : "",
                   renterType: "Rice Student",
                   isFavorite: true,
+                  image_paths: listing.image_paths
                 };
               })
             );
@@ -155,7 +159,7 @@ export default function Index() {
       }
     };
     fetchUser();
-  }, []);
+  }, [reload]);
 
   const router = useRouter();
 
@@ -309,6 +313,7 @@ export default function Index() {
                         isRiceStudent={listing.renterType === "Rice Student"}
                         isFavorited={listing.isFavorite}
                         ownListing={false}
+                        imagePaths={listing.image_paths}
                       />
                     </div>
                   ))) : (
@@ -338,6 +343,8 @@ export default function Index() {
                         isRiceStudent={listing.renterType === "Rice Student"}
                         isFavorited={listing.isFavorite}
                         ownListing={true}
+                        imagePaths={listing.image_paths}
+                        onDelete={() => setReload(!reload)}
                       />
                     </div>
                   ))}
