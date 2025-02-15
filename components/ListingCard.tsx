@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { FaHeart } from "react-icons/fa";
+import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { IconContext } from "react-icons";
 import { MdEdit } from "react-icons/md";
@@ -16,8 +16,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { createClient } from "@/utils/supabase/client";
-import Link from "next/link";
-import { Heart } from "lucide-react";
 
 interface CardProps {
   postId: string;
@@ -70,7 +68,6 @@ const ListingCard: React.FC<CardProps> = ({
       }
 
       setFavorite(!favorite);
-      router.push('/favorites');
     } catch (error) {
       alert("Failed to favorite/unfavorite a listing");
     }
@@ -92,7 +89,7 @@ const ListingCard: React.FC<CardProps> = ({
             className="object-cover rounded-2xl"
           />
           <Button
-            className="w-10 h-10 p-0 border-none hover:bg-transparent hover:text-white"
+            className="absolute top-4 right-4 w-10 h-10 p-0 border-none hover:bg-transparent hover:text-white"
             variant="ghost"
             onClick={handleAddOrRemoveFavorite}
           >
@@ -133,6 +130,7 @@ const ListingCard: React.FC<CardProps> = ({
                     <DropdownMenuItem
                       key={"edit"}
                       className="flex justify-left group"
+                      onClick={() => router.push(`/post-a-listing/edit/${postId}`)}
                     >
                       <MdEdit className="group-hover:text-[#FF7439]" />
                       <p className="group-hover:text-[#FF7439] text-left">
