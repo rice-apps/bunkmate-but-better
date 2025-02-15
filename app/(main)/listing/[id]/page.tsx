@@ -4,7 +4,7 @@ import Listing from "@/components/Listing";
 import ListingDescription from "@/components/ListingDescription";
 import MeetSubleaser from "@/components/MeetSubleaser";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface UserData {
@@ -44,6 +44,11 @@ const ListingPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
+
+  // Grabbing the isFavorited value & converting from the URL of Listing.
+  const searchParams = useSearchParams();
+  const isFavorited = searchParams?.get('isFavorited');
+  const isFavoritedValue = isFavorited === 'true';
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -153,6 +158,7 @@ const ListingPage = () => {
           end_date: listing.end_date, // Use the new format
           price: listing.price,
           location: listing.address,
+          isFavorited: isFavoritedValue,
           imagePaths: listing.image_paths,
           loadImages: true,
           description: listing.description,
