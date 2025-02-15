@@ -58,7 +58,7 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [images, setImages] = useState<ImageData[]>([]);
-
+  // TODO: Fetch image captions from Supabase
   useEffect(() => {
     if (data?.imagePaths && data?.loadImages) {
       // Transform the image paths into our gallery format
@@ -94,6 +94,25 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
       setImages(transformedImages);
     }
   }, [data?.imagePaths, data?.loadImages]);
+
+  // Keyboard shortcuts for slideshow
+  useEffect(() => {
+    if (!isDialogOpen) return;
+  
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeDialog();
+      } else if (e.key === 'ArrowLeft') {
+        handlePrev();
+      } else if (e.key === 'ArrowRight') {
+        handleNext();
+      }
+    };
+  
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDialogOpen]);
+
 
   const openDialog = (index: number = 0) => {
     setCurrentImageIndex(index);
@@ -210,23 +229,35 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 flex -top-5 items-center justify-center bg-black bg-opacity-75 z-50"
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50" onClick={closeDialog}
         >
           <button 
-            onClick={closeDialog} 
-            className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors"
+            onClick={(e) => { e.stopPropagation(); closeDialog(); }} 
+            className="absolute top-4 right-4 z-70 w-10 text-white hover:text-gray-300 transition-colors"
             aria-label="Close gallery"
           >
             <span className="text-4xl">×</span>
           </button>
-          <button
-            onClick={handlePrev}
-            className="absolute left-12 text-white hover:text-gray-300 transition-colors"
+          
+          {/* Left Button */}
+          <div 
+            className="absolute left-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors"
+            onClick={(e) => { e.stopPropagation(); handlePrev(); }}
             aria-label="Previous image"
           >
-            <span className="text-5xl">&lt;</span>
-          </button>
+            <span className="text-5xl text-white hover:text-gray-300 transition-colors cursor-pointer">&lt;</span>
+          </div>
+          {/* Right Button */}
+
+          <div 
+            className="absolute right-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors"
+            onClick={(e) => { e.stopPropagation(); handleNext(); }}
+            aria-label="Next image"
+          >
+            <span className="text-5xl text-white hover:text-gray-300 transition-colors cursor-pointer">&gt;</span>
+          </div>
           
+          {/* Image Container */}      
           <motion.div 
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
@@ -237,10 +268,10 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
               src={images[currentImageIndex].src} 
               fill={true} 
               alt={`${data.title} - Image ${currentImageIndex + 1}`}
-              className="object-cover rounded-lg"
+              className="object-contain rounded-lg" 
             />
           </motion.div>
-
+        
           <motion.div 
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -250,18 +281,11 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
             <p className="text-center font-semibold">{data.title}</p>
             {getCaption(currentImageIndex) && (
               <p className="text-center">
-                {getCaption(currentImageIndex)}
+                {`${data.location} • ${formatDateRange(data.start_date, data.end_date)} • $${data.price.toLocaleString()} / month`}
+              {data.priceNotes && ` - ${data.priceNotes}`}
               </p>
             )}
           </motion.div>
-
-          <button
-            onClick={handleNext}
-            className="absolute right-12 text-white hover:text-gray-300 transition-colors"
-            aria-label="Next image"
-          >
-            <span className="text-5xl">&gt;</span>
-          </button>
         </motion.div>
       )}
     </motion.div>
