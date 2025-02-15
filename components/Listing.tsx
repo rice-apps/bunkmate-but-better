@@ -1,9 +1,9 @@
-'use client'
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { FaHeart } from 'react-icons/fa6';
-import { getImagePublicUrl } from "@/utils/supabase/client";
-import { motion } from "framer-motion";
+"use client";
+import React, {useState, useEffect} from "react";
+import Image from "next/image";
+import {FaHeart} from "react-icons/fa6";
+import {getImagePublicUrl} from "@/utils/supabase/client";
+import {motion} from "framer-motion";
 
 interface ListingData {
   id: number;
@@ -98,21 +98,20 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
   // Keyboard shortcuts for slideshow
   useEffect(() => {
     if (!isDialogOpen) return;
-  
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         closeDialog();
-      } else if (e.key === 'ArrowLeft') {
+      } else if (e.key === "ArrowLeft") {
         handlePrev();
-      } else if (e.key === 'ArrowRight') {
+      } else if (e.key === "ArrowRight") {
         handleNext();
       }
     };
-  
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isDialogOpen]);
 
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isDialogOpen]);
 
   const openDialog = (index: number = 0) => {
     setCurrentImageIndex(index);
@@ -148,7 +147,7 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
 
   // Helper function to safely get caption
   const getCaption = (index: number): string => {
-    return data.captions && Array.isArray(data.captions) && data.captions[index] ? data.captions[index] : "";
+    return data.captions && data.captions[index] ? data.captions[index] : data.title;
   };
 
   return (
@@ -159,22 +158,19 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
       className='w-full'
     >
       {/* Header Section */}
-      <motion.div 
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+      <motion.div
+        initial={{opacity: 0, x: -20}}
+        animate={{opacity: 1, x: 0}}
+        transition={{duration: 0.5, delay: 0.2}}
         className="mb-6 w-full"
       >
         <div className="flex items-center mb-2">
           <h1 className="text-4xl font-semibold">{data.title}</h1>
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <FaHeart 
-              className="ml-3 cursor-pointer w-6 h-6 duration-300" 
+          <motion.div whileHover={{scale: 1.1}} whileTap={{scale: 0.9}}>
+            <FaHeart
+              className="ml-3 cursor-pointer w-6 h-6 duration-300"
               fill={isFavorited ? "#FF7439" : "gray"}
-              onClick={toggleFavorite} 
+              onClick={toggleFavorite}
             />
           </motion.div>
         </div>
@@ -185,18 +181,18 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
       </motion.div>
 
       {/* Image Gallery */}
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+      <motion.div
+        initial={{opacity: 0, scale: 0.95}}
+        animate={{opacity: 1, scale: 1}}
+        transition={{duration: 0.5, delay: 0.4}}
         className="relative w-full h-[500px] grid grid-cols-1 lg:grid-cols-8 gap-2 mb-8"
       >
         {images.map((image, index) => (
           <motion.div
             key={index}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 * (index + 1) }}
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            transition={{duration: 0.5, delay: 0.2 * (index + 1)}}
             className={`relative overflow-hidden rounded-lg cursor-pointer ${image.span} ${
               index === 0 ? "" : "hidden lg:block sm:hidden md:hidden"
             }`}
@@ -213,9 +209,9 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
         ))}
 
         {/* View All Button */}
-        <motion.button 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <motion.button
+          whileHover={{scale: 1.05}}
+          whileTap={{scale: 0.95}}
           onClick={() => openDialog(0)}
           className="absolute bottom-4 right-4 py-2 px-4 bg-black bg-opacity-50 text-white rounded-lg hover:bg-black hover:bg-opacity-70 hover:text-white transition-colors"
         >
@@ -225,66 +221,70 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
 
       {/* Image Dialog */}
       {isDialogOpen && images.length > 0 && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50" onClick={closeDialog}
+        <motion.div
+          initial={{opacity: 0}}
+          animate={{opacity: 1}}
+          exit={{opacity: 0}}
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+          onClick={closeDialog}
         >
-          <button 
-            onClick={(e) => { e.stopPropagation(); closeDialog(); }} 
+          <button
+            onClick={e => {
+              e.stopPropagation();
+              closeDialog();
+            }}
             className="absolute top-4 right-4 z-70 w-10 text-white hover:text-gray-300 transition-colors"
             aria-label="Close gallery"
           >
             <span className="text-4xl">×</span>
           </button>
-          
+
           {/* Left Button */}
-          <div 
+          <div
             className="absolute left-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors"
-            onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+            onClick={e => {
+              e.stopPropagation();
+              handlePrev();
+            }}
             aria-label="Previous image"
           >
             <span className="text-5xl text-white hover:text-gray-300 transition-colors cursor-pointer">&lt;</span>
           </div>
           {/* Right Button */}
 
-          <div 
+          <div
             className="absolute right-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors"
-            onClick={(e) => { e.stopPropagation(); handleNext(); }}
+            onClick={e => {
+              e.stopPropagation();
+              handleNext();
+            }}
             aria-label="Next image"
           >
             <span className="text-5xl text-white hover:text-gray-300 transition-colors cursor-pointer">&gt;</span>
           </div>
-          
-          {/* Image Container */}      
-          <motion.div 
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.3 }}
+
+          {/* Image Container */}
+          <motion.div
+            initial={{scale: 0.9}}
+            animate={{scale: 1}}
+            transition={{duration: 0.3}}
             className="w-3/4 md:w-3/4 lg:w-1/2 h-3/4 relative mb-17.5"
           >
-            <Image 
-              src={images[currentImageIndex].src} 
-              fill={true} 
+            <Image
+              src={images[currentImageIndex].src}
+              fill={true}
               alt={`${data.title} - Image ${currentImageIndex + 1}`}
-              className="object-contain rounded-lg" 
+              className="object-contain rounded-lg"
             />
           </motion.div>
-        
-          <motion.div 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className='text-white absolute bottom-14'
+
+          <motion.div
+            initial={{y: 20, opacity: 0}}
+            animate={{y: 0, opacity: 1}}
+            transition={{delay: 0.2}}
+            className="text-white absolute bottom-14"
           >
-            <p className="text-center font-semibold">{data.title}</p>
-            {getCaption(currentImageIndex) && (
-              <p className="text-center">
-                {`${data.location} • ${formatDateRange(data.start_date, data.end_date)} • $${data.price.toLocaleString()} / month`}
-              {data.priceNotes && ` - ${data.priceNotes}`}
-              </p>
-            )}
+            <p className="text-center font-semibold">{getCaption(currentImageIndex)}</p>
           </motion.div>
         </motion.div>
       )}

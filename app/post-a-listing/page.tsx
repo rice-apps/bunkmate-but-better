@@ -65,6 +65,7 @@ const PostListing = () => {
   const {formData, setFormData, resetFormData} = useContext(PostListingFormContext);
   const [isOpen, setIsOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
 
   const isComplete = Boolean(
     formData.title.length >= 1 &&
@@ -78,6 +79,7 @@ const PostListing = () => {
   );
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setIsPosting(true);
     e.preventDefault();
     const supabase = createClient();
     const userId = (await supabase.auth.getUser()).data.user?.id;
@@ -271,7 +273,15 @@ const PostListing = () => {
           />
         );
       case "profile":
-        return <Profile formData={formData} setFormData={setFormData} onBack={handlePreviousCategory} />;
+        return (
+          <Profile
+            formData={formData}
+            setFormData={setFormData}
+            onBack={handlePreviousCategory}
+            isPosting={isPosting}
+            handleSubmit={handleSubmit}
+          />
+        );
       default:
         return <TitleDescription formData={formData} setFormData={setFormData} onNext={handleNextCategory} />;
     }
@@ -397,7 +407,7 @@ const PostListing = () => {
                       className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
                         isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
                       }`}
-                      disabled={!isComplete}
+                      disabled={!isComplete || isPosting}
                       onClick={e => handleSubmit(e)}
                     >
                       <p>Post</p>
