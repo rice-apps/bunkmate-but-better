@@ -82,7 +82,7 @@ const MeetSubleaser: React.FC<MeetSubleaserProps> = ({ data }) => {
             className='flex flex-col'
           >
             <div className='flex flex-col pb-4 border-b mb-4'>
-              <h1 className='text-lg font-semibold mb-[2.27px] mr-14 sm:mr-20'>
+              <h1 className='text-[22px] font-semibold mb-[2.27px] mr-14 sm:mr-20'>
                 {data.user?.full_name || 'Anonymous'}
               </h1>
               {data.user?.is_rice_student && (
@@ -101,12 +101,12 @@ const MeetSubleaser: React.FC<MeetSubleaserProps> = ({ data }) => {
             <div className='flex flex-col gap-[5.69px]'>
               <div className='flex flex-row gap-[18.7px] items-center'>
                 <FaPhoneAlt className='w-4 h-4' fill='#777777'/>
-                <p className='text-xs text-gray-400'>{data.phone_number}</p>
+                <p className='text-base text-gray-500'>{data.phone_number}</p>
               </div>
               {data.user?.email && (
                 <div className='flex flex-row gap-[18.7px] items-center'>
                   <IoMail className='w-4 h-4' fill='#777777'/>
-                  <p className='text-xs text-gray-400'>{data.user.email}</p>
+                  <p className='text-base text-gray-500'>{data.user.email}</p>
                 </div>
               )}
             </div>
@@ -125,7 +125,7 @@ const MeetSubleaser: React.FC<MeetSubleaserProps> = ({ data }) => {
             className='rounded-lg px-3 py-2 bg-[#FF7439] flex flex-row items-center gap-2 hover:cursor-pointer duration-300'
           >
             <FaPhoneAlt className='w-4 h-4' fill='white'/>
-            <p className='text-xs font-medium text-white'>
+            <p className='text-[14px] font-medium text-white'>
               {copyStatus === 'phone' ? 'Copied!' : 'Copy Phone'}
             </p>
           </motion.button>
@@ -138,7 +138,7 @@ const MeetSubleaser: React.FC<MeetSubleaserProps> = ({ data }) => {
               className='rounded-lg px-3 py-2 bg-[#FF7439] flex flex-row items-center gap-2 hover:cursor-pointer duration-300'
             >
               <IoMail className='w-4 h-4' fill='white'/>
-              <p className='text-xs font-medium text-white'>
+              <p className='text-[14px] font-medium text-white'>
                 {copyStatus === 'email' ? 'Copied!' : 'Copy Email'}
               </p>
             </motion.button>
