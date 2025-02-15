@@ -80,9 +80,15 @@ const ListingCard: React.FC<CardProps> = ({
     }
   };
 
+
   const handleCardClick = () => {
-    router.push(`/listing/${postId}`);
+    // Passing the favorites.
+    const url = `/listing/${postId}?isFavorited=${favorite.toString()}`;
+    router.push(url);
   };
+  
+  
+
 
   const handleDelete = async () => {
     setIsModalOpen(false);

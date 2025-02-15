@@ -6,22 +6,8 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { FaHeart } from "react-icons/fa6";
 import { Button } from "./ui/button";
+import { createClient } from "@/utils/supabase/client";
 
-interface ListingData {
-  id: number;
-  title: string;
-  address: string;
-  description: string;
-  duration_notes: string;
-  end_date: string;
-  start_date: string;
-  image_paths: string[];
-  phone_number: string;
-  price: number;
-  price_notes: string;
-  created_at: string;
-  user_id: string;
-}
 
 interface ImageData {
   src: string;
@@ -38,6 +24,7 @@ interface ListingProps {
     price: number;
     location: string;
     imagePaths: string[];
+    isFavorited: boolean;
     captions: {
       [key: number]: string;
     };
@@ -56,10 +43,34 @@ interface ListingProps {
   isPreview?: boolean;
 }
 
+interface CardProps {
+  postId: string;
+  name: string;
+  imagePath: string;
+  distance: string;
+  duration: string;
+  price: string;
+  isRiceStudent: boolean;
+  isFavorited: boolean;
+  ownListing: boolean;
+}
+
+interface CardProps {
+  postId: string;
+  name: string;
+  imagePath: string;
+  distance: string;
+  duration: string;
+  price: string;
+  isRiceStudent: boolean;
+  isFavorited: boolean;
+  ownListing: boolean;
+}
+
 const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps) => {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isFavorited, setIsFavorited] = useState(false);
+  const [favorite, setFavorite] = useState(data.isFavorited);
   const [images, setImages] = useState<ImageData[]>([]);
   // TODO: Fetch image captions from Supabase
   useEffect(() => {
@@ -131,9 +142,33 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
     setCurrentImageIndex(prevIndex => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
   };
 
-  const toggleFavorite = () => {
-    setIsFavorited(!isFavorited);
-    // TODO: Add API call to update favorite status in Supabase
+  const toggleFavorite = async () => {
+      // Added API call to modify isFavorited 
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+  
+      try {
+        if (favorite) {
+          await supabase
+            .from("users_favorites")
+            .delete()
+            .eq("user_id", user?.id)
+            .eq("listing_id", data.id);
+
+        } else {
+          await supabase.from("users_favorites").insert({
+            user_id: user?.id,
+            listing_id: data.id,
+          });
+        }
+  
+        setFavorite(!favorite);
+      } catch (error) {
+        alert("Failed to favorite/unfavorite a listing");
+      }
+    
   };
 
   const formatDateRange = (startDate: string, endDate: string) => {
@@ -172,7 +207,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           <motion.div whileHover={{scale: 1.1}} whileTap={{scale: 0.9}}>
             <FaHeart
               className="ml-3 cursor-pointer w-6 h-6 duration-300"
-              fill={isFavorited ? "#FF7439" : "gray"}
+              fill={favorite ? "#FF7439" : "gray"}
               onClick={toggleFavorite}
             />
           </motion.div>
