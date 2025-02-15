@@ -85,7 +85,7 @@ const PreviewPage = () => {
               start_date: formData.startDate,
               end_date: formData.endDate,
               durationNotes: formData.durationNotes,
-              distance: "2 miles away",
+              distance: 2,
               location: formData.address.label,
               bed_num: formData.bed_num,
               bath_num: formData.bath_num,
@@ -109,14 +109,9 @@ const PreviewPage = () => {
         </div>
 
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogHeader>
-            <DialogTitle>Preview Dialog</DialogTitle>
-          </DialogHeader>
           <DialogContent className="w-fit">
             <div className="px-10 py-6 flex flex-col gap-6">
-              <h1 className="text-xl flex text-center items-center">
-                You're entering <p className="font-bold">&nbsp;Preview Mode</p>
-              </h1>
+              <DialogTitle className="font-normal text-xl flex text-center items-center">You're entering <p className="font-bold">&nbsp;Preview Mode</p></DialogTitle>
 
               <p>Take a look at what your listing will look like once it’s posted.</p>
               <p className="flex items-end whitespace-nowrap">
