@@ -181,7 +181,7 @@ export default function Index() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="flex flex-col text-left sm:items-start gap-4"
+                className="mt-4 flex flex-col text-left sm:items-start gap-4"
               >
                 <h1 className="text-left text-3xl font-semibold">Profile</h1>
                 <h1 className="text-left text-sm mb-2">
@@ -190,7 +190,7 @@ export default function Index() {
                 </h1>
               </motion.div>
               <div>
-              <div className='flex flex-row justify-between mt-[3vh]'>
+              <div className='mt-4 flex flex-row justify-between mt-[3vh]'>
                 <h1 className="text-left text-[24px] text-#000000 font-medium">Your Profile Information</h1>
                 
                 <div className='flex flex-row gap-[20px]'>
