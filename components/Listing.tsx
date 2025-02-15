@@ -164,7 +164,7 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
         transition={{duration: 0.5, delay: 0.2}}
         className="mb-6 w-full"
       >
-        <div className="flex items-center mb-2">
+        <div className="flex items-center mt-4 mb-2">
           <h1 className="text-4xl font-semibold">{data.title}</h1>
           <motion.div whileHover={{scale: 1.1}} whileTap={{scale: 0.9}}>
             <FaHeart
