@@ -16,23 +16,6 @@ interface UserData {
   affiliation: string | null;
 }
 
-interface FormData {
-  [key: string]: any;
-  title: string;
-  description: string;
-  price: number;
-  priceNotes: string;
-  startDate: string;
-  endDate: string;
-  durationNotes: string;
-  address: string;
-  locationNotes: string;
-  photos: string[];
-  photoLabels: string[];
-  affiliation: string;
-  phone: string;
-}
-
 const PreviewPage = () => {
   const supabase = createClient();
   const {formData} = useContext(PostListingFormContext);

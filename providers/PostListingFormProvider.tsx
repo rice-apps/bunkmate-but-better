@@ -17,7 +17,7 @@ export const defaultFormData = {
   startDate: "",
   endDate: "",
   durationNotes: "",
-  address: {label: ""},
+  address: {label: "", value: {description: ""}},
   locationNotes: "",
   photos: [],
   rawPhotos: [],

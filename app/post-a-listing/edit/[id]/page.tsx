@@ -111,7 +111,7 @@ const EditListing = () => {
             startDate: listingData.start_date || '',
             endDate: listingData.end_date || '',
             durationNotes: listingData.duration_notes || '',
-            address: listingData.address || {label: ''},
+            address: {label: listingData.address, value: {description: listingData.address}},
             locationNotes: listingData.location_notes || '',
             photos: [],
             rawPhotos: [],
@@ -314,7 +314,7 @@ const EditListing = () => {
     {
       id: 'location',
       name: 'Location',
-      completed: Boolean(formData.address)
+      completed: Boolean(formData.address.label)
     },
     {
       id: 'duration',
