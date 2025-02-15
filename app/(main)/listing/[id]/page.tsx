@@ -3,9 +3,9 @@
 import Listing from "@/components/Listing";
 import ListingDescription from "@/components/ListingDescription";
 import MeetSubleaser from "@/components/MeetSubleaser";
-import {createClient, getImagePublicUrl} from "@/utils/supabase/client";
-import {useParams} from "next/navigation";
-import {useEffect, useState} from "react";
+import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface UserData {
   id: string;
@@ -40,6 +40,7 @@ const ListingPage = () => {
   const params = useParams();
   const listingId = params.id as string;
   const [listing, setListing] = useState<ListingData | null>(null);
+  const [captions, setCaptions] = useState<{[key: number]: string}>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
@@ -77,8 +78,21 @@ const ListingPage = () => {
         if (queryError) throw queryError;
         if (!data) throw new Error("No listing found");
 
-        console.log("Fetched data:", data); // For debugging
         setListing(data);
+
+        const {data: captionData, error: captionError} = await supabase
+          .from("images_captions")
+          .select("*")
+          .in("image_path", data.image_paths);
+        if (captionError) throw captionError;
+        const captions = captionData?.reduce((acc, cur) => {
+          const index = data.image_paths.indexOf(cur.image_path);
+          acc[index] = cur.caption;
+          return acc;
+        }, {});
+        setCaptions(captions);
+
+        
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Failed to load listing";
         setError(errorMessage);
@@ -145,6 +159,7 @@ const ListingPage = () => {
           phoneNumber: listing.phone_number,
           durationNotes: listing.duration_notes,
           priceNotes: listing.price_notes,
+          captions: captions,
           user: listing.user
             ? {
                 fullName: listing.user.name,
