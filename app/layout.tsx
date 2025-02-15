@@ -20,7 +20,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
       <body className={`${dmsans.className} bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <PostListingFormProvider>
-            <main className="min-h-screen flex flex-col items-center" style={{width: "90%", margin: "0 auto"}}>{children}</main>
+            <main className="min-h-screen flex flex-col items-center">{children}</main>
           </PostListingFormProvider>
         </ThemeProvider>
       </body>

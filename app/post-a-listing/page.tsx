@@ -339,7 +339,7 @@ const PostListing = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-white">
+    <div className="min-h-screen w-[90%] mx-auto bg-white">
       < Navbar includeFilter={false} includePostBtn={false}/>
 
       {/* Main Content */}

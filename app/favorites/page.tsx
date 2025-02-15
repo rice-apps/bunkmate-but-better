@@ -172,8 +172,9 @@ export default function Favorites() {
     </motion.div>
   );
 
+  
   return (
-    <div className="mb-20 w-full">
+    <div className="mb-20 w-[90%] mx-auto">
       <Navbar />
       <div className="mx-auto py-0 w-full">
         <motion.div 
