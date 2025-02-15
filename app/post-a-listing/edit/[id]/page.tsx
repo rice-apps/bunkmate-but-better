@@ -85,6 +85,21 @@ const EditListing = () => {
         if (queryError) throw queryError;
         if (!listingData) throw new Error('No listing found');
 
+        const { data: captionData, error: captionError } = await supabase
+          .from("images_captions")
+          .select("*")
+          .in("image_path", listingData.image_paths);
+
+        if (captionError) throw captionError;
+
+        // Adjust caption indexes to start at 100 for existing images
+        const captions = captionData?.reduce((acc, cur) => {
+          const index = listingData.image_paths.indexOf(cur.image_path);
+          acc[index + 100] = cur.caption; // Add 100 to index to match Photos component
+          return acc;
+        }, {});
+        console.log(captions);
+
         // Verify user owns this listing
         if (listingData.user_id !== authData.user.id) {
           // If not, route to profile-section
@@ -111,17 +126,19 @@ const EditListing = () => {
             startDate: listingData.start_date || '',
             endDate: listingData.end_date || '',
             durationNotes: listingData.duration_notes || '',
-            address: {label: listingData.address, value: {description: listingData.address}},
+            address: { label: listingData.address, value: { description: listingData.address } },
             locationNotes: listingData.location_notes || '',
             photos: [],
             rawPhotos: [],
-            photoLabels: {},
+            photoLabels: captions || {},
             imagePaths: listingData.image_paths || [],
+            removedImagePaths: [],
             affiliation: userData.affiliation || '',
             phone: listingData.phone_number || listingData.user?.phone || '',
             bed_num: listingData.bed_num || 0,
             bath_num: listingData.bath_num || 0,
           });
+          console.log(listingData.image_paths);
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load data';
@@ -155,29 +172,50 @@ const EditListing = () => {
     setIsPosting(true);
     e.preventDefault();
 
-    // const userId = (await supabase.auth.getUser()).data.user?.id;
-    // const insertions: ImagePromiseType[] = [];
-
-    // // Cache the name of our file paths.
-    // const filePaths: string[] = [];
-
-    // formData.photos.forEach((photo) => {
-    //   const filePath = `${userId}/${v4()}`;
-    //   const insertion = supabase.storage.from('listing_images').upload(filePath, photo);
-    //   insertions.push(insertion);
-    //   filePaths.push(filePath);
-    // });
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+    const insertions: ImagePromiseType[] = [];
+    let newImagePaths: string[] = [...formData.imagePaths];
 
     try {
-      // // Handle image uploads
-      // const imageUploads = await Promise.all(insertions);
-      // const successfulUploads = imageUploads.filter((imageUploads) => imageUploads.data);
-      // if (successfulUploads.length != filePaths.length) {
-      //   const successfulFilePaths = successfulUploads.map((imgResp: ImageResponse) => imgResp.data?.path);
-      //   throw new Error('Some image(s) failed to upload', { cause: successfulFilePaths });
-      // }
+      // First, remove all existing captions for both current and removed images
+      const allAffectedPaths = [...formData.imagePaths, ...formData.removedImagePaths];
+      if (allAffectedPaths.length > 0) {
+        const { error: deleteCaptionsError } = await supabase
+          .from('images_captions')
+          .delete()
+          .in('image_path', allAffectedPaths);
 
-      // Update the listing
+        if (deleteCaptionsError) {
+          throw new Error(`Error removing existing captions: ${deleteCaptionsError.message}`);
+        }
+      }
+
+      // Upload new photos if any
+      if (formData.rawPhotos.length > 0) {
+        formData.rawPhotos.forEach(photo => {
+          const filePath = `${userId}/${v4()}`;
+          const insertion = supabase.storage.from("listing_images").upload(filePath, photo);
+          insertions.push(insertion);
+        });
+
+        try {
+          const imageUploads = await Promise.all(insertions);
+          const successfulUploads = imageUploads.filter(upload => upload.data);
+
+          if (successfulUploads.length !== formData.rawPhotos.length) {
+            throw new Error('Some image(s) failed to upload');
+          }
+
+          // Add new file paths to the existing ones
+          const uploadedPaths = successfulUploads.map(upload => upload.data!.path);
+          newImagePaths = [...formData.imagePaths, ...uploadedPaths];
+        } catch (error) {
+          console.error('Error uploading new images:', error);
+          return;
+        }
+      }
+
+      // Update the listing with all fields including new image paths
       const { error: updateError } = await supabase
         .from('listings')
         .update({
@@ -189,9 +227,9 @@ const EditListing = () => {
           start_date: formData.startDate,
           end_date: formData.endDate,
           duration_notes: formData.durationNotes,
-          address: formData.address,
+          address: formData.address.label,
           location_notes: formData.locationNotes,
-          // image_paths: filePaths, // Commented out for now
+          image_paths: newImagePaths,
           bed_num: formData.bed_num,
           bath_num: formData.bath_num,
         })
@@ -201,50 +239,57 @@ const EditListing = () => {
         throw new Error(`Failed to update listing: ${updateError.message}`);
       }
 
-      // // Handle image captions
-      // const imageCaptions = filePaths.map((path, index) => ({
-      //   user_id: userId,
-      //   image_path: path,
-      //   caption: formData.photoLabels[index] || '',
-      // }))
+      // Handle image captions for new uploads
+      if (formData.photoLabels && Object.keys(formData.photoLabels).length > 0) {
+        const newCaptions = newImagePaths.map((path, index) => {
+          // Get caption from either existing (index + 100) or new (index)
+          const caption = formData.photoLabels[index + 100] || formData.photoLabels[index] || '';
+          return {
+            user_id: userId,
+            image_path: path,
+            caption: caption,
+          };
+        });
 
-      // const { error: captionError } = await supabase
-      //   .from('images_captions')
-      //   .insert(imageCaptions)
-      //   .select();
-      // if (captionError) {
-      //   throw new Error(captionError.message, { cause: filePaths });
-      // }
+        if (newCaptions.length > 0) {
+          const { error: captionError } = await supabase
+            .from('images_captions')
+            .insert(newCaptions);
 
-      // Update user affiliation if changed
-      const { data: authData } = await supabase.auth.getUser();
-      if (!authData.user) throw new Error('Not authenticated');
+          if (captionError) {
+            console.error('Error updating captions:', captionError);
+          }
+        }
+      }
 
+      // Remove deleted images from storage
+      if (formData.removedImagePaths.length > 0) {
+        const { error: removingError } = await supabase
+          .storage
+          .from('listing_images')
+          .remove(formData.removedImagePaths);
+
+        if (removingError) {
+          throw new Error(`Error removing images: ${removingError.message}`);
+        }
+      }
+
+      // Update user affiliation
       const { error: userError } = await supabase
         .from('users')
-        .update({
-          affiliation: formData.affiliation,
-        })
-        .eq('id', authData.user.id);
+        .update({ affiliation: formData.affiliation })
+        .eq('id', userId);
 
       if (userError) {
         throw new Error(`Failed to update user: ${userError.message}`);
       }
 
-      // Redirect on success
       router.push('/profile-section');
+    } catch (error: any) {
+      console.error('Error updating listing:', error.message);
+    } finally {
+      setIsPosting(false);
     }
-    catch (error: any) {
-      //revert all uploads
-      console.error(error.message);
-      // await cleanupUploads(error.cause);
-    }
-
-    // async function cleanupUploads(paths: string[]) {
-    //   const supabase = createClient();
-    //   await supabase.storage.from('listing_images').remove(paths);
-    //   await supabase.from('images_captions').delete().in('image_path', paths);
-    // }
   };
 
   const renderComponent = () => {
@@ -324,7 +369,7 @@ const EditListing = () => {
     {
       id: 'photos',
       name: 'Photos',
-      completed: formData.photos.length >= 1
+      completed: formData.photos.length + formData.imagePaths.length >= 5
     },
     {
       id: 'profile',

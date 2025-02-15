@@ -29,6 +29,7 @@ export interface FormDataType {
   rawPhotos: File[];
   photoLabels: {[key: number]: string};
   imagePaths: string[];
+  removedImagePaths: string[];
   affiliation: string;
   phone: string;
   bed_num: number;

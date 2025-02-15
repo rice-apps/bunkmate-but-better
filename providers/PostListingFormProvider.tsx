@@ -23,6 +23,7 @@ export const defaultFormData = {
   rawPhotos: [],
   photoLabels: {},
   imagePaths: [],
+  removedImagePaths: [],
   affiliation: "rice",
   phone: "",
   bed_num: 0,
