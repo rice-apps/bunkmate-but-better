@@ -1,9 +1,11 @@
 "use client";
-import React, {useState, useEffect} from "react";
+import { getImagePublicUrl } from "@/utils/supabase/client";
+import { motion } from "framer-motion";
 import Image from "next/image";
-import {FaHeart} from "react-icons/fa6";
-import {getImagePublicUrl} from "@/utils/supabase/client";
-import {motion} from "framer-motion";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { FaHeart } from "react-icons/fa6";
+import { Button } from "./ui/button";
 
 interface ListingData {
   id: number;
@@ -51,9 +53,10 @@ interface ListingProps {
       isRiceStudent: boolean;
     } | null;
   };
+  isPreview?: boolean;
 }
 
-const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
+const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps) => {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
@@ -151,11 +154,11 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className='w-full'
+    <motion.div
+      initial={{opacity: 0, y: 20}}
+      animate={{opacity: 1, y: 0}}
+      transition={{duration: 0.5}}
+      className="w-full"
     >
       {/* Header Section */}
       <motion.div
@@ -164,7 +167,7 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
         transition={{duration: 0.5, delay: 0.2}}
         className="mb-6 w-full"
       >
-        <div className="flex items-center mt-4 mb-2">
+        <div className="flex items-center mt-4 mb-2 w-full">
           <h1 className="text-4xl font-semibold">{data.title}</h1>
           <motion.div whileHover={{scale: 1.1}} whileTap={{scale: 0.9}}>
             <FaHeart
@@ -173,6 +176,17 @@ const Listing: React.FC<ListingProps> = ({data}: ListingProps) => {
               onClick={toggleFavorite}
             />
           </motion.div>
+
+          {isPreview && (
+            <div className="ml-auto flex gap-2">
+              <Link href={`/post-a-listing`}>
+                <Button className="rounded-lg px-6 flex items-center bg-[#777777] hover:bg-[#777777]/90">
+                  <Image src="/edit-icon.png" alt="Edit" width={16} height={16} className="" />
+                  BACK TO LISTING EDITOR
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
         <p className="text-gray-600">
           {`${formatDateRange(data.start_date, data.end_date)}  • $${data.price.toLocaleString()} / month`}
