@@ -201,7 +201,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
         transition={{duration: 0.5, delay: 0.4}}
         className="relative w-full h-[500px] grid grid-cols-1 lg:grid-cols-8 gap-2 mb-8"
       >
-        {images.map((image, index) => (
+        {images.slice(0, 5).map((image, index) => (
           <motion.div
             key={index}
             initial={{opacity: 0}}

@@ -70,7 +70,7 @@ const Pricing = ({
         <div className="relative">
           <Textarea
             placeholder="Ex: Parking spot prices, willing to negotiate rent..."
-            value={formData.specialNotes}
+            value={formData.priceNotes}
             onChange={handlePriceNotesChange}
             maxLength={500}
             className="min-h-[150px] rounded-xl border border-gray-200 resize-none placeholder:text-gray-400 py-3"

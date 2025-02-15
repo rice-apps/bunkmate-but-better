@@ -1,17 +1,11 @@
 "use client";
 
+import Navbar from "@/components/Navbar";
 import {Button} from "@/components/ui/button";
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {PostListingFormContext} from "@/providers/PostListingFormProvider";
 import {createClient} from "@/utils/supabase/client";
-import Image from "next/image";
-import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {useContext, useMemo, useState} from "react";
-import {CgProfile} from "react-icons/cg";
-import {FaHeart, FaPlus, FaTimes} from "react-icons/fa";
-import {MdHome} from "react-icons/md";
-import {RxHamburgerMenu} from "react-icons/rx";
 import {v4} from "uuid";
 import CategoryStatusIndicator from "./CategoryStatusIndicator";
 import Duration from "./Duration";
@@ -19,7 +13,6 @@ import Location from "./Location";
 import Photos from "./Photos";
 import Pricing from "./Pricing";
 import Profile from "./Profile";
-import Navbar from "@/components/Navbar";
 import TitleDescription from "./TitleDescription";
 
 export interface FormDataType {
@@ -30,11 +23,13 @@ export interface FormDataType {
   startDate: string;
   endDate: string;
   durationNotes: string;
-  address: {label: string};
+  address: {label: string; value: {description: string}};
   locationNotes: string;
   photos: string[];
   rawPhotos: File[];
   photoLabels: {[key: number]: string};
+  imagePaths: string[];
+  removedImagePaths: string[];
   affiliation: string;
   phone: string;
   bed_num: number;
@@ -70,12 +65,13 @@ const PostListing = () => {
     formData.title.length >= 1 &&
       formData.description.length >= 100 &&
       formData.price &&
-      formData.address &&
+      formData.address.label.length > 0 &&
       formData.startDate &&
       formData.endDate &&
       formData.photos.length >= 5 &&
       formData.phone,
   );
+  console.log(formData.address);
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setIsPosting(true);
@@ -301,7 +297,7 @@ const PostListing = () => {
       {
         id: "location",
         name: "Location",
-        completed: Boolean(formData.address),
+        completed: Boolean(formData.address.label),
       },
       {
         id: "duration",
@@ -350,7 +346,7 @@ const PostListing = () => {
 
   return (
     <div className="min-h-screen w-[90%] mx-auto bg-white">
-      < Navbar includeFilter={false} includePostBtn={false}/>
+      <Navbar includeFilter={false} includePostBtn={false} />
 
       {/* Main Content */}
       <div className={`mx-auto relative `}>
@@ -417,7 +413,12 @@ const PostListing = () => {
             </div>
 
             {/* Form Content */}
-            <div className="flex-1 md:pl-16 md:border-l border-gray-500 pb-8 pr-8"  style={{height: "85vh", overflowY: "auto"}}>{renderComponent()}</div>
+            <div
+              className="flex-1 md:pl-16 md:border-l border-gray-500 pb-8 pr-8"
+              style={{height: "85vh", overflowY: "auto"}}
+            >
+              {renderComponent()}
+            </div>
           </div>
         </div>
       </div>

@@ -9,23 +9,25 @@ interface FormContextType {
   resetFormData: () => void;
 }
 
-const defaultFormData = {
+export const defaultFormData = {
   title: "",
   description: "",
-  price: "",
+  price: 0,
   priceNotes: "",
   startDate: "",
   endDate: "",
   durationNotes: "",
-  address: "",
+  address: {label: "", value: {description: ""}},
   locationNotes: "",
   photos: [],
   rawPhotos: [],
   photoLabels: {},
+  imagePaths: [],
+  removedImagePaths: [],
   affiliation: "rice",
   phone: "",
-  bed_num: "",
-  bath_num: "",
+  bed_num: 0,
+  bath_num: 0,
 };
 
 export const PostListingFormContext = createContext<FormContextType>({

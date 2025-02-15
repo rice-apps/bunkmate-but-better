@@ -179,6 +179,7 @@ const ListingCard: React.FC<CardProps> = ({
                     <DropdownMenuItem
                       key={"edit"}
                       className="flex justify-left group"
+                      onClick={() => router.push(`/post-a-listing/edit/${postId}`)}
                     >
                       <MdEdit className="group-hover:text-[#FF7439]" />
                       <p className="group-hover:text-[#FF7439] text-left">
