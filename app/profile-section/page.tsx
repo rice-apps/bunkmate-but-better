@@ -20,7 +20,7 @@ import { MdLogout } from "react-icons/md";
 type Listing = {
   id: string;
   title: string;
-  distance: string;
+  distance: number;
   dates: string;
   price: number;
   location: string;
@@ -92,7 +92,8 @@ export default function Index() {
               end_date,
               price,
               image_paths,
-              address
+              address,
+              distance
               )
             `
           )
@@ -107,7 +108,7 @@ export default function Index() {
                 return {
                   id: favorite.listings.id,
                   title: favorite.listings.title,
-                  distance: "1.2 miles away",
+                  distance: favorite.listings.distance,
                   dates: `${new Date(favorite.listings.start_date).toLocaleDateString()} - ${new Date(favorite.listings.end_date).toLocaleDateString()}`,
                   price: favorite.listings.price,
                   location: favorite.listings.address,
@@ -137,7 +138,7 @@ export default function Index() {
                 return {
                   id: listing.id,
                   title: listing.title,
-                  distance: "1.2 miles away",
+                  distance: listing.distance,
                   dates: `${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`,
                   price: listing.price,
                   location: listing.address,

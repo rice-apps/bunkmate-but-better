@@ -22,7 +22,7 @@ interface CardProps {
   postId: string;
   name: string;
   imagePath: string;
-  distance: string;
+  distance: number;
   duration: string;
   price: string;
   isRiceStudent: boolean;
@@ -220,7 +220,7 @@ const ListingCard: React.FC<CardProps> = ({
             )}
           </div>
           <div className="space-y-1 text-gray-500 text-sm">
-            <p>{distance}</p>
+            <p>{distance} miles away from Rice</p>
             <p>{duration}</p>
             <p className="font-medium">{price}</p>
           </div>
