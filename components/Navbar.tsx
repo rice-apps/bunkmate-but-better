@@ -63,7 +63,12 @@ const ModularDropDown: React.FC<ModularDropDownProps> = ({ allOptions, title }) 
   );
 }
 
-const Navbar = () => {
+interface NavbarProps {
+  includeFilter?: boolean;
+  includePostBtn?: boolean;
+}
+
+const Navbar = ({includeFilter=true, includePostBtn=true}: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
@@ -78,7 +83,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className='my-10 md:px-8 items-center lg:px-20 xl:px-20 flex flex-row place-items-center w-screen justify-between'>
+    <div className='items-center flex flex-row place-items-center justify-between w-full' style={{height: "15vh"}} >
       {/* Logo */}
       <button className='hidden hide-logo:flex justify-center'>
         <Link href='/' className='flex flex-row gap-[8.33] place-items-center'>
@@ -87,7 +92,7 @@ const Navbar = () => {
         </Link>
       </button>
 
-      <div className="min-h-[78px] max-w-[780px] flex h-16 border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex-row place-items-center justify-between whitespace-nowrap mx-3">
+      {includeFilter && <div className="max-w-[780px] flex h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3">
         {/* Distance from Rice. */}
         <div className='ml-[10px] flex justify-center items-center flex-col border-r w-[212px]' >
           <div className = "text-left">
@@ -158,16 +163,16 @@ const Navbar = () => {
             className='hover:cursor-pointer h-[29px] w-[25px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105'
           />
         </button>
-      </div>
+      </div>}
 
       {/* ===== Right Section of Nav Bar */}
       {/* Post a Listing */}
-      <div className='justify-center items-center hidden hide-icons:flex hide-icons:flex-row gap-[25px] place-items-center'>
-        <Link href='/post-a-listing'>
+      <div className='flex justify-center items-center hidden hide-icons:flex hide-icons:flex-row gap-[25px] place-items-center items-center'>
+        {includePostBtn && <Link href='/post-a-listing'>
           <button className="py-2 px-7 bg-[#FF7439] hover:bg-[#BB5529] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-105 whitespace-nowrap">
             <p className="text-[15px] text-white font-semibold">Post a Listing</p>
           </button>
-        </Link>
+        </Link>}
         <Link href='/favorites' className="py-0 flex items-center">
           <button>
             <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[29px] h-[30px]" />
