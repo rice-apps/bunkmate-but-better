@@ -48,6 +48,7 @@ const EditListing = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
+  const [isPosting, setIsPosting] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -151,6 +152,7 @@ const EditListing = () => {
   );
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    setIsPosting(true);
     e.preventDefault();
 
     // const userId = (await supabase.auth.getUser()).data.user?.id;
@@ -285,7 +287,9 @@ const EditListing = () => {
         return <Profile
           formData={formData}
           setFormData={setFormData}
+          handleSubmit={handleSubmit}
           onBack={handlePreviousCategory}
+          isPosting={isPosting}
         />;
       default:
         return <TitleDescription
