@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import Image from 'next/image';
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { FaHeart, FaTimes } from "react-icons/fa";
@@ -18,23 +18,31 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from "@/utils/supabase/client";
+import { set } from 'date-fns';
 
 
 interface ModularDropDownProps {
   allOptions: string[];
   title: string;
+  value: string;
+  setValue: (value: string) => void;
 }
 
-const ModularDropDown: React.FC<ModularDropDownProps> = ({ allOptions, title }) => {
-  const [selectedOption, setSelectedOption] = useState(title);
+const ModularDropDown: React.FC<ModularDropDownProps> = ({ allOptions, title, value, setValue }) => {
 
   const MenuItem: React.FC<{ option: string }> = ({ option }) => {
     return (
       <>
-        <DropdownMenuItem key={option} onClick={() => setSelectedOption(option)} className="flex justify-center">
-          <p className='hover:text-[#FF7439] text-[16px] text-center'>{option}</p>
+        <DropdownMenuItem key={option} onClick={() => {
+          if (option === value) {
+            setValue(title);
+          } else {
+            setValue(option);
+          }
+        }} className="flex justify-center">
+          <p className={`${value === option && "text-[#FF7439] font-bold"} hover:text-[#FF7439] text-[16px] text-center cursor-pointer`}>{option}</p>
         </DropdownMenuItem>
       </>
     )
@@ -45,8 +53,8 @@ const ModularDropDown: React.FC<ModularDropDownProps> = ({ allOptions, title }) 
       <DropdownMenu key={title}>
         <DropdownMenuTrigger asChild>
           <button className='text-left'>
-            <p className={`text-[16px] ${selectedOption !== title ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}>
-              {selectedOption}
+            <p className={`text-[16px] ${value !== title ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}>
+              {value}
             </p>
           </button>
         </DropdownMenuTrigger>
@@ -74,13 +82,48 @@ const Navbar = ({includeFilter=true, includePostBtn=true}: NavbarProps) => {
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const supabase = createClient();
   const router = useRouter();
+  const distanceTitle = "Search Properties";
+  const [distance, setDistance] = useState(distanceTitle);
+  const searchParams = useSearchParams(); // Use useSearchParams
 
+  const pathname = usePathname();
+  
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     // Redirect to Sign-in page
     router.push("/sign-in");
   };
+
+    // Make sure the navbar reflects the search parameters even if you search from a different section
+    // like the profile section
+    useEffect(() => {
+      if (searchParams && searchParams.get('startDate')) {
+        setStartDate(new Date(searchParams.get('startDate')!));
+      }
+      if (searchParams && searchParams.get('endDate')) {
+        setEndDate(new Date(searchParams.get('endDate')!));
+      }
+      if (searchParams && searchParams.get('distance')) {
+        setDistance(searchParams.get('distance')!);
+      }
+    }, []);
+  
+    const handleFilterChange = () => {
+      const queryParams = new URLSearchParams();
+      if (distance !== distanceTitle) queryParams.set('distance', distance);
+      if (startDate) queryParams.set('startDate', startDate.toISOString());
+      if (endDate) queryParams.set('endDate', endDate.toISOString());
+  
+      const queryString = queryParams.toString();
+      router.push(`/?${queryString}`);
+    };
+  
+    useEffect(() => {
+      if (pathname === "/" || startDate != null || endDate != null || distance != "") {
+        handleFilterChange();
+      }
+    }, [startDate, endDate, distance])  
 
   return (
     <div className='items-center flex flex-row place-items-center justify-between w-full' style={{height: "15vh"}} >
@@ -97,7 +140,7 @@ const Navbar = ({includeFilter=true, includePostBtn=true}: NavbarProps) => {
         <div className='ml-[10px] flex justify-center items-center flex-col border-r w-[212px]' >
           <div className = "text-left">
             <p className='text-[14px] font-semibold text-[#777777]'> Distance from Rice </p>
-            <ModularDropDown allOptions={["< 1 mile", "< 3 miles", "< 5 miles", "> 5 miles"]} title={"Search Properties"} />
+            <ModularDropDown allOptions={["< 1 mile", "< 3 miles", "< 5 miles", "> 5 miles"]} title={distanceTitle} value={distance} setValue={setDistance} />
           </div>
         </div>
 
