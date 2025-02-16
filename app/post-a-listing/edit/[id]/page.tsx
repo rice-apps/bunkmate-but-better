@@ -22,6 +22,7 @@ import CategoryStatusIndicator from './../../CategoryStatusIndicator';
 import LoadingCircle from '@/components/LoadingCircle';
 import { FormDataType } from '../../page';
 import { defaultFormData } from '@/providers/PostListingFormProvider';
+import Navbar from '@/components/Navbar';
 
 type ImageResponse = {
   data: {
@@ -407,36 +408,19 @@ const EditListing = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-white">
+    <div className="min-h-screen w-[90%] mx-auto bg-white">
       {/* Navbar */}
-      <nav className="bg-white top-0 z-10 h-16 fixed w-full">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href='/'>
-            <div className="flex items-center space-x-2">
-              <Image src="/bunkmate_logo.png" alt="Bunkmate" width={32} height={32} />
-              <span className="text-2xl text-[#FF7439] font-semibold">bunkmate</span>
-            </div>
-          </Link>
-          <div className="flex items-center space-x-4">
-            <Link href='/favorites'>
-              <FaHeart
-                className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 hover:cursor-pointer transition-transform duration-150 w-[35px] h-[31px]"
-              />
-            </Link>
-            <CgProfile className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 hover:cursor-pointer transition-transform duration-150 w-[35px] h-[31px]" />
-          </div>
-        </div>
-      </nav>
+      <Navbar includeFilter={false} includePostBtn={false} />
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 mt-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex gap-16">
+      <div className="mx-auto relative">
+        <div className="mx-auto">
+          <div className="flex flex-col md:flex-row gap-8 md:gap-24">
             {/* Sidebar */}
-            <div className='fixed'>
-              <div className="w-64 pr-16 h-svh">
-                <h1 className="text-2xl font-bold mb-10">Listing Editor</h1>
-                <div className="space-y-2">
+            <div>
+              <div className="w-full md:w-80 pr-0 h-auto mb-8 md:mb-0">
+                <h1 className="text-2xl font-bold mb-8">Listing Editor</h1>
+                <div className="space-y-3">
                   {categories.map((category) => (
                     <div
                       key={category.id}
@@ -446,14 +430,14 @@ const EditListing = () => {
                         }`}
                       onClick={() => setSelectedCategory(category.id)}
                     >
-                      <div className="mr-2">
+                      <div className="mr-3">
                         <CategoryStatusIndicator selected={selectedCategory === category.id} completed={category.completed} />
                       </div>
                       {category.name}
                     </div>
                   ))}
                   {/* Post Button */}
-                  <div className="flex items-center justify-center pt-12">
+                  <div className="flex items-center justify-center pt-12 gap-4">
                     <Button
                       className={`w-[5.3rem] rounded-lg px-6 flex items-center ${isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
                         }`}
@@ -475,7 +459,7 @@ const EditListing = () => {
                 </div>
               </> :
               <>
-                <div className="flex-1 ml-64 pl-16 border-l border-gray-500">
+                <div className="flex-1 md:pl-16 md:border-l border-gray-500 pb-8 pr-8" style={{height: "85vh", overflowY: "auto"}}>
                   {renderComponent()}
                 </div>
               </>}

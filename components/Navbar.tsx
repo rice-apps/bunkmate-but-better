@@ -120,10 +120,12 @@ const Navbar = ({includeFilter=true, includePostBtn=true}: NavbarProps) => {
     };
   
     useEffect(() => {
-      if (pathname === "/" || startDate != null || endDate != null || distance != "") {
+      if (pathname === "/" || startDate != null || endDate != null || distance != "Search Properties") {
+        console.log("HI")
+        console.log(pathname, startDate, endDate, distance);
         handleFilterChange();
       }
-    }, [startDate, endDate, distance])  
+     }, [startDate, endDate, distance])  
 
   return (
     <div className='items-center flex flex-row place-items-center justify-between w-full' style={{height: "15vh"}} >
