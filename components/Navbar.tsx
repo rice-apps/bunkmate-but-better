@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect } from 'react'
+import React, { Suspense, useEffect } from 'react'
 import Image from 'next/image';
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { FaHeart, FaTimes } from "react-icons/fa";
@@ -128,6 +128,7 @@ const Navbar = ({includeFilter=true, includePostBtn=true}: NavbarProps) => {
      }, [startDate, endDate, distance])  
 
   return (
+    <Suspense>
     <div className='items-center flex flex-row place-items-center justify-between w-full' style={{height: "15vh"}} >
       {/* Logo */}
       <button className='hidden hide-logo:flex justify-center'>
@@ -285,6 +286,7 @@ const Navbar = ({includeFilter=true, includePostBtn=true}: NavbarProps) => {
         </div> : null
       }
     </div>
+    </Suspense>
   )
 }
 

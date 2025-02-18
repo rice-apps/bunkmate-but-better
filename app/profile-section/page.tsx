@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import LoadingCircle from "@/components/LoadingCircle";
 import Link from 'next/link';
 import { RiPencilFill } from 'react-icons/ri';
@@ -165,7 +165,7 @@ export default function Index() {
   const router = useRouter();
 
   return (
-    <>
+    <Suspense>
       <motion.main 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -357,6 +357,6 @@ export default function Index() {
           {!profile && <LoadingCircle />}
         </div>
       </motion.main>
-    </>
+    </Suspense>
   );
 }

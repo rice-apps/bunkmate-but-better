@@ -5,7 +5,7 @@ import ListingDescription from "@/components/ListingDescription";
 import MeetSubleaser from "@/components/MeetSubleaser";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 interface UserData {
   id: string;
@@ -149,7 +149,7 @@ const ListingPage = () => {
   };
 
   return (
-    <>
+    <Suspense>
       <Listing
         data={{
           id: listing.id.toString(),
@@ -213,7 +213,7 @@ const ListingPage = () => {
           />
         </div>
       </div>
-    </>
+    </Suspense>
   );
 };
 

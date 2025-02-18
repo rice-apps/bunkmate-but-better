@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Input } from "@/components/ui/input";
 import { Upload, PencilIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -202,6 +202,7 @@ const EditProfile = () => {
   };
 
   return (
+    <Suspense>
     <motion.main 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -442,6 +443,7 @@ const EditProfile = () => {
         </DialogContent>
       </Dialog>
     </motion.main>
+    </Suspense>
   );
 };
 

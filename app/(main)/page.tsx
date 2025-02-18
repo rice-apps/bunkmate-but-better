@@ -1,8 +1,6 @@
-//(main)/page.tsx
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import ListingCard from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
@@ -164,7 +162,7 @@ export default function Index() {
   );
 
   return (
-    <>
+    <Suspense>
       <motion.main 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -220,6 +218,6 @@ export default function Index() {
           </Button>
         </motion.a>
       </motion.div>
-    </>
+    </Suspense>
   );
 }

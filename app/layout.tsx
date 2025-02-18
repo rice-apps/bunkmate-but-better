@@ -3,6 +3,7 @@ import {ThemeProvider} from "next-themes";
 import {DM_Sans} from "next/font/google";
 import "./globals.css";
 import PostListingFormProvider from "@/providers/PostListingFormProvider";
+import { Suspense } from "react";
 
 const defaultUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
 
@@ -16,6 +17,7 @@ const dmsans = DM_Sans({subsets: ["latin"]});
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   return (
+    <Suspense>
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
       <body className={`${dmsans.className} bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
@@ -24,6 +26,6 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           </PostListingFormProvider>
         </ThemeProvider>
       </body>
-    </html>
+    </html></Suspense>
   );
 }
