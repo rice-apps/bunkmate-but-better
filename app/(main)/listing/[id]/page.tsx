@@ -41,15 +41,15 @@ const ListingPage = () => {
   const params = useParams();
   const listingId = params.id as string;
   const [listing, setListing] = useState<ListingData | null>(null);
-  const [captions, setCaptions] = useState<{[key: number]: string}>({});
+  const [captions, setCaptions] = useState<{ [key: number]: string }>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
   // Grabbing the isFavorited value & converting from the URL of Listing.
   const searchParams = useSearchParams();
-  const isFavorited = searchParams?.get('isFavorited');
-  const isFavoritedValue = isFavorited === 'true';
+  const isFavorited = searchParams?.get("isFavorited");
+  const isFavoritedValue = isFavorited === "true";
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -62,7 +62,7 @@ const ListingPage = () => {
         }
 
         // Fetch listing with joined user data
-        const {data, error: queryError} = await supabase
+        const { data, error: queryError } = await supabase
           .from("listings")
           .select(
             `
@@ -76,7 +76,7 @@ const ListingPage = () => {
               profile_image_path,
               affiliation
             )
-          `,
+          `
           )
           .eq("id", listingId)
           .single();
@@ -86,7 +86,7 @@ const ListingPage = () => {
 
         setListing(data);
 
-        const {data: captionData, error: captionError} = await supabase
+        const { data: captionData, error: captionError } = await supabase
           .from("images_captions")
           .select("*")
           .in("image_path", data.image_paths);
@@ -97,10 +97,9 @@ const ListingPage = () => {
           return acc;
         }, {});
         setCaptions(captions);
-
-        
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "Failed to load listing";
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to load listing";
         setError(errorMessage);
 
         if (err) {
@@ -154,7 +153,7 @@ const ListingPage = () => {
         data={{
           id: listing.id.toString(),
           title: listing.title,
-          distance: "2 miles away",
+          distance: `${listing.distance} away`,
           start_date: listing.start_date,
           end_date: listing.end_date, // Use the new format
           price: listing.price,
@@ -202,11 +201,16 @@ const ListingPage = () => {
                 ? {
                     full_name: listing.user.name,
                     email: listing.user.email,
-                    profile_image_path: listing.user.profile_image_path || undefined,
+                    profile_image_path:
+                      listing.user.profile_image_path || undefined,
                     avatar_url: listing.user.profile_image_path
-                      ? getImagePublicUrl("profiles", listing.user.profile_image_path)
+                      ? getImagePublicUrl(
+                          "profiles",
+                          listing.user.profile_image_path
+                        )
                       : undefined,
-                    is_rice_student: listing.user.affiliation === "Rice Student",
+                    is_rice_student:
+                      listing.user.affiliation === "Rice Student",
                   }
                 : undefined,
             }}

@@ -4,7 +4,12 @@ import Listing from "@/components/Listing";
 import ListingDescription from "@/components/ListingDescription";
 import MeetSubleaser from "@/components/MeetSubleaser";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { PostListingFormContext } from "@/providers/PostListingFormProvider";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
@@ -21,14 +26,14 @@ interface UserData {
 
 const PreviewPage = () => {
   const supabase = createClient();
-  const {formData} = useContext(PostListingFormContext);
+  const { formData } = useContext(PostListingFormContext);
   const [user, setUser] = useState<UserData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(true);
 
   useEffect(() => {
     const loadUser = async () => {
       const {
-        data: {user},
+        data: { user },
       } = await supabase.auth.getUser();
 
       if (user) {
@@ -52,7 +57,7 @@ const PreviewPage = () => {
         data={{
           id: "0",
           title: formData.title,
-          distance: "2 miles away",
+          distance: "",
           start_date: formData.startDate,
           end_date: formData.endDate, // Use the new format
           price: formData.price,
@@ -72,6 +77,7 @@ const PreviewPage = () => {
                 isRiceStudent: true,
               }
             : null,
+          isFavorited: false,
         }}
         isPreview
       />
@@ -111,12 +117,20 @@ const PreviewPage = () => {
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="w-fit">
             <div className="px-10 py-6 flex flex-col gap-6">
-              <DialogTitle className="font-normal text-xl flex text-center items-center">You're entering <p className="font-bold">&nbsp;Preview Mode</p></DialogTitle>
+              <DialogTitle className="font-normal text-xl flex text-center items-center">
+                You're entering <p className="font-bold">&nbsp;Preview Mode</p>
+              </DialogTitle>
 
-              <p>Take a look at what your listing will look like once it’s posted.</p>
+              <p>
+                Take a look at what your listing will look like once it’s
+                posted.
+              </p>
               <p className="flex items-end whitespace-nowrap">
                 Click on the top right to go{" "}
-                <span className="text-[#777777] font-semibold">&nbsp;back to listing editor</span>.
+                <span className="text-[#777777] font-semibold">
+                  &nbsp;back to listing editor
+                </span>
+                .
               </p>
 
               <div className="flex justify-end space-x-4">
