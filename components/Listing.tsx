@@ -224,8 +224,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           )}
         </div>
         <p className="text-gray-600">
-          {`${formatDateRange(data.start_date, data.end_date)}  • $${data.price.toLocaleString()} / month`}
-          {data.priceNotes && ` - ${data.priceNotes}`}
+          {`${data.distance} from Rice  •  ${formatDateRange(data.start_date, data.end_date)}  •  $${data.price.toLocaleString()} / month`}
         </p>
       </motion.div>
 
