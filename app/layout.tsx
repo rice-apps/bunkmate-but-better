@@ -26,6 +26,6 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           </PostListingFormProvider>
         </ThemeProvider>
       </body>
-    </html></Suspense>
+    </html></Suspense> 
   );
 }
