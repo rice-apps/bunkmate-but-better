@@ -10,7 +10,7 @@ type DescriptionItemProps = {
 
 const DescriptionItem = ({ icon, title, description, delay = 0 }: DescriptionItemProps) => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, delay }}
@@ -51,13 +51,13 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className=""
     >
-      <motion.h1 
+      <motion.h1
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
@@ -65,44 +65,43 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
       >
         {data.location}
       </motion.h1>
-      <motion.p 
+      <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="text-gray-700 text-sm leading-relaxed mb-6 mt-4"
+        className="text-gray-700 text-sm leading-relaxed mt-4 mb-6 break-words"
       >
         {data.description}
       </motion.p>
-
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
         className="border-t pt-6"
       >
         <div className="space-y-6">
-          <DescriptionItem 
+          <DescriptionItem
             icon={<img src="/bed.svg" alt="Duration Icon" className="w-[40px] h-[40px]" />}
             title="# of Beds and Bathrooms"
             description={`${data.bed_num} beds, ${data.bath_num} bathrooms`}
             delay={0.5}
           />
 
-          <DescriptionItem 
+          <DescriptionItem
             icon={<img src="/solar_dollar-linear.svg" alt="Duration Icon" className="w-[40px] h-[40px]" />}
             title="Cost per month"
             description={`$${data.price.toLocaleString()} / month${data.priceNotes ? ` — ${data.priceNotes}` : ''}`}
             delay={0.5}
           />
 
-          <DescriptionItem 
+          <DescriptionItem
             icon={<img src="/bx_time-five.svg" alt="Duration Icon" className="w-[40px] h-[40px]" />}
             title="Duration being leased"
             description={`${formatDate(data.start_date)} to ${formatDate(data.end_date)}${data.durationNotes ? ` — ${data.durationNotes}` : ''}`}
             delay={0.6}
           />
 
-          <DescriptionItem 
+          <DescriptionItem
             icon={<img src="/mdi_location.svg" alt="Duration Icon" className="w-[40px] h-[40px]" />}
             title="Distance from Rice"
             description={`${data.distance} miles away`}
