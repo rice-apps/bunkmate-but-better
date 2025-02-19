@@ -123,6 +123,7 @@ const Profile = ({
             value={formData.affiliation}
             onValueChange={value => setFormData({...formData, affiliation: value})}
           >
+            <label className="block cursor-pointer">
             <div
               className={`flex items-center w-[23rem] space-x-2 p-4 rounded-xl border-2 
           ${
@@ -141,6 +142,8 @@ const Profile = ({
               />
               <label className="text-sm text-[#777777] font-medium">I am a Rice student</label>
             </div>
+            </label>
+            <label className="block cursor-pointer">
             <div
               className={`flex items-center w-[23rem] space-x-2 p-4 rounded-xl border-2 
           ${formData.affiliation === "alum" ? "border-[#FF7439] bg-[#FF7439]/30" : "border-[#B5B5B5] bg-gray-50"}`}
@@ -153,6 +156,7 @@ const Profile = ({
               />
               <label className="text-sm text-[#777777] font-medium">I am a Rice alum</label>
             </div>
+            </label>
           </RadioGroup>
         </div>
       </div>
