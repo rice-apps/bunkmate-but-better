@@ -93,7 +93,7 @@ export default function Favorites() {
               "listing_images",
               favorite.listings.image_paths[0]
             ),
-            renterType: "Rice Student",
+            renterType: favorite.listings.affiliation,
             isFavorite: true,
             image_paths: favorite.listings.image_paths
           };
