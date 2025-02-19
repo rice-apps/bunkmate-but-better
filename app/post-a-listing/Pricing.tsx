@@ -75,7 +75,7 @@ const Pricing = ({
             maxLength={500}
             className="min-h-[150px] rounded-xl border border-gray-200 resize-none placeholder:text-gray-400 py-3"
           />
-          <div className="flex justify-between mt-5 text-sm text-gray-400">
+          <div className="flex justify-end mt-5 text-sm text-gray-400">
             <span>
               <span className="text-gray-500 font-semibold">{formData.priceNotes.length}</span>
               /500 characters
