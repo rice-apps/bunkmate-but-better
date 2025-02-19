@@ -17,8 +17,7 @@ const PreviewButton = ({formData}: {formData: FormDataType}) => {
       variant="preview"
       className="text-gray-500 flex flex-row items-center gap-2"
       onClick={handlePreviewClick}
-      // Optionally disable preview if required fields aren't filled
-      disabled={!formData.title || !formData.description || formData.photos.length === 0}
+      disabled={!formData.title || !formData.description || !formData.price || !formData.startDate || !formData.endDate || !formData.address || !formData.bath_num ||  !formData.bed_num || !formData.phone || formData.photos.length === 0}
     >
       <FaEye />
       <span>PREVIEW LISTING</span>
