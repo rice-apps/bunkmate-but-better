@@ -82,7 +82,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
         <div className="space-y-6">
           <DescriptionItem
             icon={<img src="/bed.svg" alt="Duration Icon" className="w-[40px] h-[40px]" />}
-            title="# of Beds and Bathrooms"
+            title="# of Beds and Baths"
             description={`${data.bed_num} beds, ${data.bath_num} bathrooms`}
             delay={0.5}
           />
