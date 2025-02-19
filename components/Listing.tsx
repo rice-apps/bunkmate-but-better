@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { FaHeart } from "react-icons/fa6";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 
 interface ImageData {
@@ -72,6 +73,8 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [favorite, setFavorite] = useState(data.isFavorited);
   const [images, setImages] = useState<ImageData[]>([]);
+  const router = useRouter();
+
   // TODO: Fetch image captions from Supabase
   useEffect(() => {
     if (data?.imagePaths && data?.loadImages) {
@@ -214,12 +217,10 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
 
           {isPreview && (
             <div className="ml-auto flex gap-2">
-              <Link href={`/post-a-listing`}>
-                <Button className="rounded-lg px-6 flex items-center bg-[#777777] hover:bg-[#777777]/90">
-                  <Image src="/edit-icon.png" alt="Edit" width={16} height={16} className="" />
-                  BACK TO LISTING EDITOR
-                </Button>
-              </Link>
+              <Button className="rounded-lg px-6 flex items-center bg-[#777777] hover:bg-[#777777]/90" onClick={() => router.back()}>
+                <Image src="/edit-icon.png" alt="Edit" width={16} height={16} className="" />
+                BACK TO LISTING EDITOR
+              </Button>
             </div>
           )}
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useContext } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ import Duration from './../../Duration';
 import CategoryStatusIndicator from './../../CategoryStatusIndicator';
 import LoadingCircle from '@/components/LoadingCircle';
 import { FormDataType } from '../../page';
-import { defaultFormData } from '@/providers/PostListingFormProvider';
+import { defaultFormData, PostListingFormContext } from '@/providers/PostListingFormProvider';
 import Navbar from '@/components/Navbar';
 
 type ImageResponse = {
@@ -45,7 +45,7 @@ const EditListing = () => {
   const params = useParams();
   const listingId = params.id as string;
   const [selectedCategory, setSelectedCategory] = useState('title');
-  const [formData, setFormData] = useState<FormDataType>(defaultFormData);
+  const {formData, setFormData} = useContext(PostListingFormContext);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
@@ -116,6 +116,14 @@ const EditListing = () => {
           .single();
 
         if (userError) throw userError;
+        
+        // Convert image paths to public URLs
+        const publicUrls = await Promise.all(
+          listingData.image_paths.map(async (path: string) => {
+            const publicUrl = await getImagePublicUrl('listing_images', path);
+            return publicUrl;
+          })
+        );
 
         if (isMounted) {
           setFormData({
@@ -129,7 +137,7 @@ const EditListing = () => {
             durationNotes: listingData.duration_notes || '',
             address: { label: listingData.address, value: { description: listingData.address } },
             locationNotes: listingData.location_notes || '',
-            photos: [],
+            photos: publicUrls,
             rawPhotos: [],
             photoLabels: captions || {},
             imagePaths: listingData.image_paths || [],

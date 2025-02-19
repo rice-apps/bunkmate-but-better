@@ -13,6 +13,7 @@ import {
 import { PostListingFormContext } from "@/providers/PostListingFormProvider";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 
 interface UserData {
@@ -29,6 +30,7 @@ const PreviewPage = () => {
   const { formData } = useContext(PostListingFormContext);
   const [user, setUser] = useState<UserData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -134,14 +136,13 @@ const PreviewPage = () => {
               </p>
 
               <div className="flex justify-end space-x-4">
-                <Link href={`/post-a-listing`}>
-                  <Button
-                    variant="outline"
-                    className="rounded-lg px-6 flex items-center bg-white border border-[#777777] hover:bg-white/90 text-[#777777]"
-                  >
-                    Back to Editor
-                  </Button>
-                </Link>
+                <Button
+                  variant="outline"
+                  className="rounded-lg px-6 flex items-center bg-white border border-[#777777] hover:bg-white/90 text-[#777777]"
+                  onClick={() => router.back()}
+                >
+                  Back to Editor
+                </Button>
                 <Button
                   className="rounded-lg px-6 flex items-center bg-[#777777] hover:bg-[#777777]/90"
                   onClick={() => setIsModalOpen(false)}
