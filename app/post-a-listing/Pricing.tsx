@@ -76,9 +76,6 @@ const Pricing = ({
             className="min-h-[150px] rounded-xl border border-gray-200 resize-none placeholder:text-gray-400 py-3"
           />
           <div className="flex justify-between mt-5 text-sm text-gray-400">
-            <span className={formData.priceNotes.length >= 100 ? "text-green-500" : "text-gray-400"}>
-              {formData.priceNotes.length >= 100 ? "✓ Minimum reached" : "Minimum 100 characters"}
-            </span>
             <span>
               <span className="text-gray-500 font-semibold">{formData.priceNotes.length}</span>
               /500 characters

@@ -12,7 +12,7 @@ interface FormContextType {
 export const defaultFormData = {
   title: "",
   description: "",
-  price: 0,
+  price: NaN,
   priceNotes: "",
   startDate: "",
   endDate: "",
