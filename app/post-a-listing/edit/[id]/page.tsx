@@ -136,8 +136,8 @@ const EditListing = () => {
             removedImagePaths: [],
             affiliation: userData.affiliation || '',
             phone: listingData.phone_number || listingData.user?.phone || '',
-            bed_num: listingData.bed_num || 0,
-            bath_num: listingData.bath_num || 0,
+            bed_num: listingData.bed_num || NaN,
+            bath_num: listingData.bath_num || NaN,
           });
           console.log(listingData.image_paths);
         }
