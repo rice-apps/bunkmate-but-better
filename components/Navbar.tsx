@@ -110,7 +110,7 @@ const Navbar = ({includeFilter=true, includePostBtn=true}: NavbarProps) => {
     }, []);
   
     const handleFilterChange = () => {
-      const queryParams = new URLSearchParams();
+      const queryParams = new URLSearchParams(window.location.search);
       if (distance !== distanceTitle) queryParams.set('distance', distance);
       if (startDate) queryParams.set('startDate', startDate.toISOString());
       if (endDate) queryParams.set('endDate', endDate.toISOString());
