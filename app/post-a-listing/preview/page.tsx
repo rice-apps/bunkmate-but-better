@@ -39,7 +39,7 @@ const PreviewPage = () => {
       if (user) {
         setUser({
           id: user.id,
-          name: user.user_metadata.username,
+          name: user.user_metadata.name,
           email: user.email!,
           phone: user.phone || "",
           profile_image_path: user.user_metadata.avatar_url,
