@@ -37,6 +37,7 @@ export default function Index() {
     email: string;
     phone: string;
     image: string;
+    affiliation: 'student' | 'alum';
   } | null>();
   const [favoritelistings, setFavoriteListings] = useState<Listing[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
@@ -76,7 +77,8 @@ export default function Index() {
               username: data.data[0].name,
               email: data.data[0].email,
               phone: data.data[0].phone,
-              image: profileImageUrl
+              image: profileImageUrl,
+              affiliation: data.data[0].affiliation
             });
           });
         supabase
@@ -261,7 +263,7 @@ export default function Index() {
                           alt="owl"
                           className="w-5 h-5 scale-75"
                         />
-                        <p className="text-[#FF7439] text-sm">Rice Student</p>
+                        <p className="text-[#FF7439] text-sm">Rice {profile.affiliation == 'student' ? "Student" : "Alumni"}</p>
                       </div>
                     </div>
                   </div>
@@ -332,7 +334,7 @@ export default function Index() {
                   Your Listings
                 </h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                  {listings.map((listing) => (
+                  {listings.length > 0 ? listings.map((listing) => (
                     <div key={listing.id}>
                       <ListingCard
                         postId={listing.id}
@@ -348,7 +350,9 @@ export default function Index() {
                         onDelete={() => setReload(!reload)}
                       />
                     </div>
-                  ))}
+                  )) : (
+                    <div className="text-gray-400 italic mt-6">- No Listings Yet!</div>
+                  )}
                 </div>
               </motion.div>
             </motion.main>
