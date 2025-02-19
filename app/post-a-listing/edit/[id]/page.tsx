@@ -122,7 +122,7 @@ const EditListing = () => {
             // Listing data
             title: listingData.title || '',
             description: listingData.description || '',
-            price: listingData.price || 0,
+            price: listingData.price || NaN,
             priceNotes: listingData.price_notes || '',
             startDate: listingData.start_date || '',
             endDate: listingData.end_date || '',

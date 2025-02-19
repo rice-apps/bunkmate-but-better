@@ -189,7 +189,7 @@ const PostListing = () => {
     }
     try {
       //const RICE_ADDRESS = "6100 Main St, Houston, TX 77005";
-      const riceCoords = {lat: 29.716791450000002, dlon: -95.40478113393792};
+      const riceCoords = {lat: 29.716791450000002, lon: -95.40478113393792};
       const listingCoords = await geocodeAddress(address);
       if (!riceCoords || !listingCoords) {
         throw new Error("Could not geocode addresses");
