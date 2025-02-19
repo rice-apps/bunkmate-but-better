@@ -28,7 +28,7 @@ const EditProfile = () => {
     lastName: '',
     email: '',
     phone: '',
-    riceAffiliation: null as 'student' | 'alumni' | null,
+    riceAffiliation: null as 'student' | 'alum' | null,
     profileImage: ''
   });
 
@@ -50,7 +50,7 @@ const EditProfile = () => {
         if (data) {
           // Split name into first and last name
           const [firstName = '', lastName = ''] = data.name ? data.name.split(' ') : ['', ''];
-          
+          console.log("new data", data);
           setFormData(prev => ({
             ...prev,
             firstName,
@@ -104,6 +104,7 @@ const EditProfile = () => {
         .update({ 
           name: fullName,
           phone: formData.phone,
+          affiliation: formData.riceAffiliation,
         })
         .eq('id', user.data.user.id);
 
@@ -319,7 +320,9 @@ const EditProfile = () => {
             <RadioGroup 
               className="mt-8 space-y-1 w-3/5"
               value={formData.riceAffiliation || undefined}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, riceAffiliation: value as 'student' | 'alum' }))}
             >
+              <label className="block cursor-pointer">
               <div className="flex items-center space-x-2 border rounded-lg justify-center py-3">
                 <RadioGroupItem 
                   value="student" 
@@ -328,14 +331,17 @@ const EditProfile = () => {
                 />
                 <Label htmlFor="student" className="text-sm">I am a Rice Student</Label>
               </div>
+              </label>
+              <label className="block cursor-pointer">
               <div className="flex items-center space-x-2 border rounded-lg justify-center py-3">
                 <RadioGroupItem 
-                  value="alumni" 
-                  id="alumni"
+                  value="alum" 
+                  id="alum"
                   className="text-[#FF7439] border-[#FF7439] data-[state=checked]:bg-[#FF7439] data-[state=checked]:text-white"
                 />
-                <Label htmlFor="alumni" className="text-sm">I am a Rice alumni</Label>
+                <Label htmlFor="alum" className="text-sm">I am a Rice alumni</Label>
               </div>
+              </label>
             </RadioGroup>
           </motion.div>
         </div>

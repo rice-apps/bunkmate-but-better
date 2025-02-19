@@ -37,6 +37,7 @@ export default function Index() {
     email: string;
     phone: string;
     image: string;
+    affiliation: 'student' | 'alum';
   } | null>();
   const [favoritelistings, setFavoriteListings] = useState<Listing[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
@@ -76,7 +77,8 @@ export default function Index() {
               username: data.data[0].name,
               email: data.data[0].email,
               phone: data.data[0].phone,
-              image: profileImageUrl
+              image: profileImageUrl,
+              affiliation: data.data[0].affiliation
             });
           });
         supabase
@@ -261,7 +263,7 @@ export default function Index() {
                           alt="owl"
                           className="w-5 h-5 scale-75"
                         />
-                        <p className="text-[#FF7439] text-sm">Rice Student</p>
+                        <p className="text-[#FF7439] text-sm">Rice {profile.affiliation == 'student' ? "Student" : "Alumni"}</p>
                       </div>
                     </div>
                   </div>
