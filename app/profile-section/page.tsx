@@ -118,7 +118,7 @@ export default function Index() {
                     "listing_images",
                     favorite.listings.image_paths[0]
                   ),
-                  renterType: "Rice Student",
+                  renterType: favorite.listings.affiliation != 'student' ? "Rice Alumni" : "Rice Student",
                   isFavorite: true,
                   image_paths: favorite.listings.image_paths
                 };
@@ -150,7 +150,7 @@ export default function Index() {
                         listing.image_paths[0]
                       )
                     : "",
-                  renterType: "Rice Student",
+                  renterType: listing.affiliation != 'student' ? "Rice Alumni" : "Rice Student",
                   isFavorite: true,
                   image_paths: listing.image_paths
                 };
