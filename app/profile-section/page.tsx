@@ -334,7 +334,7 @@ export default function Index() {
                   Your Listings
                 </h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                  {listings.map((listing) => (
+                  {listings.length > 0 ? listings.map((listing) => (
                     <div key={listing.id}>
                       <ListingCard
                         postId={listing.id}
@@ -350,7 +350,9 @@ export default function Index() {
                         onDelete={() => setReload(!reload)}
                       />
                     </div>
-                  ))}
+                  )) : (
+                    <div className="text-gray-400 italic mt-6">- No Listings Yet!</div>
+                  )}
                 </div>
               </motion.div>
             </motion.main>
