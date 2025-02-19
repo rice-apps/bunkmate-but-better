@@ -26,8 +26,8 @@ export const defaultFormData = {
   removedImagePaths: [],
   affiliation: "rice",
   phone: "",
-  bed_num: 0,
-  bath_num: 0,
+  bed_num: NaN,
+  bath_num: NaN,
 };
 
 export const PostListingFormContext = createContext<FormContextType>({
