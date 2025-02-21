@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
+import { PostgrestError } from '@supabase/supabase-js';
 import Listing from "@/components/Listing";
 import ListingDescription from "@/components/ListingDescription";
 import MeetSubleaser from "@/components/MeetSubleaser";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useParams, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 
 interface UserData {
   id: string;
@@ -37,7 +38,32 @@ interface ListingData {
   distance: number;
 }
 
-const ListingPage = () => {
+function isPostgrestError(error: unknown): error is PostgrestError {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    "details" in error &&
+    "hint" in error &&
+    "code" in error
+  );
+}
+
+function SearchParamsProvider({
+  onParamsChange
+}: {
+  onParamsChange: (params: ReturnType<typeof useSearchParams>) => void;
+}) {
+  const searchParams = useSearchParams();
+  
+  useEffect(() => {
+    onParamsChange(searchParams);
+  }, [searchParams, onParamsChange]);
+
+  return null;
+}
+
+export default function Page() {
   const params = useParams();
   const listingId = params.id as string;
   const [listing, setListing] = useState<ListingData | null>(null);
@@ -45,8 +71,8 @@ const ListingPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
+  const [currentSearchParams, setCurrentSearchParams] = useState<ReturnType<typeof useSearchParams> | null>(null);
 
-  // Grabbing the isFavorited value & converting from the URL of Listing.
   const searchParams = useSearchParams();
   const isFavorited = searchParams?.get("isFavorited");
   const isFavoritedValue = isFavorited === "true";
@@ -61,11 +87,9 @@ const ListingPage = () => {
           throw new Error("No listing ID provided");
         }
 
-        // Fetch listing with joined user data
         const { data, error: queryError } = await supabase
-          .from("listings")
-          .select(
-            `
+          .from('listings')
+          .select(`
             *,
             user:users!user_id(
               id,
@@ -76,8 +100,7 @@ const ListingPage = () => {
               profile_image_path,
               affiliation
             )
-          `
-          )
+          `)
           .eq("id", listingId)
           .single();
 
@@ -90,25 +113,35 @@ const ListingPage = () => {
           .from("images_captions")
           .select("*")
           .in("image_path", data.image_paths);
+
         if (captionError) throw captionError;
-        const captions = captionData?.reduce((acc, cur) => {
+
+        const captionsMap = captionData?.reduce((acc, cur) => {
           const index = data.image_paths.indexOf(cur.image_path);
           acc[index] = cur.caption;
           return acc;
-        }, {});
-        setCaptions(captions);
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to load listing";
-        setError(errorMessage);
+        }, {} as { [key: number]: string });
 
-        if (err) {
-          console.warn("Supabase error:", err.message, err.details, err.hint);
+        setCaptions(captionsMap);
+      } catch (err: unknown) {
+        let errorMessage: string;
+
+        if (isPostgrestError(err)) {
+          console.warn("Supabase error:", {
+            message: err.message,
+            details: err.details,
+            hint: err.hint,
+          });
+          errorMessage = err.message;
         } else if (err instanceof Error) {
           console.warn("Error fetching listing:", err.message);
+          errorMessage = err.message;
         } else {
           console.warn("Unknown error:", err);
+          errorMessage = "An unexpected error occurred";
         }
+
+        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -135,27 +168,19 @@ const ListingPage = () => {
     );
   }
 
-  const formatDateRange = (startDate: string, endDate: string) => {
-    const formatDate = (dateString: string) => {
-      return new Date(dateString).toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      });
-    };
-
-    return `${formatDate(startDate)} - ${formatDate(endDate)}`;
-  };
-
   return (
-    <Suspense>
+    <div className="w-full">
+      <Suspense fallback={null}>
+        <SearchParamsProvider onParamsChange={setCurrentSearchParams} />
+      </Suspense>
+      
       <Listing
         data={{
           id: listing.id.toString(),
           title: listing.title,
           distance: `${listing.distance} away`,
           start_date: listing.start_date,
-          end_date: listing.end_date, // Use the new format
+          end_date: listing.end_date,
           price: listing.price,
           location: listing.address,
           isFavorited: isFavoritedValue,
@@ -176,6 +201,7 @@ const ListingPage = () => {
             : null,
         }}
       />
+
       <div className="flex flex-col lg:flex-row w-full mt-4 justify-between mb-10 gap-10">
         <div className="lg:w-1/2 xl:w-2/3">
           <ListingDescription
@@ -201,24 +227,17 @@ const ListingPage = () => {
                 ? {
                     full_name: listing.user.name,
                     email: listing.user.email,
-                    profile_image_path:
-                      listing.user.profile_image_path || undefined,
+                    profile_image_path: listing.user.profile_image_path || undefined,
                     avatar_url: listing.user.profile_image_path
-                      ? getImagePublicUrl(
-                          "profiles",
-                          listing.user.profile_image_path
-                        )
+                      ? getImagePublicUrl("profiles", listing.user.profile_image_path)
                       : undefined,
-                    is_rice_student:
-                      listing.user.affiliation === "Rice Student",
+                    is_rice_student: listing.user.affiliation === "Rice Student",
                   }
                 : undefined,
             }}
           />
         </div>
       </div>
-    </Suspense>
+    </div>
   );
-};
-
-export default ListingPage;
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState, useContext } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,8 @@ import { v4 } from 'uuid';
 import Duration from './../../Duration';
 import CategoryStatusIndicator from './../../CategoryStatusIndicator';
 import LoadingCircle from '@/components/LoadingCircle';
-import { FormDataType } from '../../page';
-import { defaultFormData, PostListingFormContext } from '@/providers/PostListingFormProvider';
+import { FormDataType } from '../../../types';
+import { defaultFormData } from '@/providers/PostListingFormProvider';
 import Navbar from '@/components/Navbar';
 
 type ImageResponse = {

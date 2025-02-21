@@ -9,7 +9,6 @@ import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 
-
 interface ImageData {
   src: string;
   span: string;
@@ -68,7 +67,9 @@ interface CardProps {
   ownListing: boolean;
 }
 
-const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps) => {
+const Listing: React.FC<ListingProps> = (
+  { data, isPreview = false }: ListingProps,
+) => {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [favorite, setFavorite] = useState(data.isFavorited);
@@ -138,40 +139,40 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
   const closeDialog = () => setDialogOpen(false);
 
   const handleNext = () => {
-    setCurrentImageIndex(prevIndex => (prevIndex + 1) % images.length);
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 
   const handlePrev = () => {
-    setCurrentImageIndex(prevIndex => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
+    setCurrentImageIndex(
+      (prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1)
+    );
   };
 
   const toggleFavorite = async () => {
-      // Added API call to modify isFavorited 
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-  
-      try {
-        if (favorite) {
-          await supabase
-            .from("users_favorites")
-            .delete()
-            .eq("user_id", user?.id)
-            .eq("listing_id", data.id);
+    // Added API call to modify isFavorited
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-        } else {
-          await supabase.from("users_favorites").insert({
-            user_id: user?.id,
-            listing_id: data.id,
-          });
-        }
-  
-        setFavorite(!favorite);
-      } catch (error) {
-        alert("Failed to favorite/unfavorite a listing");
+    try {
+      if (favorite) {
+        await supabase
+          .from("users_favorites")
+          .delete()
+          .eq("user_id", user?.id)
+          .eq("listing_id", data.id);
+      } else {
+        await supabase.from("users_favorites").insert({
+          user_id: user?.id,
+          listing_id: data.id,
+        });
       }
-    
+
+      setFavorite(!favorite);
+    } catch (error) {
+      alert("Failed to favorite/unfavorite a listing");
+    }
   };
 
   const formatDateRange = (startDate: string, endDate: string) => {
@@ -188,26 +189,28 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
 
   // Helper function to safely get caption
   const getCaption = (index: number): string => {
-    return data.captions && data.captions[index] ? data.captions[index] : data.title;
+    return data.captions && data.captions[index]
+      ? data.captions[index]
+      : data.title;
   };
 
   return (
     <motion.div
-      initial={{opacity: 0, y: 20}}
-      animate={{opacity: 1, y: 0}}
-      transition={{duration: 0.5}}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
       className="w-full"
     >
       {/* Header Section */}
       <motion.div
-        initial={{opacity: 0, x: -20}}
-        animate={{opacity: 1, x: 0}}
-        transition={{duration: 0.5, delay: 0.2}}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
         className="mb-6 w-full"
       >
         <div className="flex items-center mt-4 mb-2 w-full">
           <h1 className="text-4xl font-semibold">{data.title}</h1>
-          <motion.div whileHover={{scale: 1.1}} whileTap={{scale: 0.9}}>
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <FaHeart
               className="ml-3 cursor-pointer w-6 h-6 duration-300"
               fill={favorite ? "#FF7439" : "gray"}
@@ -217,31 +220,42 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
 
           {isPreview && (
             <div className="ml-auto flex gap-2">
-              <Button className="rounded-lg px-6 flex items-center bg-[#777777] hover:bg-[#777777]/90" onClick={() => router.back()}>
-                <Image src="/edit-icon.png" alt="Edit" width={16} height={16} className="" />
+              <Button
+                className="rounded-lg px-6 flex items-center bg-[#777777] hover:bg-[#777777]/90"
+                onClick={() => router.back()}
+              >
+                <Image
+                  src="/edit-icon.png"
+                  alt="Edit"
+                  width={16}
+                  height={16}
+                  className=""
+                />
                 BACK TO LISTING EDITOR
               </Button>
             </div>
           )}
         </div>
         <p className="text-gray-600">
-          {`${data.distance} from Rice  •  ${formatDateRange(data.start_date, data.end_date)}  •  $${data.price.toLocaleString()} / month`}
+          {`${data.distance} from Rice  •  ${
+            formatDateRange(data.start_date, data.end_date)
+          }  •  $${data.price.toLocaleString()} / month`}
         </p>
       </motion.div>
 
       {/* Image Gallery */}
       <motion.div
-        initial={{opacity: 0, scale: 0.95}}
-        animate={{opacity: 1, scale: 1}}
-        transition={{duration: 0.5, delay: 0.4}}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
         className="relative w-full h-[500px] grid grid-cols-1 lg:grid-cols-8 gap-2 mb-8"
       >
         {images.slice(0, 5).map((image, index) => (
           <motion.div
             key={index}
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            transition={{duration: 0.5, delay: 0.2 * (index + 1)}}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 * (index + 1) }}
             className={`relative overflow-hidden rounded-lg cursor-pointer ${image.span} ${
               index === 0 ? "" : "hidden lg:block sm:hidden md:hidden"
             }`}
@@ -250,6 +264,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
             <Image
               src={image.src}
               fill={true}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               alt={`${data.title} - Image ${index + 1}`}
               className="object-cover hover:scale-105 transition-transform duration-300"
               priority={index === 0}
@@ -259,8 +274,8 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
 
         {/* View All Button */}
         <motion.button
-          whileHover={{scale: 1.05}}
-          whileTap={{scale: 0.95}}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => openDialog(0)}
           className="absolute bottom-4 right-4 py-2 px-4 bg-black bg-opacity-50 text-white rounded-lg hover:bg-black hover:bg-opacity-70 hover:text-white transition-colors"
         >
@@ -271,14 +286,14 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
       {/* Image Dialog */}
       {isDialogOpen && images.length > 0 && (
         <motion.div
-          initial={{opacity: 0}}
-          animate={{opacity: 1}}
-          exit={{opacity: 0}}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
           onClick={closeDialog}
         >
           <button
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
               closeDialog();
             }}
@@ -291,36 +306,42 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           {/* Left Button */}
           <div
             className="absolute left-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors rounded-r-xl cursor-pointer"
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
               handlePrev();
             }}
             aria-label="Previous image"
           >
-            <span className="text-5xl text-white hover:text-gray-300 transition-colors select-none">&lt;</span>
+            <span className="text-5xl text-white hover:text-gray-300 transition-colors select-none">
+              &lt;
+            </span>
           </div>
           {/* Right Button */}
 
           <div
             className="absolute right-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors rounded-l-xl cursor-pointer"
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
               handleNext();
             }}
             aria-label="Next image"
           >
-            <span className="text-5xl text-white hover:text-gray-300 transition-colors select-none">&gt;</span>
+            <span className="text-5xl text-white hover:text-gray-300 transition-colors select-none">
+              &gt;
+            </span>
           </div>
 
           {/* Image Container */}
           <motion.div
-            initial={{scale: 0.9}}
-            animate={{scale: 1}}
-            transition={{duration: 0.3}}
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.3 }}
             className="w-3/4 md:w-3/4 lg:w-1/2 h-3/4 relative mb-17.5"
           >
             <Image
               src={images[currentImageIndex].src}
+              // priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               fill={true}
               alt={`${data.title} - Image ${currentImageIndex + 1}`}
               className="object-contain rounded-lg select-none"
@@ -328,12 +349,14 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           </motion.div>
 
           <motion.div
-            initial={{y: 20, opacity: 0}}
-            animate={{y: 0, opacity: 1}}
-            transition={{delay: 0.2}}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
             className="text-white absolute bottom-14"
           >
-            <p className="text-center font-semibold">{getCaption(currentImageIndex)}</p>
+            <p className="text-center font-semibold">
+              {getCaption(currentImageIndex)}
+            </p>
           </motion.div>
         </motion.div>
       )}

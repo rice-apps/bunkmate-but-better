@@ -4,6 +4,14 @@ import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import PostListingFormProvider from "@/providers/PostListingFormProvider";
 import { Suspense } from "react";
+
+// Configure DM Sans font
+const dmsans = DM_Sans({
+  subsets: ["latin"],
+  display: "swap", // Add display swap for better font loading
+  adjustFontFallback: true, // Ensure proper font fallback
+});
+
 import ProgressBarProvider from "@/providers/ProgressBarProvider";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -17,33 +25,34 @@ export const metadata = {
     "Find Off-campus housing and subletters with ease using Bunkmate.",
 };
 
-const dmsans = DM_Sans({ subsets: ["latin"] });
-
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <Suspense>
-      <html lang="en" className={GeistSans.className} suppressHydrationWarning>
-        <body className={`${dmsans.className} bg-background text-foreground`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <PostListingFormProvider>
-                <main className="min-h-screen flex flex-col items-center">
-                  <ProgressBarProvider>
-                  {children}
-                  </ProgressBarProvider>
-                </main>
-            </PostListingFormProvider>
-          </ThemeProvider>
-        </body>
-      </html>
-    </Suspense>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${GeistSans.className}`}
+    >
+      <body
+        className={`bg-background text-foreground ${dmsans.className}`}
+        suppressHydrationWarning
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <PostListingFormProvider>
+            <main className="min-h-screen flex flex-col items-center font-sans">
+              {children}
+            </main>
+          </PostListingFormProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

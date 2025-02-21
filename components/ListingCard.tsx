@@ -181,29 +181,28 @@ const ListingCard: React.FC<CardProps> = ({
                     </div>
                   </DropdownMenuTrigger>
 
-                  <DropdownMenuContent className="">
-                    <DropdownMenuItem
-                      key={"edit"}
-                      className="flex justify-left group"
-                      onClick={() => router.push(`/post-a-listing/edit/${postId}`)}
-                    >
-                      <MdEdit className="group-hover:text-[#FF7439]" />
-                      <p className="group-hover:text-[#FF7439] text-left">
-                        Edit
-                      </p>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      key={"delete"}
-                      className="flex justify-left group"
-                      onSelect={() => setIsModalOpen(true)}
-                    >
-                      <RiDeleteBinLine className="group-hover:text-[#FF7439]" />
-                      <p className="group-hover:text-[#FF7439] text-left">
-                        Delete
-                      </p>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+          {/* Content */}
+          <div className="mt-4 space-y-1">
+            <div className="flex justify-between items-center">
+              {isRiceStudent
+                ? (
+                  <h3 className="font-semibold text-lg max-w-[60%] truncate">
+                    {name}
+                  </h3>
+                )
+                : <h3 className="font-semibold text-lg truncate">{name}</h3>}
+              {isRiceStudent && (
+                <div className="flex items-center gap-1 text-[#FF7439] text-m flex-shrink-0">
+                  <Image
+                    src="/owl.png"
+                    width={16}
+                    height={16}
+                    alt="owl"
+                    style={{ width: "auto", height: "auto" }}
+                    priority={false}
+                  />
+                  <span>Rice Student</span>
+                </div>
               )}
             </IconContext.Provider>
           </Button>

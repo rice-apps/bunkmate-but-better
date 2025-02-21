@@ -81,10 +81,22 @@ interface NavbarProps {
   includePostBtn?: boolean;
 }
 
-const Navbar = ({
-  includeFilter = true,
-  includePostBtn = true,
-}: NavbarProps) => {
+// Create a smaller component just for the search params functionality
+function NavbarSearch({ 
+  onParamsChange 
+}: { 
+  onParamsChange: (params: ReturnType<typeof useSearchParams>) => void 
+}) {
+  const searchParams = useSearchParams();
+  
+  useEffect(() => {
+    onParamsChange(searchParams);
+  }, [searchParams, onParamsChange]);
+
+  return null;
+}
+
+const Navbar = ({includeFilter=true, includePostBtn=true}: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showMobileFilter, setShowMobileFilter] = useState(false);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -93,8 +105,8 @@ const Navbar = ({
   const router = useRouter();
   const distanceTitle = "Search Properties";
   const [distance, setDistance] = useState(distanceTitle);
-  const searchParams = useSearchParams();
   const pathname = usePathname();
+  const [currentSearchParams, setCurrentSearchParams] = useState<ReturnType<typeof useSearchParams> | null>(null);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -108,11 +120,11 @@ const Navbar = ({
   }, []);
 
   useEffect(() => {
-    if (!searchParamsLoaded) return;
-
-    const startDateParam = searchParams?.get("startDate");
-    const endDateParam = searchParams?.get("endDate");
-    const distanceParam = searchParams?.get("distance");
+    if (!searchParamsLoaded || !currentSearchParams) return;
+    
+    const startDateParam = currentSearchParams.get('startDate');
+    const endDateParam = currentSearchParams.get('endDate');
+    const distanceParam = currentSearchParams.get('distance');
 
     if (startDateParam) {
       const date = new Date(startDateParam);
@@ -123,7 +135,7 @@ const Navbar = ({
       if (!isNaN(date.getTime())) setEndDate(date);
     }
     if (distanceParam) setDistance(distanceParam);
-  }, [searchParams, searchParamsLoaded]);
+  }, [currentSearchParams, searchParamsLoaded]);
 
   const handleFilterChange = () => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -257,7 +269,11 @@ const Navbar = ({
   );
 
   return (
-    <div className="w-full max-w-screen px-2 sm:px-4">
+    <div className='w-full'>
+      <Suspense fallback={null}>
+        <NavbarSearch onParamsChange={setCurrentSearchParams} />
+      </Suspense>
+
       {/* Mobile Search Button */}
       <button
         onClick={() => setShowMobileFilter(!showMobileFilter)}
