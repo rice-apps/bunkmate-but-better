@@ -64,6 +64,7 @@ const PreviewPage = () => {
           end_date: formData.endDate, // Use the new format
           price: formData.price,
           location: formData.address.label,
+          isFavorited: false, // Add this line
           imagePaths: formData.photos,
           captions: formData.photoLabels,
           loadImages: false,

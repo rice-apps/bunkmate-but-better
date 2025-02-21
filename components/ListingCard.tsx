@@ -232,6 +232,7 @@ const ListingCard: React.FC<CardProps> = ({
                     height={16}
                     alt="owl"
                     style={{ width: "auto", height: "auto" }}
+                    priority={false}
                   />
                   <span>Rice Student</span>
                 </div>

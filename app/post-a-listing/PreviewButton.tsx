@@ -3,7 +3,7 @@ import Link from "next/link";
 import {useRouter} from "next/navigation";
 import React from "react";
 import {FaEye} from "react-icons/fa";
-import {FormDataType} from "./page";
+import {FormDataType} from "../types";
 
 const PreviewButton = ({formData}: {formData: FormDataType}) => {
   const router = useRouter();

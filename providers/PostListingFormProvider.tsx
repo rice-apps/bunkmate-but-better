@@ -1,6 +1,6 @@
 "use client";
 
-import {FormDataType} from "@/app/post-a-listing/page";
+import {FormDataType} from "@/app/types";
 import {createContext, ReactNode, useState} from "react";
 
 interface FormContextType {

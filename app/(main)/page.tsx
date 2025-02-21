@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import ListingCard from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
@@ -32,6 +32,21 @@ interface Favorite {
   listing_id: number;
 }
 
+// Search params component
+function SearchParamsProvider({
+  onParamsChange
+}: {
+  onParamsChange: (params: ReturnType<typeof useSearchParams>) => void;
+}) {
+  const searchParams = useSearchParams();
+  
+  useEffect(() => {
+    onParamsChange(searchParams);
+  }, [searchParams, onParamsChange]);
+
+  return null;
+}
+
 export default function Index() {
   const supabase = createClient();
   const router = useRouter();
@@ -40,9 +55,7 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadingCardCount, setLoadingCardCount] = useState(4);
-
-  const searchParams = useSearchParams(); // Use useSearchParams
-
+  const [currentSearchParams, setCurrentSearchParams] = useState<ReturnType<typeof useSearchParams> | null>(null);
 
   useEffect(() => {
     const updateLoadingCardCount = () => {
@@ -71,9 +84,9 @@ export default function Index() {
 
         let query = supabase.from('listings').select();
 
-        const startDate = (searchParams && searchParams.get('startDate') ? new Date(searchParams.get('startDate')!) : null);
-        const endDate = (searchParams && searchParams.get('endDate') ? new Date(searchParams.get('endDate')!) : null);
-        const distance = (searchParams && searchParams.get('distance')) || null;
+        const startDate = (currentSearchParams && currentSearchParams.get('startDate') ? new Date(currentSearchParams.get('startDate')!) : null);
+        const endDate = (currentSearchParams && currentSearchParams.get('endDate') ? new Date(currentSearchParams.get('endDate')!) : null);
+        const distance = (currentSearchParams && currentSearchParams.get('distance')) || null;
 
         // Apply filters
         if (startDate) {
@@ -134,7 +147,7 @@ export default function Index() {
       }
     }
     fetchPosts();
-  }, [router, searchParams]);
+  }, [router, currentSearchParams]);
 
   const renderLoadingState = () => (
     <>
@@ -164,7 +177,10 @@ export default function Index() {
   );
 
   return (
-    <Suspense>
+    <>
+      <Suspense fallback={null}>
+        <SearchParamsProvider onParamsChange={setCurrentSearchParams} />
+      </Suspense>
       <motion.main 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -175,7 +191,7 @@ export default function Index() {
           {isLoading ? renderLoadingState() : error ? renderError() :
             (
               <>
-                {listings && (listings.length > 0)  ? listings.map((listing, index) => (
+                {listings && listings.map((listing, index) => (
                   <motion.div 
                     key={listing.id} 
                     className="w-full"
@@ -229,6 +245,6 @@ export default function Index() {
           </Button>
         </motion.a>
       </motion.div>
-    </Suspense>
+    </>
   );
 }

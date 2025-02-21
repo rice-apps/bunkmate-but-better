@@ -7,6 +7,13 @@ import { Suspense } from "react";
 
 const dmsans = DM_Sans({ subsets: ["latin"] });
 
+// Configure DM Sans font
+const dmsans = DM_Sans({ 
+  subsets: ["latin"],
+  display: 'swap',  // Add display swap for better font loading
+  adjustFontFallback: true  // Ensure proper font fallback
+});
+
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
@@ -14,21 +21,29 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "BunkMate - On Demand Subletting and Off-Campus Leasing",
-  description:
-    "Find Off-campus housing and subletters with ease using Bunkmate.",
+  description: "Find Off-campus housing and subletters with ease using Bunkmate.",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <Suspense>
-      <html lang="en" suppressHydrationWarning className={GeistSans.className}>
-        <body
-          className={`${dmsans.className} bg-background text-foreground`}
-          suppressHydrationWarning
+    <html 
+      lang="en" 
+      suppressHydrationWarning 
+      className={`${GeistSans.className}`}
+    >
+      <body 
+        className="bg-background text-foreground ${dmsans.className}"
+        suppressHydrationWarning
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
         >
           <ThemeProvider
             attribute="class"

@@ -13,7 +13,7 @@ export default function SignIn() {
 
   const handleLogin = async () => {
     await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider: "google",
     });
   };
 
@@ -23,28 +23,33 @@ export default function SignIn() {
       <div className="hidden lg:flex w-[55.5%] relative overflow-hidden bg-[#FF7439]">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="w-full h-full" 
+          <div
+            className="w-full h-full"
             style={{
-              backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+              backgroundImage:
+                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
             }}
           />
         </div>
-        
+
         {/* Content */}
         <div className="relative z-20 p-12 flex flex-col h-full">
           {/* Logo Section */}
           <div className="flex items-center space-x-2 mb-16">
             <div className="relative w-[25px] h-[25px]">
-              <Image 
+              <Image
                 src="/bunkmate_logo.png"
-                alt="Bunkmate" 
+                alt="Bunkmate"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 fill
                 className="brightness-0 invert object-contain"
               />
             </div>
-            <span className="ml-4 text-2xl text-white font-semibold">bunkmate</span>
+            <span className="ml-4 text-2xl text-white font-semibold">
+              bunkmate
+            </span>
           </div>
-          
+
           {/* Main Content */}
           <div className="mt-5 flex-1 flex flex-col gap-8">
             {/* Text Section */}
@@ -64,6 +69,7 @@ export default function SignIn() {
                   <Image
                     src="/homepage.png"
                     alt="Bunkmate Platform Preview"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     fill
                     className="object-cover"
                     priority
@@ -83,14 +89,17 @@ export default function SignIn() {
             <Link href="/">
               <div className="flex items-center space-x-2">
                 <div className="relative w-[32px] h-[32px]">
-                  <Image 
-                    src="/bunkmate_logo_white.png" 
-                    alt="Bunkmate" 
+                  <Image
+                    src="/bunkmate_logo_white.png"
+                    alt="Bunkmate"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     fill
                     className="object-contain"
                   />
                 </div>
-                <span className="text-xl text-[#FF7439] font-semibold">bunkmate</span>
+                <span className="text-xl text-[#FF7439] font-semibold">
+                  bunkmate
+                </span>
               </div>
             </Link>
           </div>
@@ -120,11 +129,11 @@ export default function SignIn() {
             </div>
 
             <p className="text-center text-sm text-gray-500">
-              By continuing, you agree to bunkmate's{' '}
+              By continuing, you agree to bunkmate's{" "}
               <Link href="/terms" className="text-[#FF7439] hover:underline">
                 Terms of Service
-              </Link>{' '}
-              and{' '}
+              </Link>{" "}
+              and{" "}
               <Link href="/privacy" className="text-[#FF7439] hover:underline">
                 Privacy Policy
               </Link>

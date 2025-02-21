@@ -1,12 +1,13 @@
 "use client";
 
+import { FormDataType } from "../types"; // adjust the number of ../ based on location
 import Navbar from "@/components/Navbar";
-import {Button} from "@/components/ui/button";
-import {PostListingFormContext} from "@/providers/PostListingFormProvider";
-import {createClient} from "@/utils/supabase/client";
-import {useRouter} from "next/navigation";
-import {useContext, useMemo, useState} from "react";
-import {v4} from "uuid";
+import { Button } from "@/components/ui/button";
+import { PostListingFormContext } from "@/providers/PostListingFormProvider";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
+import { useContext, useMemo, useState } from "react";
+import { v4 } from "uuid";
 import CategoryStatusIndicator from "./CategoryStatusIndicator";
 import Duration from "./Duration";
 import Location from "./Location";
@@ -15,49 +16,28 @@ import Pricing from "./Pricing";
 import Profile from "./Profile";
 import TitleDescription from "./TitleDescription";
 
-export interface FormDataType {
-  title: string;
-  description: string;
-  price: number;
-  priceNotes: string;
-  startDate: string;
-  endDate: string;
-  durationNotes: string;
-  address: {label: string; value: {description: string}};
-  locationNotes: string;
-  photos: string[];
-  rawPhotos: File[];
-  photoLabels: {[key: number]: string};
-  imagePaths: string[];
-  removedImagePaths: string[];
-  affiliation: string;
-  phone: string;
-  bed_num: number;
-  bath_num: number;
-}
-
 type ImageResponse =
   | {
-      data: {
-        id: string;
-        path: string;
-        fullPath: string;
-      };
-      error: null;
-    }
-  | {
-      data: null;
-      error: any;
+    data: {
+      id: string;
+      path: string;
+      fullPath: string;
     };
+    error: null;
+  }
+  | {
+    data: null;
+    error: any;
+  };
 
 type ImagePromiseType = Promise<ImageResponse>;
 
-// Main PostListing component
 const PostListing = () => {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("title");
-  const {formData, setFormData, resetFormData} = useContext(PostListingFormContext);
-  const [isOpen, setIsOpen] = useState(false);
+  const { formData, setFormData, resetFormData } = useContext(
+    PostListingFormContext,
+  );
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
 
@@ -71,9 +51,10 @@ const PostListing = () => {
       formData.photos.length >= 5 &&
       formData.phone,
   );
-  console.log(formData.address);
 
-  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleSubmit = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
     setIsPosting(true);
     e.preventDefault();
     const supabase = createClient();
@@ -83,19 +64,26 @@ const PostListing = () => {
     // Cache the name of our file paths
     const filePaths: string[] = [];
 
-    formData.rawPhotos.forEach(photo => {
+    formData.rawPhotos.forEach((photo: File) => {
       const filePath = `${userId}/${v4()}`;
-      const insertion = supabase.storage.from("listing_images").upload(filePath, photo);
+      const insertion = supabase.storage.from("listing_images").upload(
+        filePath,
+        photo,
+      );
       insertions.push(insertion);
       filePaths.push(filePath);
     });
 
     try {
       const imageUploads = await Promise.all(insertions);
-      const successfulUploads = imageUploads.filter(imageUploads => imageUploads.data);
+      const successfulUploads = imageUploads.filter((imageUploads) =>
+        imageUploads.data
+      );
 
       if (successfulUploads.length != filePaths.length) {
-        const successfulFilePaths = successfulUploads.map((imgResp: ImageResponse) => imgResp.data?.path);
+        const successfulFilePaths = successfulUploads.map((
+          imgResp: ImageResponse,
+        ) => imgResp.data?.path);
         throw new Error("Some image(s) failed to upload", {
           cause: successfulFilePaths,
         });
@@ -104,10 +92,12 @@ const PostListing = () => {
       // Calculate distance from address to Rice University
       const distance = await calculateDistance(formData.address.label);
       if (!distance) {
-        throw new Error("Unable to validate address or calculate distance. Please check the address.");
+        throw new Error(
+          "Unable to validate address or calculate distance. Please check the address.",
+        );
       }
 
-      const {data, error} = await supabase
+      const { data, error } = await supabase
         .from("listings")
         .insert([
           {
@@ -133,7 +123,9 @@ const PostListing = () => {
 
       if (error) {
         throw new Error(error.message, {
-          cause: successfulUploads.map((imgResp: ImageResponse) => imgResp.data?.path),
+          cause: successfulUploads.map((imgResp: ImageResponse) =>
+            imgResp.data?.path
+          ),
         });
       }
 
@@ -143,12 +135,15 @@ const PostListing = () => {
         caption: formData.photoLabels[index] || "",
       }));
 
-      const filteredImageCaptions = imageCaptions.filter(imageCaption => imageCaption.caption !== "");
+      const filteredImageCaptions = imageCaptions.filter((imageCaption) =>
+        imageCaption.caption !== ""
+      );
 
-      const {error: captionError} = await supabase.from("images_captions").insert(filteredImageCaptions).select();
+      const { error: captionError } = await supabase.from("images_captions")
+        .insert(filteredImageCaptions).select();
 
       if (captionError) {
-        throw new Error(captionError.message, {cause: filePaths});
+        throw new Error(captionError.message, { cause: filePaths });
       }
       resetFormData();
       router.push("/");
@@ -164,7 +159,9 @@ const PostListing = () => {
     }
     try {
       const API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
-      const response = await fetch(`https://geocode.maps.co/search?q=${address}&api_key=${API_KEY}`);
+      const response = await fetch(
+        `https://geocode.maps.co/search?q=${address}&api_key=${API_KEY}`,
+      );
       if (!response.ok) {
         throw new Error("Failed to geocode address");
       }
@@ -231,7 +228,13 @@ const PostListing = () => {
   const renderComponent = () => {
     switch (selectedCategory) {
       case "title":
-        return <TitleDescription formData={formData} setFormData={setFormData} onNext={handleNextCategory} />;
+        return (
+          <TitleDescription
+            formData={formData}
+            setFormData={setFormData}
+            onNext={handleNextCategory}
+          />
+        );
       case "pricing":
         return (
           <Pricing
@@ -279,7 +282,13 @@ const PostListing = () => {
           />
         );
       default:
-        return <TitleDescription formData={formData} setFormData={setFormData} onNext={handleNextCategory} />;
+        return (
+          <TitleDescription
+            formData={formData}
+            setFormData={setFormData}
+            onNext={handleNextCategory}
+          />
+        );
     }
   };
 
@@ -288,7 +297,8 @@ const PostListing = () => {
       {
         id: "title",
         name: "Title & Description",
-        completed: formData.title.length >= 1 && formData.description.length >= 100,
+        completed: formData.title.length >= 1 &&
+          formData.description.length >= 100,
       },
       {
         id: "pricing",
@@ -320,25 +330,21 @@ const PostListing = () => {
   );
 
   const handleNextCategory = () => {
-    const currentIndex = categories.findIndex(cat => cat.id === selectedCategory);
+    const currentIndex = categories.findIndex((cat) =>
+      cat.id === selectedCategory
+    );
     if (currentIndex < categories.length - 1) {
       setSelectedCategory(categories[currentIndex + 1].id);
     }
   };
 
   const handlePreviousCategory = () => {
-    const currentIndex = categories.findIndex(cat => cat.id === selectedCategory);
+    const currentIndex = categories.findIndex((cat) =>
+      cat.id === selectedCategory
+    );
     if (currentIndex > 0) {
       setSelectedCategory(categories[currentIndex - 1].id);
     }
-  };
-
-  const supabase = createClient();
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    // Redirect to Sign-in page
-    router.push("/sign-in");
   };
 
   const toggleSidebar = () => {
@@ -350,7 +356,7 @@ const PostListing = () => {
       <Navbar includeFilter={false} includePostBtn={false} />
 
       {/* Main Content */}
-      <div className={`mx-auto relative `}>
+      <div className={`mx-auto relative`}>
         <div className="mx-auto">
           <div className="flex flex-col md:flex-row gap-8 md:gap-24">
             {/* Mobile Sidebar Toggle */}
@@ -362,11 +368,15 @@ const PostListing = () => {
             </button>
 
             {/* Responsive Sidebar */}
-            <div className={`${isSidebarOpen ? "block" : "hidden"} md:block w-full md:w-80`}>
+            <div
+              className={`${
+                isSidebarOpen ? "block" : "hidden"
+              } md:block w-full md:w-80`}
+            >
               <div className="w-full md:w-80 pr-0 h-auto mb-8 md:mb-0">
                 <h1 className="text-2xl font-semibold mb-8">Listing Editor</h1>
                 <div className="space-y-3">
-                  {categories.map(category => (
+                  {categories.map((category) => (
                     <div
                       key={category.id}
                       className={`flex items-center p-3 rounded-xl cursor-pointer w-full ${
@@ -392,19 +402,19 @@ const PostListing = () => {
                   {/* Bottom Buttons */}
                   <div className="flex items-center justify-center pt-12 gap-4">
                     <Button
-                      className={
-                        "w-[5.3rem] rounded-lg px-6 flex items-center border border-red-500 bg-white text-red-500 hover:bg-red-500 hover:text-white"
-                      }
+                      className={"w-[5.3rem] rounded-lg px-6 flex items-center border border-red-500 bg-white text-red-500 hover:bg-red-500 hover:text-white"}
                       onClick={() => resetFormData()}
                     >
                       <p>Clear All</p>
                     </Button>
                     <Button
                       className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
-                        isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
+                        isComplete
+                          ? "bg-[#FF7439] hover:bg-[#FF7439]/90"
+                          : "bg-gray-300"
                       }`}
                       disabled={!isComplete || isPosting}
-                      onClick={e => handleSubmit(e)}
+                      onClick={(e) => handleSubmit(e)}
                     >
                       <p>Post</p>
                     </Button>
@@ -416,7 +426,7 @@ const PostListing = () => {
             {/* Form Content */}
             <div
               className="flex-1 md:pl-16 md:border-l border-gray-500 pb-8 pr-8"
-              style={{height: "85vh", overflowY: "auto"}}
+              style={{ height: "85vh", overflowY: "auto" }}
             >
               {renderComponent()}
             </div>

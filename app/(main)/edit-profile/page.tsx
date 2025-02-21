@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { formatPhoneNumber, Input } from "@/components/ui/input";
+import { FormDataType } from '../../types'; // adjust the number of ../ based on location
+import React, { useState, useEffect } from 'react';
+import { Input } from "@/components/ui/input";
 import { Upload, PencilIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -50,7 +51,7 @@ const EditProfile = () => {
         if (data) {
           // Split name into first and last name
           const [firstName = '', lastName = ''] = data.name ? data.name.split(' ') : ['', ''];
-          console.log("new data", data);
+          
           setFormData(prev => ({
             ...prev,
             firstName,
@@ -203,7 +204,6 @@ const EditProfile = () => {
   };
 
   return (
-    <Suspense>
     <motion.main 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -456,7 +456,6 @@ const EditProfile = () => {
         </DialogContent>
       </Dialog>
     </motion.main>
-    </Suspense>
   );
 };
 
