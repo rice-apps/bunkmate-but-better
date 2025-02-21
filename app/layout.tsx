@@ -1,11 +1,9 @@
 import { GeistSans } from "geist/font/sans";
-import { DM_Sans } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import PostListingFormProvider from "@/providers/PostListingFormProvider";
 import { Suspense } from "react";
-
-const dmsans = DM_Sans({ subsets: ["latin"] });
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -18,6 +16,8 @@ export const metadata = {
     "Find Off-campus housing and subletters with ease using Bunkmate.",
 };
 
+const dmsans = DM_Sans({ subsets: ["latin"] });
+
 export default async function RootLayout({
   children,
 }: {
@@ -25,11 +25,8 @@ export default async function RootLayout({
 }) {
   return (
     <Suspense>
-      <html lang="en" suppressHydrationWarning className={GeistSans.className}>
-        <body
-          className={`${dmsans.className} bg-background text-foreground`}
-          suppressHydrationWarning
-        >
+      <html lang="en" className={GeistSans.className} suppressHydrationWarning>
+        <body className={`${dmsans.className} bg-background text-foreground`}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -37,7 +34,7 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <PostListingFormProvider>
-              <main className="min-h-screen flex flex-col items-center font-sans">
+              <main className="min-h-screen flex flex-col items-center">
                 {children}
               </main>
             </PostListingFormProvider>
