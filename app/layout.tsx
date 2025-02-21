@@ -1,6 +1,6 @@
 import { GeistSans } from "geist/font/sans";
-import { DM_Sans } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import PostListingFormProvider from "@/providers/PostListingFormProvider";
 import { Suspense } from "react";
@@ -12,6 +12,7 @@ const dmsans = DM_Sans({
   adjustFontFallback: true, // Ensure proper font fallback
 });
 
+import ProgressBarProvider from "@/providers/ProgressBarProvider";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
