@@ -3,6 +3,7 @@ import { DM_Sans } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import PostListingFormProvider from "@/providers/PostListingFormProvider";
+import { Suspense } from "react";
 
 const dmsans = DM_Sans({ subsets: ["latin"] });
 
@@ -23,25 +24,26 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${dmsans.className} bg-background text-foreground`}
-        suppressHydrationWarning
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+    <Suspense>
+      <html lang="en" suppressHydrationWarning className={GeistSans.className}>
+        <body
+          className={`${dmsans.className} bg-background text-foreground`}
           suppressHydrationWarning
         >
-          <PostListingFormProvider>
-            <main className="min-h-screen flex flex-col items-center font-sans">
-              {children}
-            </main>
-          </PostListingFormProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <PostListingFormProvider>
+              <main className="min-h-screen flex flex-col items-center font-sans">
+                {children}
+              </main>
+            </PostListingFormProvider>
+          </ThemeProvider>
+        </body>
+      </html>
+    </Suspense>
   );
 }
