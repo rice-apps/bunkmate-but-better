@@ -254,7 +254,7 @@ const Navbar = ({includeFilter=true, includePostBtn=true}: NavbarProps) => {
             </Link>
           )}
           <Link href='/favorites'>
-            <button>
+            <button className="flex items-center">
               <FaHeart className="text-[24px] text-gray-300 hover:text-gray-500 hover:scale-105 transition-transform duration-150 w-[29px] h-[30px]" />
             </button>
           </Link>
