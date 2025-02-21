@@ -143,10 +143,10 @@ const Navbar = ({
 
   const FilterContent = () => (
     <div
-      className={`max-w-[780px] flex h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex-col lg:flex-row place-items-center justify-between whitespace-nowrap mx-3`}
+      className={`max-w-[500px] flex h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex-col lg:flex-row place-items-center justify-between whitespace-nowrap mx-auto px-2`}
     >
       {/* Distance from Rice */}
-      <div className="lg:ml-[10px] flex justify-center items-center flex-col lg:border-r w-full lg:w-[212px] mb-4 lg:mb-0">
+      <div className="lg:ml-[10px] flex justify-center items-center flex-col w-full lg:max-w-[180px] mb-4 lg:mb-0">
         <div className="text-left w-full lg:w-auto">
           <p className="text-[14px] font-semibold text-[#777777]">
             Distance from Rice
@@ -159,9 +159,9 @@ const Navbar = ({
           />
         </div>
       </div>
-
+      
       {/* Start Date */}
-      <div className="flex justify-center items-center flex-col w-full lg:w-[212px] lg:border-r mb-4 lg:mb-0">
+      <div className="flex justify-center items-center flex-col w-full lg:max-w-[180px] mb-4 lg:mb-0">
         <div className="text-left w-full lg:w-auto">
           <p className="text-[14px] font-bold text-[#777777]">Start Date</p>
           <Popover>
@@ -197,7 +197,7 @@ const Navbar = ({
       </div>
 
       {/* End Date */}
-      <div className="flex justify-center items-center flex-col w-full lg:w-[212px] mb-4 lg:mb-0">
+      <div className="flex justify-center items-center flex-col w-full lg:max-w-[180px] mb-4 lg:mb-0">
         <div className="text-left w-full lg:w-auto">
           <p className="text-[14px] font-semibold text-[#777777]">End Date</p>
           <Popover>
@@ -232,14 +232,14 @@ const Navbar = ({
         </div>
       </div>
 
-      <button className="lg:pr-8 w-full lg:w-auto flex justify-center lg:block mb-4 lg:mb-0">
-        <FaMagnifyingGlass className="h-[29px] w-[25px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105" />
+      <button className="lg:px-4 w-full lg:w-auto flex justify-center lg:block mb-4 lg:mb-0">
+        <FaMagnifyingGlass className="h-[24px] w-[24px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105" />
       </button>
     </div>
   );
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-screen px-2 sm:px-4">
       {/* Mobile Search Button */}
       <button
         onClick={() => setShowMobileFilter(!showMobileFilter)}
@@ -265,35 +265,37 @@ const Navbar = ({
         </div>
       )}
 
-      <div
-        className="items-center flex flex-row place-items-center justify-between w-full"
-        style={{ height: "15vh" }}
-      >
+      <div className="items-center flex flex-row place-items-center justify-between w-full max-w-[1440px] mx-auto h-[15vh]">
         {/* Logo */}
-        <Link href='/' className='flex-shrink-0 flex flex-row gap-[8.33] items-center'>
-          <Image 
-            src="/bunkmate_logo.png" 
-            alt="Bunkmate Logo" 
-            width={35} 
+        <Link
+          href="/"
+          className="flex-shrink-0 flex flex-row gap-2 sm:gap-[8.33] items-center"
+        >
+          <Image
+            src="/bunkmate_logo.png"
+            alt="Bunkmate Logo"
+            width={35}
             height={35}
-            className="w-[35px] h-[35px]"
+            className="w-[30px] h-[30px] sm:w-[35px] sm:h-[35px]"
           />
-          <p className="ml-4 text-[30px] text-[#FF7439] font-semibold hidden md:block">bunkmate</p>
+          <p className="ml-2 sm:ml-4 text-2xl sm:text-[30px] text-[#FF7439] font-semibold hidden md:block">
+            bunkmate
+          </p>
         </Link>
 
         {/* Desktop Filter */}
         {includeFilter && (
-          <div className="hidden lg:block">
+          <div className="hidden lg:block max-w-[780px] flex-1 mx-4">
             <FilterContent />
           </div>
         )}
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex flex-row gap-[25px] place-items-center">
+        <div className="hidden lg:flex flex-row gap-3 sm:gap-[25px] place-items-center">
           {includePostBtn && (
             <Link href="/post-a-listing">
-              <button className="py-2 px-7 bg-[#FF7439] hover:bg-[#BB5529] rounded-[10.2px] transform transition-all duration-150 hover:scale-105 active:scale-105">
-                <p className="text-[15px] text-white font-semibold">
+              <button className="py-1.5 sm:py-2 px-4 sm:px-7 bg-[#FF7439] hover:bg-[#BB5529] rounded-[10.2px] transform transition-all duration-150 hover:scale-105">
+                <p className="text-sm sm:text-[15px] text-white font-semibold whitespace-nowrap">
                   Post a Listing
                 </p>
               </button>
