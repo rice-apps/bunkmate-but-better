@@ -282,7 +282,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
               e.stopPropagation();
               closeDialog();
             }}
-            className="absolute top-4 right-4 z-70 w-10 text-white hover:text-gray-300 transition-colors"
+            className="absolute top-4 right-4 z-70 w-10 text-white hover:text-gray-300 transition-colors select-none"
             aria-label="Close gallery"
           >
             <span className="text-4xl">×</span>
@@ -290,26 +290,26 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
 
           {/* Left Button */}
           <div
-            className="absolute left-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors"
+            className="absolute left-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors rounded-r-xl cursor-pointer"
             onClick={e => {
               e.stopPropagation();
               handlePrev();
             }}
             aria-label="Previous image"
           >
-            <span className="text-5xl text-white hover:text-gray-300 transition-colors cursor-pointer">&lt;</span>
+            <span className="text-5xl text-white hover:text-gray-300 transition-colors select-none">&lt;</span>
           </div>
           {/* Right Button */}
 
           <div
-            className="absolute right-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors"
+            className="absolute right-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors rounded-l-xl cursor-pointer"
             onClick={e => {
               e.stopPropagation();
               handleNext();
             }}
             aria-label="Next image"
           >
-            <span className="text-5xl text-white hover:text-gray-300 transition-colors cursor-pointer">&gt;</span>
+            <span className="text-5xl text-white hover:text-gray-300 transition-colors select-none">&gt;</span>
           </div>
 
           {/* Image Container */}
@@ -323,7 +323,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
               src={images[currentImageIndex].src}
               fill={true}
               alt={`${data.title} - Image ${currentImageIndex + 1}`}
-              className="object-contain rounded-lg"
+              className="object-contain rounded-lg select-none"
             />
           </motion.div>
 
