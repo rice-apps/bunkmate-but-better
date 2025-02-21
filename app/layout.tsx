@@ -4,6 +4,7 @@ import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import PostListingFormProvider from "@/providers/PostListingFormProvider";
 import { Suspense } from "react";
+import ProgressBarProvider from "@/providers/ProgressBarProvider";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -34,9 +35,11 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <PostListingFormProvider>
-              <main className="min-h-screen flex flex-col items-center">
-                {children}
-              </main>
+                <main className="min-h-screen flex flex-col items-center">
+                  <ProgressBarProvider>
+                  {children}
+                  </ProgressBarProvider>
+                </main>
             </PostListingFormProvider>
           </ThemeProvider>
         </body>
