@@ -45,7 +45,9 @@ const ModularDropDown: React.FC<ModularDropDownProps> = ({
       className="flex justify-center"
     >
       <p
-        className={`${value === option ? "text-[#FF7439] font-bold" : ""} hover:text-[#FF7439] text-[16px] text-center cursor-pointer`}
+        className={`${
+          value === option ? "text-[#FF7439] font-bold" : ""
+        } hover:text-[#FF7439] text-[16px] text-center cursor-pointer`}
       >
         {option}
       </p>
@@ -57,16 +59,18 @@ const ModularDropDown: React.FC<ModularDropDownProps> = ({
       <DropdownMenuTrigger asChild>
         <button className="text-left w-full">
           <p
-            className={`text-[16px] ${value !== title ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}
+            className={`text-[16px] ${
+              value !== title
+                ? "text-[#FF7439] font-semibold"
+                : "text-[#777777] font-light"
+            }`}
           >
             {value}
           </p>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-full">
-        {allOptions.map((option) => (
-          <MenuItem option={option} key={option} />
-        ))}
+        {allOptions.map((option) => <MenuItem option={option} key={option} />)}
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -144,13 +148,11 @@ const Navbar = ({
   }, [startDate, endDate, distance, pathname]);
 
   const FilterContent = () => (
-    <div
-      className={`max-w-[500px] flex h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex-col lg:flex-row place-items-center justify-between whitespace-nowrap mx-auto px-2`}
-    >
+    <div className="w-full flex flex-col lg:flex-row lg:h-[78px] lg:border-[2px] lg:border-[#D9D9D9] lg:rounded-[50px] lg:shadow-lg items-center justify-between whitespace-nowrap mx-auto lg:p-0 space-y-6 lg:space-y-0">
       {/* Distance from Rice */}
-      <div className="lg:ml-[10px] flex justify-center items-center flex-col w-full lg:max-w-[180px] mb-4 lg:mb-0">
-        <div className="text-left w-full lg:w-auto">
-          <p className="text-[14px] font-semibold text-[#777777]">
+      <div className="w-full lg:w-[212px] lg:border-r lg:flex lg:justify-center lg:items-center lg:flex-col flex flex-col items-center lg:items-start">
+        <div className="text-center lg:text-left lg:ml-[10px]">
+          <p className="text-[14px] font-semibold text-[#777777] mb-2 lg:mb-0">
             Distance from Rice
           </p>
           <ModularDropDown
@@ -161,16 +163,22 @@ const Navbar = ({
           />
         </div>
       </div>
-      
+
       {/* Start Date */}
-      <div className="flex justify-center items-center flex-col w-full lg:max-w-[180px] mb-4 lg:mb-0">
-        <div className="text-left w-full lg:w-auto">
-          <p className="text-[14px] font-bold text-[#777777]">Start Date</p>
+      <div className="w-full lg:w-[212px] lg:border-r lg:flex lg:justify-center lg:items-center lg:flex-col flex flex-col items-center lg:items-start">
+        <div className="text-center lg:text-left">
+          <p className="text-[14px] font-bold text-[#777777] mb-2 lg:mb-0">
+            Start Date
+          </p>
           <Popover>
             <PopoverTrigger asChild>
-              <button className="text-left w-full">
+              <button className="text-center lg:text-left self-start">
                 <p
-                  className={`text-base ${startDate ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}
+                  className={`text-base ${
+                    startDate
+                      ? "text-[#FF7439] font-semibold"
+                      : "text-[#777777] font-light"
+                  }`}
                 >
                   {startDate ? startDate.toDateString() : "Select date"}
                 </p>
@@ -188,9 +196,8 @@ const Navbar = ({
                   if (!searchParamsLoaded) return true;
                   const today = new Date();
                   today.setHours(0, 0, 0, 0);
-                  return (
-                    date < today || (endDate !== undefined && date > endDate)
-                  );
+                  return date < today ||
+                    (endDate !== undefined && date > endDate);
                 }}
               />
             </PopoverContent>
@@ -199,14 +206,20 @@ const Navbar = ({
       </div>
 
       {/* End Date */}
-      <div className="flex justify-center items-center flex-col w-full lg:max-w-[180px] mb-4 lg:mb-0">
-        <div className="text-left w-full lg:w-auto">
-          <p className="text-[14px] font-semibold text-[#777777]">End Date</p>
+      <div className="w-full lg:w-[212px] lg:flex lg:justify-center lg:items-center lg:flex-col flex flex-col items-center lg:items-start">
+        <div className="text-center lg:text-left">
+          <p className="text-[14px] font-semibold text-[#777777] mb-2 lg:mb-0">
+            End Date
+          </p>
           <Popover>
             <PopoverTrigger asChild>
-              <button className="text-left w-full">
+              <button className="text-center lg:text-left">
                 <p
-                  className={`text-[16px] ${endDate ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}
+                  className={`text-[16px] ${
+                    endDate
+                      ? "text-[#FF7439] font-semibold"
+                      : "text-[#777777] font-light"
+                  }`}
                 >
                   {endDate ? endDate.toDateString() : "Select date"}
                 </p>
@@ -223,10 +236,8 @@ const Navbar = ({
                 disabled={(date) => {
                   const today = new Date();
                   today.setHours(0, 0, 0, 0);
-                  return (
-                    date < today ||
-                    (startDate !== undefined && date < startDate)
-                  );
+                  return date < today ||
+                    (startDate !== undefined && date < startDate);
                 }}
               />
             </PopoverContent>
@@ -234,9 +245,12 @@ const Navbar = ({
         </div>
       </div>
 
-      <button className="lg:px-4 w-full lg:w-auto flex justify-center lg:block mb-4 lg:mb-0">
-        <FaMagnifyingGlass className="h-[24px] w-[24px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105" />
-      </button>
+      {/* Search Button */}
+      <div className="w-full lg:w-auto flex justify-center mt-4 lg:mt-0">
+        <button className="p-2 lg:pr-8">
+          <FaMagnifyingGlass className="h-[24px] w-[24px] lg:h-[29px] lg:w-[25px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105" />
+        </button>
+      </div>
     </div>
   );
 
@@ -287,7 +301,7 @@ const Navbar = ({
 
         {/* Desktop Filter */}
         {includeFilter && (
-          <div className="hidden lg:block max-w-[780px] flex-1 mx-4">
+          <div className="hidden lg:block max-w-[580px] flex-1 mx-4">
             <FilterContent />
           </div>
         )}
