@@ -100,6 +100,8 @@ export default function Index() {
           else if (distance == "< 3 miles") query = query.lte('distance', 3);
           else if (distance == "< 5 miles") query = query.lte('distance', 5);
           else if (distance == "> 5 miles") query = query.gte('distance', 5);
+
+          query = query.order('distance');
         }
 
         const { data: listings, error } = await query.order('created_at', { ascending: false });
