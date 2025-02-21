@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { PostgrestError } from '@supabase/supabase-js';
 import Listing from "@/components/Listing";
@@ -38,7 +38,6 @@ interface ListingData {
   distance: number;
 }
 
-// Type guard for PostgrestError
 function isPostgrestError(error: unknown): error is PostgrestError {
   return (
     typeof error === "object" &&
@@ -50,7 +49,6 @@ function isPostgrestError(error: unknown): error is PostgrestError {
   );
 }
 
-// Search params component
 function SearchParamsProvider({
   onParamsChange
 }: {
@@ -65,7 +63,7 @@ function SearchParamsProvider({
   return null;
 }
 
-const ListingPage = () => {
+export default function Page() {
   const params = useParams();
   const listingId = params.id as string;
   const [listing, setListing] = useState<ListingData | null>(null);
@@ -75,10 +73,10 @@ const ListingPage = () => {
   const supabase = createClient();
   const [currentSearchParams, setCurrentSearchParams] = useState<ReturnType<typeof useSearchParams> | null>(null);
 
-  // Grabbing the isFavorited value & converting from the URL of Listing.
   const searchParams = useSearchParams();
   const isFavorited = searchParams?.get("isFavorited");
   const isFavoritedValue = isFavorited === "true";
+
   useEffect(() => {
     const fetchListing = async () => {
       try {
@@ -90,6 +88,7 @@ const ListingPage = () => {
         }
 
         const { data, error: queryError } = await supabase
+          .from('listings')
           .select(`
             *,
             user:users!user_id(
@@ -117,13 +116,13 @@ const ListingPage = () => {
 
         if (captionError) throw captionError;
 
-        const captions = captionData?.reduce((acc, cur) => {
+        const captionsMap = captionData?.reduce((acc, cur) => {
           const index = data.image_paths.indexOf(cur.image_path);
           acc[index] = cur.caption;
           return acc;
         }, {} as { [key: number]: string });
 
-        setCaptions(captions);
+        setCaptions(captionsMap);
       } catch (err: unknown) {
         let errorMessage: string;
 
@@ -169,23 +168,12 @@ const ListingPage = () => {
     );
   }
 
-  const formatDateRange = (startDate: string, endDate: string) => {
-    const formatDate = (dateString: string) => {
-      return new Date(dateString).toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      });
-    };
-
-    return `${formatDate(startDate)} - ${formatDate(endDate)}`;
-  };
-
   return (
-    <>
+    <div className="w-full">
       <Suspense fallback={null}>
         <SearchParamsProvider onParamsChange={setCurrentSearchParams} />
       </Suspense>
+      
       <Listing
         data={{
           id: listing.id.toString(),
@@ -205,14 +193,15 @@ const ListingPage = () => {
           captions: captions,
           user: listing.user
             ? {
-              fullName: listing.user.name,
-              avatarUrl: listing.user.profile_image_path,
-              email: listing.user.email,
-              isRiceStudent: listing.user.affiliation === "Rice Student",
-            }
+                fullName: listing.user.name,
+                avatarUrl: listing.user.profile_image_path,
+                email: listing.user.email,
+                isRiceStudent: listing.user.affiliation === "Rice Student",
+              }
             : null,
         }}
       />
+
       <div className="flex flex-col lg:flex-row w-full mt-4 justify-between mb-10 gap-10">
         <div className="lg:w-1/2 xl:w-2/3">
           <ListingDescription
@@ -236,25 +225,19 @@ const ListingPage = () => {
               phone_number: listing.phone_number,
               user: listing.user
                 ? {
-                  full_name: listing.user.name,
-                  email: listing.user.email,
-                  profile_image_path: listing.user.profile_image_path ||
-                    undefined,
-                  avatar_url: listing.user.profile_image_path
-                    ? getImagePublicUrl(
-                      "profiles",
-                      listing.user.profile_image_path,
-                    )
-                    : undefined,
-                  is_rice_student: listing.user.affiliation === "Rice Student",
-                }
+                    full_name: listing.user.name,
+                    email: listing.user.email,
+                    profile_image_path: listing.user.profile_image_path || undefined,
+                    avatar_url: listing.user.profile_image_path
+                      ? getImagePublicUrl("profiles", listing.user.profile_image_path)
+                      : undefined,
+                    is_rice_student: listing.user.affiliation === "Rice Student",
+                  }
                 : undefined,
             }}
           />
         </div>
       </div>
-    </Suspense>
+    </div>
   );
-};
-
-export default ListingPage;
+}

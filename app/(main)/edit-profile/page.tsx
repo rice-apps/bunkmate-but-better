@@ -2,7 +2,7 @@
 
 import { FormDataType } from '../../types'; // adjust the number of ../ based on location
 import React, { useState, useEffect } from 'react';
-import { Input } from "@/components/ui/input";
+import { formatPhoneNumber, Input } from "@/components/ui/input";
 import { Upload, PencilIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";

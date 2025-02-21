@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import ListingCard from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
-import LoadingCircle from "@/components/LoadingCircle";
 import LoadingCard from "@/components/LoadingCard";
 import { motion } from "framer-motion";
-import { FcFeedback } from "react-icons/fc";
 import { MdChatBubble } from "react-icons/md";
 
 interface Listing {
@@ -32,14 +30,13 @@ interface Favorite {
   listing_id: number;
 }
 
-// Search params component
 function SearchParamsProvider({
-  onParamsChange
+  onParamsChange,
 }: {
   onParamsChange: (params: ReturnType<typeof useSearchParams>) => void;
 }) {
   const searchParams = useSearchParams();
-  
+
   useEffect(() => {
     onParamsChange(searchParams);
   }, [searchParams, onParamsChange]);
@@ -47,7 +44,7 @@ function SearchParamsProvider({
   return null;
 }
 
-export default function Index() {
+export default function Page() {
   const supabase = createClient();
   const router = useRouter();
   const [listings, setListings] = useState<Listing[] | null>(null);
@@ -55,25 +52,22 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadingCardCount, setLoadingCardCount] = useState(4);
-  const [currentSearchParams, setCurrentSearchParams] = useState<ReturnType<typeof useSearchParams> | null>(null);
+  const [currentSearchParams, setCurrentSearchParams] = useState<
+    ReturnType<typeof useSearchParams> | null
+  >(null);
 
   useEffect(() => {
     const updateLoadingCardCount = () => {
       const width = window.innerWidth;
-      if (width >= 1024) setLoadingCardCount(8); // lg: 4 columns
-      else if (width >= 768) setLoadingCardCount(6); // md: 3 columns
-      else if (width >= 640) setLoadingCardCount(4); // sm: 2 columns
-      else setLoadingCardCount(2); // mobile: 1 column
+      if (width >= 1024) setLoadingCardCount(8);
+      else if (width >= 768) setLoadingCardCount(6);
+      else if (width >= 640) setLoadingCardCount(4);
+      else setLoadingCardCount(2);
     };
 
-    // Set initial count
     updateLoadingCardCount();
-
-    // Add resize listener
-    window.addEventListener('resize', updateLoadingCardCount);
-
-    // Cleanup
-    return () => window.removeEventListener('resize', updateLoadingCardCount);
+    window.addEventListener("resize", updateLoadingCardCount);
+    return () => window.removeEventListener("resize", updateLoadingCardCount);
   }, []);
 
   useEffect(() => {
@@ -82,83 +76,86 @@ export default function Index() {
         setIsLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
 
-        let query = supabase.from('listings').select();
+        let query = supabase.from("listings").select();
 
-        const startDate = (currentSearchParams && currentSearchParams.get('startDate') ? new Date(currentSearchParams.get('startDate')!) : null);
-        const endDate = (currentSearchParams && currentSearchParams.get('endDate') ? new Date(currentSearchParams.get('endDate')!) : null);
-        const distance = (currentSearchParams && currentSearchParams.get('distance')) || null;
+        const startDate = currentSearchParams?.get("startDate")
+          ? new Date(currentSearchParams.get("startDate")!)
+          : null;
+        const endDate = currentSearchParams?.get("endDate")
+          ? new Date(currentSearchParams.get("endDate")!)
+          : null;
+        const distance = currentSearchParams?.get("distance") || null;
 
-        // Apply filters
         if (startDate) {
           const startRange = new Date(startDate);
-          startRange.setMonth(startRange.getMonth() - 1); // One month before
+          startRange.setMonth(startRange.getMonth() - 1);
           const endRange = new Date(startDate);
-          endRange.setMonth(endRange.getMonth() + 1); // One month after
+          endRange.setMonth(endRange.getMonth() + 1);
 
-          query = query.gte('start_date', startRange.toISOString());
-          query = query.lte('start_date', endRange.toISOString());
+          query = query.gte("start_date", startRange.toISOString());
+          query = query.lte("start_date", endRange.toISOString());
         }
         if (endDate) {
           const startRange = new Date(endDate);
-          startRange.setMonth(startRange.getMonth() - 1); // One month before
+          startRange.setMonth(startRange.getMonth() - 1);
           const endRange = new Date(endDate);
-          endRange.setMonth(endRange.getMonth() + 1); // One month after
+          endRange.setMonth(endRange.getMonth() + 1);
 
-          query = query.gte('end_date', startRange.toISOString());
-          query = query.lte('end_date', endRange.toISOString());
+          query = query.gte("end_date", startRange.toISOString());
+          query = query.lte("end_date", endRange.toISOString());
         }
-        // Implement distance filtering logic here if applicable
+
         if (distance) {
-          if (distance == "< 1 mile") query = query.lte('distance', 1);
-          else if (distance == "< 3 miles") query = query.lte('distance', 3);
-          else if (distance == "< 5 miles") query = query.lte('distance', 5);
-          else if (distance == "> 5 miles") query = query.gte('distance', 5);
+          if (distance === "< 1 mile") query = query.lte("distance", 1);
+          else if (distance === "< 3 miles") query = query.lte("distance", 3);
+          else if (distance === "< 5 miles") query = query.lte("distance", 5);
+          else if (distance === "> 5 miles") query = query.gte("distance", 5);
 
-          query = query.order('distance');
+          query = query.order("distance");
         }
 
-        const { data: listings, error } = await query.order('created_at', { ascending: false });
+        const { data: listings, error } = await query.order("created_at", {
+          ascending: false,
+        });
 
         if (error) throw error;
 
         setListings(listings);
 
-        const { data: favorites } = await supabase.from('users_favorites').select('listing_id').eq('user_id', user?.id);
+        if (!user) {
+          router.push("/sign-in");
+          return;
+        }
 
-        // Convert the list of favorites to an object for faster lookups.
+        const { data: favorites } = await supabase.from("users_favorites")
+          .select("listing_id").eq("user_id", user?.id);
+
         const favoritesObject: { [key: number]: boolean } = {};
         favorites?.forEach((favorite: Favorite) => {
           favoritesObject[favorite.listing_id] = true;
         });
 
         setFavorites(favoritesObject);
-
-        if (!user) {
-          router.push('/sign-in');
-          return;
-        }
-      }
-      catch (error) {
+      } catch (error) {
         console.error(error);
-        setError('Failed to load listings');
-      }
-      finally {
+        setError("Failed to load listings");
+      } finally {
         setIsLoading(false);
       }
     }
     fetchPosts();
-  }, [router, currentSearchParams]);
+  }, [router, currentSearchParams, supabase]);
 
   const renderLoadingState = () => (
     <>
-      {[...Array(loadingCardCount)].map((_, index) => (
+      {Array.from({ length: loadingCardCount }).map((_, index) => (
         <LoadingCard key={`loading-${index}`} />
       ))}
     </>
   );
 
   const renderError = () => (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -177,23 +174,23 @@ export default function Index() {
   );
 
   return (
-    <>
+    <div>
       <Suspense fallback={null}>
         <SearchParamsProvider onParamsChange={setCurrentSearchParams} />
       </Suspense>
-      <motion.main 
+      <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="mx-auto py-8 w-full"
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {isLoading ? renderLoadingState() : error ? renderError() :
-            (
-              <>
-                {listings && listings.map((listing, index) => (
-                  <motion.div 
-                    key={listing.id} 
+          {isLoading ? renderLoadingState() : error ? renderError() : (
+            <>
+              {listings && listings.length > 0
+                ? listings.map((listing, index) => (
+                  <motion.div
+                    key={listing.id}
                     className="w-full"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -202,9 +199,14 @@ export default function Index() {
                     <ListingCard
                       postId={listing.id.toString()}
                       name={listing.title}
-                      imagePath={getImagePublicUrl("listing_images", (listing.image_paths[0]))}
+                      imagePath={getImagePublicUrl(
+                        "listing_images",
+                        listing.image_paths[0],
+                      )}
                       distance={listing.distance}
-                      duration={`${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`}
+                      duration={`${
+                        new Date(listing.start_date).toLocaleDateString()
+                      } - ${new Date(listing.end_date).toLocaleDateString()}`}
                       price={`$${listing.price} / month`}
                       isRiceStudent={true}
                       ownListing={false}
@@ -212,18 +214,19 @@ export default function Index() {
                       imagePaths={listing.image_paths}
                     />
                   </motion.div>
-                )) : (
-                  <motion.div 
-                  className="col-span-full flex flex-col items-center justify-center py-12"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
+                ))
+                : (
+                  <motion.div
+                    className="col-span-full flex flex-col items-center justify-center py-12"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
                   >
-                  <p className="text-gray-500 text-lg">No listings found</p>
+                    <p className="text-gray-500 text-lg">No listings found</p>
                   </motion.div>
                 )}
-              </>
-            )}
+            </>
+          )}
         </div>
       </motion.main>
       <motion.div
@@ -245,6 +248,6 @@ export default function Index() {
           </Button>
         </motion.a>
       </motion.div>
-    </>
+    </div>
   );
 }
