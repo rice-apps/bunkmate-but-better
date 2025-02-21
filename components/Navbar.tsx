@@ -270,17 +270,15 @@ const Navbar = ({
         style={{ height: "15vh" }}
       >
         {/* Logo */}
-        <Link href="/" className="flex flex-row gap-[8.33] place-items-center">
-          <Image
-            src="/bunkmate_logo.png"
-            alt="Bunkmate Logo"
-            width={35}
+        <Link href='/' className='flex-shrink-0 flex flex-row gap-[8.33] items-center'>
+          <Image 
+            src="/bunkmate_logo.png" 
+            alt="Bunkmate Logo" 
+            width={35} 
             height={35}
-            style={{ width: "auto", height: "auto" }}
+            className="w-[35px] h-[35px]"
           />
-          <p className="ml-4 text-[30px] text-[#FF7439] font-semibold hidden md:block">
-            bunkmate
-          </p>
+          <p className="ml-4 text-[30px] text-[#FF7439] font-semibold hidden md:block">bunkmate</p>
         </Link>
 
         {/* Desktop Filter */}
