@@ -148,9 +148,9 @@ const Navbar = ({
   }, [startDate, endDate, distance, pathname]);
 
   const FilterContent = () => (
-    <div className="w-full flex flex-col lg:flex-row lg:h-[78px] lg:border-[2px] lg:border-[#D9D9D9] lg:rounded-[50px] lg:shadow-lg items-center justify-between whitespace-nowrap mx-auto lg:p-0 space-y-6 lg:space-y-0">
+    <div className="max-w-[650px] w-full flex flex-col lg:flex-row lg:h-[78px] lg:border-[2px] lg:border-[#D9D9D9] lg:rounded-[50px] lg:shadow-lg items-center justify-between whitespace-nowrap mx-auto lg:p-0 space-y-6 lg:space-y-0">
       {/* Distance from Rice */}
-      <div className="w-full lg:w-[212px] lg:border-r lg:flex lg:justify-center lg:items-center lg:flex-col flex flex-col items-center lg:items-start">
+      <div className="w-full lg:max-w-[180px] lg:flex lg:justify-center lg:items-center lg:flex-col flex flex-col items-center lg:items-start">
         <div className="text-center lg:text-left lg:ml-[10px]">
           <p className="text-[14px] font-semibold text-[#777777] mb-2 lg:mb-0">
             Distance from Rice
@@ -164,9 +164,9 @@ const Navbar = ({
         </div>
         <div className="block lg:hidden h-[2px] w-[60%] bg-[#777777] mt-4 rounded-full"></div>
       </div>
-
+      
       {/* Start Date */}
-      <div className="w-full lg:w-[212px] lg:border-r lg:flex lg:justify-center lg:items-center lg:flex-col flex flex-col items-center lg:items-start">
+      <div className="w-full lg:max-w-[180px] lg:flex lg:justify-center lg:items-center lg:flex-col flex flex-col items-center lg:items-start">
         <div className="text-center lg:text-left">
           <p className="text-[14px] font-bold text-[#777777] mb-2 lg:mb-0">
             Start Date
@@ -208,7 +208,7 @@ const Navbar = ({
       </div>
 
       {/* End Date */}
-      <div className="w-full lg:w-[212px] lg:flex lg:justify-center lg:items-center lg:flex-col flex flex-col items-center lg:items-start">
+      <div className="w-full lg:max-w-[180px] lg:flex lg:justify-center lg:items-center lg:flex-col flex flex-col items-center lg:items-start">
         <div className="text-center lg:text-left">
           <p className="text-[14px] font-semibold text-[#777777] mb-2 lg:mb-0">
             End Date
