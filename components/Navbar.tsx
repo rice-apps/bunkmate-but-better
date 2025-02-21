@@ -162,6 +162,7 @@ const Navbar = ({
             setValue={setDistance}
           />
         </div>
+        <div className="block lg:hidden h-[2px] w-[60%] bg-[#777777] mt-4 rounded-full"></div>
       </div>
 
       {/* Start Date */}
@@ -203,6 +204,7 @@ const Navbar = ({
             </PopoverContent>
           </Popover>
         </div>
+        <div className="block lg:hidden h-[2px] w-[60%] bg-[#777777] mt-4 rounded-full"></div>
       </div>
 
       {/* End Date */}
@@ -247,8 +249,8 @@ const Navbar = ({
 
       {/* Search Button */}
       <div className="w-full lg:w-auto flex justify-center mt-4 lg:mt-0">
-        <button className="p-2 lg:pr-8">
-          <FaMagnifyingGlass className="h-[24px] w-[24px] lg:h-[29px] lg:w-[25px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105" />
+        <button className="p-2 lg:pr-8 bg-[#FF7439] lg:bg-inherit rounded-lg">
+          <FaMagnifyingGlass className="h-[24px] w-[24px] lg:h-[29px] lg:w-[25px] transition-transform duration-100 text-white hover:text-[#777777] lg:text-[#FF7439] lg:hover:text-[#BB5529] hover:scale-105" />
         </button>
       </div>
     </div>
