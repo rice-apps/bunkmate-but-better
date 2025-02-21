@@ -358,6 +358,7 @@ const EditListing = () => {
           handleSubmit={handleSubmit}
           onBack={handlePreviousCategory}
           isPosting={isPosting}
+          editingMode={true}
         />;
       default:
         return <TitleDescription

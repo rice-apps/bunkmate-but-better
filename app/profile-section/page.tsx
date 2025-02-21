@@ -15,6 +15,7 @@ import LoadingCircle from "@/components/LoadingCircle";
 import Link from 'next/link';
 import { RiPencilFill } from 'react-icons/ri';
 import { MdLogout } from "react-icons/md";
+import { formatPhoneNumber } from "@/components/ui/input";
 
 
 type Listing = {
@@ -288,7 +289,7 @@ export default function Index() {
 
                       <div className="gap-4">
                         <h1 className="text-lg font-medium">Phone Number</h1>
-                        <p className="text-lg text-gray-400">{profile?.phone ? profile?.phone : 'Please enter your phone number in "Edit Profile"'}</p>
+                        <p className="text-lg text-gray-400">{profile?.phone ? formatPhoneNumber(profile?.phone) : 'Please enter your phone number in "Edit Profile"'}</p>
                       </div>
                     </div>
                   </motion.div>

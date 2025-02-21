@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { Input } from "@/components/ui/input";
+import { formatPhoneNumber, Input } from "@/components/ui/input";
 import { Upload, PencilIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -389,10 +389,17 @@ const EditProfile = () => {
           <h2 className='text-2xl font-medium mt-20'>Phone Number</h2>
           <p className='mt-2 text-gray-400 text-sm'>Use the number you'd like to be contacted with.</p>
           <Input 
+            type="tel"
             name="phone"
-            value={formData.phone}
-            onChange={handleInputChange}
-            placeholder="+1 (xxx) xxx-xxxx" 
+            value={formatPhoneNumber(formData.phone)}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, '');
+              if (value.length <= 10) {
+                setFormData(prev => ({ ...prev, phone: value }));
+              }
+            }}
+            placeholder="(123) 456-7890"
+            maxLength={14}
             className='w-full rounded-xl mt-8 border border-gray-200' 
           />
         </motion.div>

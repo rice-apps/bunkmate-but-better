@@ -1,5 +1,5 @@
 import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
+import {formatPhoneNumber, Input} from "@/components/ui/input";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 import {createClient, getImagePublicUrl} from "@/utils/supabase/client";
 import Link from "next/link";
@@ -15,12 +15,14 @@ const Profile = ({
   onBack,
   handleSubmit,
   isPosting,
+  editingMode = false,
 }: {
   formData: any;
   setFormData: any;
   onBack: () => void;
   handleSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   isPosting: boolean;
+  editingMode: boolean;
 }) => {
   const isComplete = Boolean(
     formData.title.length >= 1 &&
@@ -164,22 +166,21 @@ const Profile = ({
         <div className="mt-10">
           <h2 className="text-[1.25rem] font-medium mb-2 mt-4">Phone Number</h2>
           <p className="text-sm text-gray-400 mb-6">Use the number you&apos;d like to be contacted with.</p>
-          <div>
+            <div>
             <Input
               type="tel"
-              placeholder="+1 (123) 456-7890"
-              value={formData.phone}
+              placeholder="(123) 456-7890"
+              value={formatPhoneNumber(formData.phone)}
               onChange={e => {
-                const value = e.target.value;
-                if (/^\+?[0-9\s()-]*$/.test(value)) {
-                  setFormData({...formData, phone: value});
-                }
+              const value = e.target.value.replace(/\D/g, '');
+              if (value.length <= 10) {
+                setFormData({...formData, phone: value});
+              }
               }}
-              maxLength={15}
-              // className="p-4 rounded-xl border border-[#B5B5B5]"
+              maxLength={14}
               className="h-15 p-4 rounded-xl border border-[#B5B5B5]"
             />
-          </div>
+            </div>
         </div>
       </div>
 
@@ -198,7 +199,7 @@ const Profile = ({
           disabled={!isComplete || isPosting}
           onClick={e => handleSubmit(e)}
         >
-          <p>Post</p>
+          <p>{editingMode ? "Save" : "Post"}</p>
         </Button>
       </div>
     </div>
