@@ -5,14 +5,13 @@ import "./globals.css";
 import PostListingFormProvider from "@/providers/PostListingFormProvider";
 import { Suspense } from "react";
 
-const dmsans = DM_Sans({ subsets: ["latin"] });
-
 // Configure DM Sans font
-const dmsans = DM_Sans({ 
+const dmsans = DM_Sans({
   subsets: ["latin"],
-  display: 'swap',  // Add display swap for better font loading
-  adjustFontFallback: true  // Ensure proper font fallback
+  display: "swap", // Add display swap for better font loading
+  adjustFontFallback: true, // Ensure proper font fallback
 });
+
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -21,7 +20,8 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "BunkMate - On Demand Subletting and Off-Campus Leasing",
-  description: "Find Off-campus housing and subletters with ease using Bunkmate.",
+  description:
+    "Find Off-campus housing and subletters with ease using Bunkmate.",
 };
 
 export default function RootLayout({
@@ -30,13 +30,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html 
-      lang="en" 
-      suppressHydrationWarning 
+    <html
+      lang="en"
+      suppressHydrationWarning
       className={`${GeistSans.className}`}
     >
-      <body 
-        className="bg-background text-foreground ${dmsans.className}"
+      <body
+        className={`bg-background text-foreground ${dmsans.className}`}
         suppressHydrationWarning
       >
         <ThemeProvider
@@ -45,20 +45,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <PostListingFormProvider>
-              <main className="min-h-screen flex flex-col items-center font-sans">
-                {children}
-              </main>
-            </PostListingFormProvider>
-          </ThemeProvider>
-        </body>
-      </html>
-    </Suspense>
+          <PostListingFormProvider>
+            <main className="min-h-screen flex flex-col items-center font-sans">
+              {children}
+            </main>
+          </PostListingFormProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }
