@@ -1,8 +1,11 @@
 import { GeistSans } from "geist/font/sans";
+import {DM_Sans} from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import PostListingFormProvider from "@/providers/PostListingFormProvider";
 import { Suspense } from "react";
+
+const dmsans = DM_Sans({subsets: ["latin"]});
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -22,8 +25,8 @@ export default async function RootLayout({
 }) {
   return (
     <Suspense>
-    <html lang="en" suppressHydrationWarning>
-      <body className="bg-background text-foreground" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={GeistSans.className}>
+      <body className={`${dmsans.className} bg-background text-foreground`} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
