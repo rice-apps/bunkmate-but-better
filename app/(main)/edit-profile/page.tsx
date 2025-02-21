@@ -231,10 +231,10 @@ const EditProfile = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className='w-full flex justify-between items-center mt-14'
+        className='w-full flex justify-between items-center mt-14 flex-wrap-reverse gap-y-4'
       >
         <h2 className='text-2xl font-medium'>Your Profile Information</h2>
-        <div className='flex space-x-4'>
+        <div className='flex space-x-6'>
           <button 
             onClick={handleCancel}
             className='px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 hover:cursor-pointer hover:scale-105 transition duration-300'
@@ -255,9 +255,9 @@ const EditProfile = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className='flex flex-row w-full h-full space-x-5 mt-14 mb-20'
+        className='flex flex-row w-full h-full gap-x-5 gap-y-6 mt-14 mb-20 flex-wrap'
       >
-        <div className='w-1/3 h-full'>
+        <div className='flex-1 h-full'>
           <motion.h2 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -318,7 +318,7 @@ const EditProfile = () => {
             <p className='mt-2 text-gray-400 text-sm'>Below, select the option that applies to you:</p>
             
             <RadioGroup 
-              className="mt-8 space-y-1 w-3/5"
+              className="mt-8 space-y-1 max-w-[500px]"
               value={formData.riceAffiliation || undefined}
               onValueChange={(value) => setFormData(prev => ({ ...prev, riceAffiliation: value as 'student' | 'alum' }))}
             >
@@ -350,7 +350,7 @@ const EditProfile = () => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 1 }}
-          className='w-2/3 h-full mb-20'
+          className='flex-2 h-full mb-20'
         >
           {/* Name Fields */}
           <h2 className='text-2xl font-medium'>Name</h2>

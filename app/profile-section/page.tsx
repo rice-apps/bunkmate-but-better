@@ -198,7 +198,7 @@ export default function Index() {
                 </h1>
               </motion.div>
               <div>
-              <div className='mt-4 flex flex-row justify-between mt-[3vh]'>
+              <div className='mt-4 flex flex-row justify-between mt-[3vh] flex-wrap-reverse gap-y-4'>
                 <h1 className="text-left text-[24px] text-#000000 font-medium">Your Profile Information</h1>
                 
                 <div className='flex flex-row gap-[20px]'>
