@@ -78,6 +78,7 @@ export default function Index() {
         const startDate = (searchParams && searchParams.get('startDate') ? new Date(searchParams.get('startDate')!) : null);
         const endDate = (searchParams && searchParams.get('endDate') ? new Date(searchParams.get('endDate')!) : null);
         const distance = (searchParams && searchParams.get('distance')) || null;
+        const searchQuery = (searchParams && searchParams.get('search')) || null;
 
         // Apply filters
         if (startDate) {
@@ -104,6 +105,11 @@ export default function Index() {
           else if (distance == "< 3 miles") query = query.lte('distance', 3).gte('distance', 1);
           else if (distance == "< 5 miles") query = query.lte('distance', 5).gte('distance', 3);
           else if (distance == "> 5 miles") query = query.gte('distance', 5);
+        }
+
+        // Add search query filter
+        if (searchQuery) {
+          query = query.or(`title.ilike.%${searchQuery}%,address.ilike.%${searchQuery}%`);
         }
 
         const { data: listings, error } = await query.order('created_at', { ascending: false });
