@@ -126,7 +126,9 @@ const Navbar = ({
     if (distance !== distanceTitle) queryParams.set("distance", distance);
     if (distance === distanceTitle) queryParams.delete("distance");
     if (startDate) queryParams.set("startDate", startDate.toISOString());
+    if (!startDate) queryParams.delete("startDate");
     if (endDate) queryParams.set("endDate", endDate.toISOString());
+    if (!endDate) queryParams.delete("endDate");
     router.push(`/?${queryParams.toString()}`);
   };
 
