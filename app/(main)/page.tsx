@@ -40,11 +40,13 @@ export default function Index() {
   const [listings, setListings] = useState<Listing[] | null>(null);
   const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingCardCount, setLoadingCardCount] = useState(4);
+  const [visibleListings, setVisibleListings] = useState(24);
+  const listingsPerLoad = 24;
 
   const searchParams = useSearchParams(); // Use useSearchParams
-
 
   useEffect(() => {
     const updateLoadingCardCount = () => {
@@ -163,6 +165,14 @@ export default function Index() {
     </motion.div>
   );
 
+  const loadMore = async () => {
+    setIsLoadingMore(true);
+    // Simulate loading delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setVisibleListings(prev => prev + listingsPerLoad);
+    setIsLoadingMore(false);
+  };
+
   return (
     <>
       <motion.main 
@@ -175,13 +185,13 @@ export default function Index() {
           {isLoading ? renderLoadingState() : error ? renderError() :
             (
               <>
-                {listings && listings.map((listing, index) => (
+                {listings && listings.slice(0, visibleListings).map((listing, index) => (
                   <motion.div 
                     key={listing.id} 
                     className="w-full"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    transition={{ duration: 0.5, delay: (index % listingsPerLoad) * 0.1 }}
                   >
                     <ListingCard
                       postId={listing.id.toString()}
@@ -197,9 +207,41 @@ export default function Index() {
                     />
                   </motion.div>
                 ))}
+                {isLoadingMore && (
+                  [...Array(loadingCardCount)].map((_, index) => (
+                    <motion.div
+                      key={`loading-more-${index}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <LoadingCard />
+                    </motion.div>
+                  ))
+                )}
               </>
             )}
         </div>
+        
+        {/* Load More Button */}
+        {!isLoading && !error && listings && visibleListings < listings.length && (
+          <div className="flex justify-center mt-8">
+            <Button 
+              onClick={loadMore}
+              className="bg-[#FF7439] hover:bg-[#FF7439]/90 text-white font-semibold px-6 py-3 rounded-full"
+              disabled={isLoadingMore}
+            >
+              {isLoadingMore ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Loading...</span>
+                </div>
+              ) : (
+                'Load More'
+              )}
+            </Button>
+          </div>
+        )}
       </motion.main>
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
