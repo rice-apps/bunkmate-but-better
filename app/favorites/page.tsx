@@ -229,7 +229,7 @@ export default function Favorites() {
         animate={{ opacity: 1, scale: 1 }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-9 right-9 p-0.5 cursor-pointer rounded-full shadow-lg bg-[#FF7439] border-[#FF7439] hover:bg-white transition-all duration-300"
+        className="fixed bottom-9 left-9 p-0.5 cursor-pointer rounded-full shadow-lg bg-[#FF7439] border-[#FF7439] hover:bg-white transition-all duration-300"
         onClick={scrollToTop}
       >
         <BsArrowUpCircleFill className="w-16 h-16 text-white group-hover:text-[#FF7439]" />
