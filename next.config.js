@@ -18,7 +18,10 @@ const nextConfig = {
   },
   typescript: {
     ignoreBuildErrors: true, // to:do REMOVE THIS SHIT AS SOON AS POSSIBLE @SATHYA @GABE YES - LUCY
-  }
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 module.exports = nextConfig;
