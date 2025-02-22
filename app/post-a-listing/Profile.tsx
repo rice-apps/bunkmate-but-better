@@ -1,5 +1,5 @@
 import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
+import {formatPhoneNumber, Input} from "@/components/ui/input";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 import {createClient, getImagePublicUrl} from "@/utils/supabase/client";
 import Link from "next/link";
@@ -15,12 +15,14 @@ const Profile = ({
   onBack,
   handleSubmit,
   isPosting,
+  editingMode = false,
 }: {
   formData: any;
   setFormData: any;
   onBack: () => void;
   handleSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   isPosting: boolean;
+  editingMode: boolean;
 }) => {
   const isComplete = Boolean(
     formData.title.length >= 1 &&
@@ -72,7 +74,7 @@ const Profile = ({
 
   return (
     <div>
-      <div className="flex flex-row justify-between mr-10">
+      <div className="flex flex-row justify-between flex-wrap-reverse gap-4 pb-2 items-center">
         <div>
           <h1 className="text-2xl font-semibold">Profile</h1>
         </div>
@@ -85,7 +87,7 @@ const Profile = ({
         </Link>
         .
       </h2>
-      <div className="grid grid-cols-[1fr_2fr] items-start gap-4 pl-8 mt-10 mb-10">
+      <div className="flex flex-row flex-wrap items-start gap-4 pl-8 mt-10 mb-10">
         <div>
           <h2 className="text-[1.25rem] font-medium mb-4">Profile Picture</h2>
           {profile.image ? (
@@ -123,8 +125,9 @@ const Profile = ({
             value={formData.affiliation}
             onValueChange={value => setFormData({...formData, affiliation: value})}
           >
+            <label className="block cursor-pointer">
             <div
-              className={`flex items-center w-[23rem] space-x-2 p-4 rounded-xl border-2 
+              className={`flex items-center space-x-2 p-4 rounded-xl border-2 
           ${
             formData.affiliation === "student"
               ? "border-[#FF7439] bg-[#FF7439]/30"
@@ -141,8 +144,10 @@ const Profile = ({
               />
               <label className="text-sm text-[#777777] font-medium">I am a Rice student</label>
             </div>
+            </label>
+            <label className="block cursor-pointer">
             <div
-              className={`flex items-center w-[23rem] space-x-2 p-4 rounded-xl border-2 
+              className={`flex items-center space-x-2 p-4 rounded-xl border-2 
           ${formData.affiliation === "alum" ? "border-[#FF7439] bg-[#FF7439]/30" : "border-[#B5B5B5] bg-gray-50"}`}
             >
               <RadioGroupItem
@@ -153,6 +158,7 @@ const Profile = ({
               />
               <label className="text-sm text-[#777777] font-medium">I am a Rice alum</label>
             </div>
+            </label>
           </RadioGroup>
         </div>
       </div>
@@ -160,22 +166,21 @@ const Profile = ({
         <div className="mt-10">
           <h2 className="text-[1.25rem] font-medium mb-2 mt-4">Phone Number</h2>
           <p className="text-sm text-gray-400 mb-6">Use the number you&apos;d like to be contacted with.</p>
-          <div>
+            <div>
             <Input
               type="tel"
-              placeholder="+1 (123) 456-7890"
-              value={formData.phone}
+              placeholder="(123) 456-7890"
+              value={formatPhoneNumber(formData.phone)}
               onChange={e => {
-                const value = e.target.value;
-                if (/^\+?[0-9\s()-]*$/.test(value)) {
-                  setFormData({...formData, phone: value});
-                }
+              const value = e.target.value.replace(/\D/g, '');
+              if (value.length <= 10) {
+                setFormData({...formData, phone: value});
+              }
               }}
-              maxLength={15}
-              // className="p-4 rounded-xl border border-[#B5B5B5]"
+              maxLength={14}
               className="h-15 p-4 rounded-xl border border-[#B5B5B5]"
             />
-          </div>
+            </div>
         </div>
       </div>
 
@@ -194,7 +199,7 @@ const Profile = ({
           disabled={!isComplete || isPosting}
           onClick={e => handleSubmit(e)}
         >
-          <p>Post</p>
+          <p>{editingMode ? "Save" : "Post"}</p>
         </Button>
       </div>
     </div>

@@ -1,12 +1,11 @@
-//(main)/page.tsx
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import ListingCard from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@bprogress/next";
 import LoadingCircle from "@/components/LoadingCircle";
 import LoadingCard from "@/components/LoadingCard";
 import { motion } from "framer-motion";
@@ -99,9 +98,11 @@ export default function Index() {
         // Implement distance filtering logic here if applicable
         if (distance) {
           if (distance == "< 1 mile") query = query.lte('distance', 1);
-          else if (distance == "< 3 miles") query = query.lte('distance', 3).gte('distance', 1);
-          else if (distance == "< 5 miles") query = query.lte('distance', 5).gte('distance', 3);
+          else if (distance == "< 3 miles") query = query.lte('distance', 3);
+          else if (distance == "< 5 miles") query = query.lte('distance', 5);
           else if (distance == "> 5 miles") query = query.gte('distance', 5);
+
+          query = query.order('distance');
         }
 
         const { data: listings, error } = await query.order('created_at', { ascending: false });
@@ -134,7 +135,7 @@ export default function Index() {
       }
     }
     fetchPosts();
-  }, [router, searchParams]);
+  }, [searchParams]);
 
   const renderLoadingState = () => (
     <>
@@ -164,7 +165,7 @@ export default function Index() {
   );
 
   return (
-    <>
+    <Suspense>
       <motion.main 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -175,7 +176,7 @@ export default function Index() {
           {isLoading ? renderLoadingState() : error ? renderError() :
             (
               <>
-                {listings && listings.map((listing, index) => (
+                {listings && (listings.length > 0)  ? listings.map((listing, index) => (
                   <motion.div 
                     key={listing.id} 
                     className="w-full"
@@ -196,7 +197,16 @@ export default function Index() {
                       imagePaths={listing.image_paths}
                     />
                   </motion.div>
-                ))}
+                )) : (
+                  <motion.div 
+                  className="col-span-full flex flex-col items-center justify-center py-12"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  >
+                  <p className="text-gray-500 text-lg">No listings found</p>
+                  </motion.div>
+                )}
               </>
             )}
         </div>
@@ -220,6 +230,6 @@ export default function Index() {
           </Button>
         </motion.a>
       </motion.div>
-    </>
+    </Suspense>
   );
 }

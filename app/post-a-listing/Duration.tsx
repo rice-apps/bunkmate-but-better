@@ -39,7 +39,7 @@ const Duration = ({
 
   return (
     <div>
-      <div className="flex flex-row justify-between mr-10">
+      <div className="flex flex-row justify-between flex-wrap-reverse gap-4 pb-2 items-center">
         <div>
           <h1 className="text-2xl font-semibold mb-3">Duration</h1>
         </div>
@@ -47,8 +47,8 @@ const Duration = ({
       </div>
       <h2 className="text-sm font-bold">Set the start and end dates of your lease here. </h2>
 
-      <div className="flex justify-between mt-10">
-        <div className="w-[49%]">
+      <div className="flex justify-between mt-10 flex-wrap gap-4">
+        <div className="flex-1">
           <h2 className="text-2xl font-medium mb-2">Start Date</h2>
           <span className="text-sm text-gray-400 mb-5 block">Required: Please select a start date</span>
           <div className="relative">
@@ -78,7 +78,7 @@ const Duration = ({
           </div>
         </div>
 
-        <div className="w-[49%]">
+        <div className="flex-1">
           <h2 className="text-2xl font-medium mb-2">End Date</h2>
           <span className="text-sm text-gray-400 mb-5 block">Required: Please select an end date</span>
           <div className="relative">
