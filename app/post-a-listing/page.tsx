@@ -71,7 +71,7 @@ const PostListing = () => {
       formData.photos.length >= 5 &&
       formData.phone,
   );
-  console.log(formData.address);
+
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setIsPosting(true);
@@ -288,7 +288,7 @@ const PostListing = () => {
       {
         id: "title",
         name: "Title & Description",
-        completed: formData.title.length >= 1 && formData.description.length >= 100,
+        completed: formData.title.length >= 1 && formData.description.length >= 100 && !isNaN(formData.bed_num) && !isNaN(formData.bath_num)
       },
       {
         id: "pricing",
