@@ -205,7 +205,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
         transition={{duration: 0.5, delay: 0.2}}
         className="mb-6 w-full"
       >
-        <div className="flex items-center mt-4 mb-2 w-full">
+        <div className="flex items-center mt-4 mb-2 flex-wrap-reverse gap-y-4">
           <h1 className="text-4xl font-semibold">{data.title}</h1>
           <motion.div whileHover={{scale: 1.1}} whileTap={{scale: 0.9}}>
             <FaHeart
@@ -216,10 +216,10 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           </motion.div>
 
           {isPreview && (
-            <div className="ml-auto flex gap-2">
+            <div className="flex-1 flex justify-end gap-2 pl-4">
               <Button className="rounded-lg px-6 flex items-center bg-[#777777] hover:bg-[#777777]/90" onClick={() => router.back()}>
-                <Image src="/edit-icon.png" alt="Edit" width={16} height={16} className="" />
-                BACK TO LISTING EDITOR
+              <Image src="/edit-icon.png" alt="Edit" width={16} height={16} />
+              BACK TO LISTING EDITOR
               </Button>
             </div>
           )}
