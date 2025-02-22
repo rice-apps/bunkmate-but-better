@@ -26,6 +26,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "@bprogress/next";
 import { createClient } from "@/utils/supabase/client";
 import { set } from "date-fns";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface ModularDropDownProps {
   allOptions: string[];
@@ -429,8 +430,14 @@ const Navbar = ({
       </div>
 
       {/* Mobile Menu */}
+      <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-y-0 right-0 w-64 bg-[#FF7439] z-50 transform transition-transform duration-300">
+        <motion.div
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="fixed inset-y-0 right-0 w-64 bg-[#FF7439] z-50">
           <div className="p-4 pl-10 text-white space-y-6 flex flex-col text-[18px] mt-12">
             <button
               onClick={() => setIsOpen(false)}
@@ -486,8 +493,9 @@ const Navbar = ({
               <span>Logout</span>
             </button>
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 };
