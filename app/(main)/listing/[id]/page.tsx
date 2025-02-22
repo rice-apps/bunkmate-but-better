@@ -116,7 +116,7 @@ const ListingPage = () => {
     };
 
     fetchListing();
-  }, [listingId, supabase]);
+  }, [listingId]);
 
   if (isLoading) {
     return <LoadingCircle />;

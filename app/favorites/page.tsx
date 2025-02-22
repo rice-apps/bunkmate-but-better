@@ -109,7 +109,7 @@ export default function Favorites() {
       }
     }
     fetchPosts();
-  }, [router]);
+  }, []);
 
   const scrollToTop = () => {
     window.scrollTo({

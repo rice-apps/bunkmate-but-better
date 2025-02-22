@@ -165,7 +165,7 @@ const EditListing = () => {
     return () => {
       isMounted = false;
     };
-  }, [listingId, supabase]);
+  }, [listingId]);
 
   const isComplete = Boolean(
     formData.title.length >= 1 &&

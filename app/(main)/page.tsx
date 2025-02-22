@@ -135,7 +135,7 @@ export default function Index() {
       }
     }
     fetchPosts();
-  }, [router, searchParams]);
+  }, [searchParams]);
 
   const renderLoadingState = () => (
     <>
