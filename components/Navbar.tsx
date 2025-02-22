@@ -98,6 +98,14 @@ const Navbar = ({includeFilter=true, includePostBtn=true}: NavbarProps) => {
     // Make sure the navbar reflects the search parameters even if you search from a different section
     // like the profile section
     useEffect(() => {
+      // Clear filters if URL has no search params
+      if (searchParams && !searchParams.toString()) {
+        setStartDate(undefined);
+        setEndDate(undefined);
+        setDistance(distanceTitle);
+        return;
+      }
+
       if (searchParams && searchParams.get('startDate')) {
         setStartDate(new Date(searchParams.get('startDate')!));
       }
@@ -107,7 +115,7 @@ const Navbar = ({includeFilter=true, includePostBtn=true}: NavbarProps) => {
       if (searchParams && searchParams.get('distance')) {
         setDistance(searchParams.get('distance')!);
       }
-    }, []);
+    }, [searchParams]);
   
     const handleFilterChange = () => {
       const queryParams = new URLSearchParams();
