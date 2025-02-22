@@ -106,6 +106,8 @@ const Navbar = ({
   const distanceTitle = "Search Properties";
   const [distance, setDistance] = useState(distanceTitle);
   const searchParams = useSearchParams(); // Use useSearchParams
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const pathname = usePathname();
 
@@ -168,6 +170,28 @@ const Navbar = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
+  // Add this function to handle search
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    const queryParams = new URLSearchParams(window.location.search);
+    if (query) queryParams.set("search", query);
+    if (!query) queryParams.delete("search");
+    const queryString = queryParams.toString();
+    router.push(`/?${queryString}`);
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      setShowSearch(false);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    handleSearch("");
+    setShowSearch(false);
+  };
+
   return (
     <div className="w-full">
       {/* Mobile Search Button */}
@@ -191,6 +215,29 @@ const Navbar = ({
             <div className="pt-4">
               {/* Mobile filter options */}
               <div className="space-y-6 flex flex-col justify-center items-center text-center">
+                {/* Search Input */}
+                <div className="w-full">
+                  <div className="relative flex items-center">
+                    <FaMagnifyingGlass className="absolute left-3 text-gray-400 w-5 h-5" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => handleSearch(e.target.value)}
+                      onKeyDown={handleSearchKeyDown}
+                      placeholder="Search by name or location..."
+                      className="w-full pl-10 pr-4 py-2 border-2 bg-white border-gray-200 rounded-full focus:outline-none focus:border-[#FF7439]"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={handleClearSearch}
+                        className="absolute right-3 text-gray-400 hover:text-gray-600"
+                      >
+                        <FaTimes className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
                 {/* Distance from Rice */}
                 <div>
                   <p className="text-[14px] font-semibold text-[#777777] mb-2">
@@ -295,101 +342,139 @@ const Navbar = ({
         </button>
 
         {includeFilter && (
-          <div className="hidden max-w-[780px] lg:flex h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3">
-            {/* Distance from Rice. */}
-            <div className="ml-[10px] flex justify-center items-center flex-col border-r w-[212px]">
-              <div className="text-left">
-                <p className="text-[14px] font-semibold text-[#777777]">
-                  {" "}
-                  Distance from Rice{" "}
-                </p>
-                <ModularDropDown
-                  allOptions={[
-                    "< 1 mile",
-                    "< 3 miles",
-                    "< 5 miles",
-                    "> 5 miles",
-                  ]}
-                  title={distanceTitle}
-                  value={distance}
-                  setValue={setDistance}
-                />
+          <div className="hidden max-w-[780px] lg:flex h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3 relative">
+            {/* Show search input when search is active */}
+            <AnimatePresence>
+              {showSearch ? (
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "100%" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute inset-0 bg-white rounded-[50px] flex items-center px-6 z-10"
+                >
+                  <FaMagnifyingGlass className="text-gray-400 w-5 h-5 mr-3" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    onKeyDown={handleSearchKeyDown}
+                    placeholder="Search by name or location..."
+                    className="w-full h-full bg-transparent outline-none text-gray-700"
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleClearSearch}
+                    className="ml-4 text-gray-400 hover:text-gray-600"
+                  >
+                    <FaTimes className="w-5 h-5" />
+                  </button>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+
+            {/* Existing filter options */}
+            <div className={`${showSearch ? 'opacity-0' : 'opacity-100'} flex flex-row items-center w-full`}>
+              {/* Distance from Rice. */}
+              <div className="ml-[10px] flex justify-center items-center flex-col border-r w-[212px]">
+                <div className="text-left">
+                  <p className="text-[14px] font-semibold text-[#777777]">
+                    {" "}
+                    Distance from Rice{" "}
+                  </p>
+                  <ModularDropDown
+                    allOptions={[
+                      "< 1 mile",
+                      "< 3 miles",
+                      "< 5 miles",
+                      "> 5 miles",
+                    ]}
+                    title={distanceTitle}
+                    value={distance}
+                    setValue={setDistance}
+                  />
+                </div>
+              </div>
+
+              {/* Start Date. */}
+              <div className="flex justify-center items-center flex-col w-[212px] border-r">
+                <div className="text-left ">
+                  <p className="text-[14px] font-bold text-[#777777] self-start">
+                    Start Date
+                  </p>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="text-left self-start">
+                        <p
+                          className={`text-base ${
+                            startDate &&
+                            startDate.toDateString() !== "Select Start Date"
+                              ? "text-[#FF7439] font-semibold"
+                              : "text-[#777777] font-light"
+                          }`}
+                        >
+                          {startDate ? startDate.toDateString() : "Select date"}
+                        </p>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="p-2 bg-white rounded-lg shadow-lg"
+                      style={{ zIndex: 1000 }}
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={setStartDate}
+                        disabled={(date) =>
+                          date < new Date() ||
+                          (endDate !== undefined && date > endDate)
+                        }
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+
+              {/* End Date */}
+              <div className="flex justify-center items-center flex-col w-[212px]">
+                <div className="text-left">
+                  <p className="text-[14px] font-semibold text-[#777777]">
+                    End Date
+                  </p>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="text-left">
+                        <p
+                          className={`text-[16px] ${endDate && endDate.toDateString() !== "Select date" ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}
+                        >
+                          {endDate ? endDate.toDateString() : "Select date"}
+                        </p>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="p-2 bg-white rounded-lg shadow-lg"
+                      style={{ zIndex: 1000 }}
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={endDate}
+                        onSelect={setEndDate}
+                        disabled={(date) =>
+                          date < new Date() ||
+                          (startDate !== undefined && date < startDate)
+                        }
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
             </div>
 
-            {/* Start Date. */}
-            <div className="flex justify-center items-center flex-col w-[212px] border-r">
-              <div className="text-left ">
-                <p className="text-[14px] font-bold text-[#777777] self-start">
-                  Start Date
-                </p>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="text-left self-start">
-                      <p
-                        className={`text-base ${
-                          startDate &&
-                          startDate.toDateString() !== "Select Start Date"
-                            ? "text-[#FF7439] font-semibold"
-                            : "text-[#777777] font-light"
-                        }`}
-                      >
-                        {startDate ? startDate.toDateString() : "Select date"}
-                      </p>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="p-2 bg-white rounded-lg shadow-lg"
-                    style={{ zIndex: 1000 }}
-                  >
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={setStartDate}
-                      disabled={(date) =>
-                        date < new Date() ||
-                        (endDate !== undefined && date > endDate)
-                      }
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-
-            {/* End Date */}
-            <div className="flex justify-center items-center flex-col w-[212px]">
-              <div className="text-left">
-                <p className="text-[14px] font-semibold text-[#777777]">
-                  End Date
-                </p>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="text-left">
-                      <p
-                        className={`text-[16px] ${endDate && endDate.toDateString() !== "Select date" ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}
-                      >
-                        {endDate ? endDate.toDateString() : "Select date"}
-                      </p>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="p-2 bg-white rounded-lg shadow-lg"
-                    style={{ zIndex: 1000 }}
-                  >
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={setEndDate}
-                      disabled={(date) =>
-                        date < new Date() ||
-                        (startDate !== undefined && date < startDate)
-                      }
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-            <button className="pr-8">
+            {/* Search button */}
+            <button 
+              className="pr-8"
+              onClick={() => setShowSearch(true)}
+            >
               <FaMagnifyingGlass className="hover:cursor-pointer h-[29px] w-[25px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105" />
             </button>
           </div>
