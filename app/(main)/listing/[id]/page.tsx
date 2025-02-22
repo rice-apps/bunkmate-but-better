@@ -2,6 +2,7 @@
 
 import Listing from "@/components/Listing";
 import ListingDescription from "@/components/ListingDescription";
+import ListingMap from "@/components/ListingMap";
 import LoadingCircle from "@/components/LoadingCircle";
 import MeetSubleaser from "@/components/MeetSubleaser";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
@@ -169,11 +170,11 @@ const ListingPage = () => {
           captions: captions,
           user: listing.user
             ? {
-                fullName: listing.user.name,
-                avatarUrl: listing.user.profile_image_path,
-                email: listing.user.email,
-                isRiceStudent: listing.user.affiliation === "Rice Student",
-              }
+              fullName: listing.user.name,
+              avatarUrl: listing.user.profile_image_path,
+              email: listing.user.email,
+              isRiceStudent: listing.user.affiliation === "Rice Student",
+            }
             : null,
         }}
       />
@@ -200,24 +201,25 @@ const ListingPage = () => {
               phone_number: listing.phone_number,
               user: listing.user
                 ? {
-                    full_name: listing.user.name,
-                    email: listing.user.email,
-                    profile_image_path:
-                      listing.user.profile_image_path || undefined,
-                    avatar_url: listing.user.profile_image_path
-                      ? getImagePublicUrl(
-                          "profiles",
-                          listing.user.profile_image_path
-                        )
-                      : undefined,
-                    is_rice_student:
-                      listing.user.affiliation === "Rice Student",
-                  }
+                  full_name: listing.user.name,
+                  email: listing.user.email,
+                  profile_image_path:
+                    listing.user.profile_image_path || undefined,
+                  avatar_url: listing.user.profile_image_path
+                    ? getImagePublicUrl(
+                      "profiles",
+                      listing.user.profile_image_path
+                    )
+                    : undefined,
+                  is_rice_student:
+                    listing.user.affiliation === "Rice Student",
+                }
                 : undefined,
             }}
           />
         </div>
       </div>
+      <ListingMap name={listing.title} coords={{lat: 29.70568824215991, lng: -95.40426859376323}} />
     </Suspense>
   );
 };
