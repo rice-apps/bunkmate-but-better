@@ -171,12 +171,6 @@ const Navbar = ({
   return (
     <div className="w-full">
       {/* Mobile Search Button */}
-      <button
-        onClick={() => setShowMobileFilter(!showMobileFilter)}
-        className="lg:hidden fixed bottom-20 right-4 z-40 bg-[#FF7439] p-4 rounded-full shadow-lg"
-      >
-        <FaMagnifyingGlass className="h-6 w-6 text-white" />
-      </button>
 
       {/* Mobile Filter Overlay */}
       {showMobileFilter && (
@@ -293,7 +287,12 @@ const Navbar = ({
             </p>
           </Link>
         </button>
-
+        <button
+        onClick={() => setShowMobileFilter(!showMobileFilter)}
+        className="lg:hidden z-40 p-1 ml-20"
+      >
+        <FaMagnifyingGlass className="h-6 w-6 text-[#FF7439]" />
+      </button>
         {includeFilter && (
           <div className="hidden max-w-[780px] lg:flex h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3">
             {/* Distance from Rice. */}

@@ -173,7 +173,7 @@ export default function Index() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="pb-8 w-[90%] mx-auto"
+        className="pb-8 w-[80%] sm: w-[90%] mx-auto"
       >
         <div className="flex flex-col items-center">
           <Navbar />
@@ -235,9 +235,9 @@ export default function Index() {
                   className=" flex flex-col sm:flex-row sm:gap-[24vh] py-5"
                 >
                   {/* Profile Image and Rice Affiliate text */}
-                  <div className="flex flex-col items-center sm:items-start gap-4 sm:gap-8">
+                  <div className="flex flex-col items-left sm:items-start gap-4 sm:gap-8">
                     <div className="flex flex-col gap-4">
-                      <h1 className="text-lg sm:text-xl font-medium text-center sm:text-left">
+                      <h1 className="text-lg sm:text-xl font-medium text-left sm:text-left">
                         Profile Picture
                       </h1>
                       <motion.div 

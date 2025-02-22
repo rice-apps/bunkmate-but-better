@@ -418,7 +418,7 @@ const EditListing = () => {
   };
 
   return (
-    <div className="min-h-screen w-[90%] mx-auto bg-white">
+    <div className="min-h-screen w-[80%] sm: w-[90%] mx-auto bg-white">
       {/* Navbar */}
       <Navbar includeFilter={false} includePostBtn={false} />
 
