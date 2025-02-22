@@ -70,6 +70,25 @@ const Profile = ({
     fetchUser();
   }, []);
 
+  const formatPhoneNumber = (value: string): string => {
+    // Remove all non-numeric characters
+    let phoneDigits = value.replace(/\D/g, "");
+
+    // If input is empty, return an empty string
+    if (phoneDigits === "") return "";
+
+    // Limit to 10 digits (standard US phone number format)
+    phoneDigits = phoneDigits.slice(0, 10);
+
+    let formatted = "";
+
+    if (phoneDigits.length > 0) formatted += `(${phoneDigits.slice(0, 3)}`;
+    if (phoneDigits.length >= 4) formatted += `) ${phoneDigits.slice(3, 6)}`;
+    if (phoneDigits.length >= 7) formatted += `-${phoneDigits.slice(6, 10)}`;
+
+    return formatted;
+  };
+
   return (
     <div>
       <div className="flex flex-row justify-between mr-10">
@@ -163,15 +182,15 @@ const Profile = ({
           <div>
             <Input
               type="tel"
-              placeholder="+1 (123) 456-7890"
+              placeholder="(123) 456-7890"
               value={formData.phone}
               onChange={e => {
                 const value = e.target.value;
-                if (/^\+?[0-9\s()-]*$/.test(value)) {
-                  setFormData({...formData, phone: value});
-                }
+                // Format the phone number as the user types
+                const formattedValue = formatPhoneNumber(value);
+                setFormData({ ...formData, phone: formattedValue });
               }}
-              maxLength={15}
+              maxLength={17}
               // className="p-4 rounded-xl border border-[#B5B5B5]"
               className="h-15 p-4 rounded-xl border border-[#B5B5B5]"
             />
