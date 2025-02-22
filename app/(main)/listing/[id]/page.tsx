@@ -103,10 +103,11 @@ const ListingPage = () => {
           err instanceof Error ? err.message : "Failed to load listing";
         setError(errorMessage);
 
+        const isSupabasError = typeof err === "object" && err !== null && "message" in err && "details" in err && "hint" in err;
         if (err instanceof Error) {
           console.warn("Error fetching listing:", err.message);
         }
-        else if (typeof err === "object" && err !== null && "message" in err && "details" in err && "hint" in err) {
+        else if (isSupabasError) {
           console.warn("Supabase error:", err.message, err.details, err.hint);
         } 
         else {
