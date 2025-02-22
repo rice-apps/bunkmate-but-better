@@ -16,9 +16,6 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  typescript: {
-    ignoreBuildErrors: true, // to:do REMOVE THIS SHIT AS SOON AS POSSIBLE @SATHYA @GABE YES - LUCY
-  }
 };
 
 module.exports = nextConfig;

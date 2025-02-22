@@ -22,7 +22,7 @@ const Profile = ({
   onBack: () => void;
   handleSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   isPosting: boolean;
-  editingMode: boolean;
+  editingMode?: boolean;
 }) => {
   const isComplete = Boolean(
     formData.title.length >= 1 &&
