@@ -42,8 +42,9 @@ export default function Index() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingCardCount, setLoadingCardCount] = useState(4);
-  const [visibleListings, setVisibleListings] = useState(24);
+  const [visibleListings, setVisibleListings] = useState(48);
   const [hasMore, setHasMore] = useState(true);
+  const [lastLoadedIndex, setLastLoadedIndex] = useState(0); // Track last loaded index
 
   const searchParams = useSearchParams();
 
@@ -151,6 +152,7 @@ export default function Index() {
 
         setListings(listings);
         setHasMore(listings.length > visibleListings);
+        setLastLoadedIndex(0); // Reset last loaded index on new search
 
         const { data: favorites } = await supabase.from('users_favorites').select('listing_id').eq('user_id', user?.id);
 
@@ -184,6 +186,7 @@ export default function Index() {
     setVisibleListings(prev => {
       const next = prev + 24;
       setHasMore(listings ? listings.length > next : false);
+      setLastLoadedIndex(prev); // Update last loaded index
       return next;
     });
     setIsLoadingMore(false);
@@ -228,13 +231,16 @@ export default function Index() {
           {isLoading ? renderLoadingState() : error ? renderError() :
             (
               <>
-                {listings && (listings.length > 0) ? listings.slice(0, visibleListings).map((listing) => (
+                {listings && (listings.length > 0) ? listings.slice(0, visibleListings).map((listing, index) => (
                   <motion.div 
                     key={listing.id}
                     className="w-full"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ 
+                      duration: 0.5,
+                      delay: index < lastLoadedIndex ? 0 : (index - lastLoadedIndex) * 0.1 // Only delay new items
+                    }}
                   >
                     <ListingCard
                       postId={listing.id.toString()}
@@ -307,7 +313,7 @@ export default function Index() {
         >
           <Button className="bg-[#FF7439] hover:bg-[#FF7439]/90 text-white font-semibold px-6 py-3 rounded-full shadow-lg flex items-center space-x-1">
             <MdChatBubble />
-            <p>Give Feedback</p>
+            <p className="text-white hidden md:block">Give Feedback</p>
           </Button>
         </motion.a>
       </motion.div>
