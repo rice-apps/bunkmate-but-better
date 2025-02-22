@@ -39,11 +39,13 @@ export default function Index() {
   const [listings, setListings] = useState<Listing[] | null>(null);
   const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingCardCount, setLoadingCardCount] = useState(4);
+  const [visibleListings, setVisibleListings] = useState(24);
+  const [hasMore, setHasMore] = useState(true);
 
-  const searchParams = useSearchParams(); // Use useSearchParams
-
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const updateLoadingCardCount = () => {
@@ -114,6 +116,7 @@ export default function Index() {
         if (error) throw error;
 
         setListings(listings);
+        setHasMore(listings.length > visibleListings);
 
         const { data: favorites } = await supabase.from('users_favorites').select('listing_id').eq('user_id', user?.id);
 
@@ -140,6 +143,17 @@ export default function Index() {
     }
     fetchPosts();
   }, [searchParams]);
+
+  const loadMore = async () => {
+    setIsLoadingMore(true);
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate loading
+    setVisibleListings(prev => {
+      const next = prev + 24;
+      setHasMore(listings ? listings.length > next : false);
+      return next;
+    });
+    setIsLoadingMore(false);
+  };
 
   const renderLoadingState = () => (
     <>
@@ -180,13 +194,13 @@ export default function Index() {
           {isLoading ? renderLoadingState() : error ? renderError() :
             (
               <>
-                {listings && (listings.length > 0)  ? listings.map((listing, index) => (
+                {listings && (listings.length > 0) ? listings.slice(0, visibleListings).map((listing) => (
                   <motion.div 
                     key={listing.id} 
                     className="w-full"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    transition={{ duration: 0.5 }}
                   >
                     <ListingCard
                       postId={listing.id.toString()}
@@ -203,12 +217,41 @@ export default function Index() {
                   </motion.div>
                 )) : (
                   <motion.div 
-                  className="col-span-full flex flex-col items-center justify-center py-12"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
+                    className="col-span-full flex flex-col items-center justify-center py-12"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
                   >
-                  <p className="text-gray-500 text-lg">No listings found</p>
+                    <p className="text-gray-500 text-lg">No listings found</p>
+                  </motion.div>
+                )}
+                {isLoadingMore && (
+                  <>
+                    {[...Array(4)].map((_, index) => (
+                      <LoadingCard key={`loading-more-${index}`} />
+                    ))}
+                  </>
+                )}
+                {hasMore && listings && listings.length > 0 && (
+                  <motion.div 
+                    className="col-span-full flex justify-center mt-8"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Button 
+                      onClick={loadMore}
+                      className="bg-[#FF7439] hover:bg-[#FF7439]/90 text-white"
+                      disabled={isLoadingMore}
+                    >
+                      {isLoadingMore ? (
+                        <div className="flex items-center gap-2">
+                          <LoadingCircle /> Loading...
+                        </div>
+                      ) : (
+                        'Load More'
+                      )}
+                    </Button>
                   </motion.div>
                 )}
               </>
