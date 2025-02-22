@@ -71,7 +71,7 @@ const PostListing = () => {
       formData.photos.length >= 5 &&
       formData.phone,
   );
-  console.log(formData.address);
+
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setIsPosting(true);

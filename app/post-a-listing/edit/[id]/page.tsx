@@ -100,7 +100,7 @@ const EditListing = () => {
           acc[index + 100] = cur.caption; // Add 100 to index to match Photos component
           return acc;
         }, {});
-        console.log(captions);
+
 
         // Verify user owns this listing
         if (listingData.user_id !== authData.user.id) {
@@ -148,7 +148,7 @@ const EditListing = () => {
             bed_num: listingData.bed_num || NaN,
             bath_num: listingData.bath_num || NaN,
           });
-          console.log(listingData.image_paths);
+
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load data';

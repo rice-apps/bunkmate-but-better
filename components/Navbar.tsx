@@ -149,8 +149,6 @@ const Navbar = ({
       endDate != null ||
       distance != "Search Properties"
     ) {
-      console.log("HI");
-      console.log(pathname, startDate, endDate, distance);
       handleFilterChange();
     }
   }, [startDate, endDate, distance]);
