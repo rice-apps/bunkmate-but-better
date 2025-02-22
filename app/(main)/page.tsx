@@ -100,7 +100,7 @@ export default function Index() {
         if (distance) {
           if (distance == "< 1 mile") query = query.lte('distance', 1);
           else if (distance == "< 3 miles") query = query.lte('distance', 3).gte('distance', 1);
-          else if (distance == "< 5 miles") query = query.lte('distance', 5).gte('distance', 3);
+          else if (distance == "< 5 miles") query = query.lte('distance', 5).gte('distance', 1);
           else if (distance == "> 5 miles") query = query.gte('distance', 5);
         }
 
