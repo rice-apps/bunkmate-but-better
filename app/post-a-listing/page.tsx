@@ -157,7 +157,27 @@ const PostListing = () => {
       await cleanupUploads(error.cause);
     }
   };
-
+  const haversine = async (lat1, lon1, lat2, lon2)
+    {
+        // distance between latitudes
+        // and longitudes
+        let dLat = (lat2 - lat1) * Math.PI / 180.0;
+        let dLon = (lon2 - lon1) * Math.PI / 180.0;
+           
+        // convert to radiansa
+        lat1 = (lat1) * Math.PI / 180.0;
+        lat2 = (lat2) * Math.PI / 180.0;
+         
+        // apply formulae
+        let a = Math.pow(Math.sin(dLat / 2), 2) + 
+                   Math.pow(Math.sin(dLon / 2), 2) * 
+                   Math.cos(lat1) * 
+                   Math.cos(lat2);
+        let rad = 6371;
+        let c = 2 * Math.asin(Math.sqrt(a));
+        return rad * c;
+         
+    }
   const geocodeAddress = async (address: string) => {
     if (!address) {
       throw new Error("Valid address is required");
@@ -182,7 +202,37 @@ const PostListing = () => {
       throw error;
     }
   };
+  calculateStraightLineDistance = (lat1, lon1, lat2, lon2) => {
+    const toRadians = (degree: number) => degree * (Math.PI / 180);
+    const latRice = toRadians(riceCoords.lat);
+    const lonRice = toRadians(riceCoords.lon);
+    const latListing = toRadians(listingCoords.lat);
+    const lonListing = toRadians(listingCoords.lon);
 
+    const dLat = latListing - latRice;
+    const dLon = lonListing - lonRice;
+
+    const a = Math.pow(Math.sin(dLat / 2), 2) +Math.cos(latRice) * Math.cos(latListing) * Math.pow(Math.sin(dLon / 2), 2);
+    const rad = 6371; // Earth's radius in kilometers
+    const c = 2 * Math.asin(Math.sqrt(a));  
+    const miles =  rad * c * 0.621371;
+    return parseFloat(miles.toFixed(1));
+  }
+
+//https://routing.openstreetmap.de/routed-car/route/v1/driving/-95.4176595,29.7156896;-95.4040814,29.72041?overview=false
+  // const osrmResponse = await fetch(
+  //   `https://router.project-osrm.org/route/v1/driving/${riceCoords.lon},${riceCoords.lat};${listingCoords.lon},${listingCoords.lat}?overview=false`,
+  // );
+  // if (!osrmResponse.ok) {
+  //   throw new Error("Failed to calculate distance");
+  // }
+  // const osrmData = await osrmResponse.json();
+  // if (!osrmData.routes || osrmData.routes.length === 0) {
+  //   throw new Error("No distance results found");
+  // }
+  // const distanceMeters = osrmData.routes[0].distance;
+  // const distanceMiles = (distanceMeters * 0.000621371).toFixed(1);
+  // return distanceMiles;
   const calculateDistance = async (address: string) => {
     if (!address) {
       throw new Error("Valid address is required");
@@ -194,19 +244,8 @@ const PostListing = () => {
       if (!riceCoords || !listingCoords) {
         throw new Error("Could not geocode addresses");
       }
-      const osrmResponse = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${riceCoords.lon},${riceCoords.lat};${listingCoords.lon},${listingCoords.lat}?overview=false`,
-      );
-      if (!osrmResponse.ok) {
-        throw new Error("Failed to calculate distance");
-      }
-      const osrmData = await osrmResponse.json();
-      if (!osrmData.routes || osrmData.routes.length === 0) {
-        throw new Error("No distance results found");
-      }
-      const distanceMeters = osrmData.routes[0].distance;
-      const distanceMiles = (distanceMeters * 0.000621371).toFixed(1);
-      return distanceMiles;
+      
+      
     } catch (error) {
       console.error("Error calculating distance:", error);
       throw error;
