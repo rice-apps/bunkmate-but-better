@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import ListingCard from "@/components/ListingCard";
 import Navbar from "@/components/Navbar";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next";
 import { BsArrowUpCircleFill } from "react-icons/bs";
 import LoadingCard from '@/components/LoadingCard';
 import { Button } from '@/components/ui/button';

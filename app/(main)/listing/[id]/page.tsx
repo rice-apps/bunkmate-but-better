@@ -2,6 +2,7 @@
 
 import Listing from "@/components/Listing";
 import ListingDescription from "@/components/ListingDescription";
+import LoadingCircle from "@/components/LoadingCircle";
 import MeetSubleaser from "@/components/MeetSubleaser";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useParams, useSearchParams } from "next/navigation";
@@ -118,7 +119,7 @@ const ListingPage = () => {
   }, [listingId, supabase]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingCircle />;
   }
 
   if (error || !listing) {

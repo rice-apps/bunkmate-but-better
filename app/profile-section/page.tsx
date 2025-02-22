@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
 import Image from "next/image";

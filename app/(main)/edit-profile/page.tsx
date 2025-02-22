@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { v4 as uuidv4 } from 'uuid';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@bprogress/next';
 import { motion } from 'framer-motion';
 
 const EditProfile = () => {

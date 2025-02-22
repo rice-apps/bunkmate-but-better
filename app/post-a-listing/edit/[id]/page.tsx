@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useMemo, useState, useContext } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { useRouter } from '@bprogress/next';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

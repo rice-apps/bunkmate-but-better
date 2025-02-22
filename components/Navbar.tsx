@@ -22,7 +22,8 @@ import {
 } from "@radix-ui/react-popover";
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "@bprogress/next";
 import { createClient } from "@/utils/supabase/client";
 import { set } from "date-fns";
 

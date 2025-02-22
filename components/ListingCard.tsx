@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "@bprogress/next";
 import { IconContext } from "react-icons";
 import { MdEdit } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";

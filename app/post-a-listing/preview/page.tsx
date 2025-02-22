@@ -13,7 +13,7 @@ import {
 import { PostListingFormContext } from "@/providers/PostListingFormProvider";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next";
 import { useContext, useEffect, useState } from "react";
 
 interface UserData {

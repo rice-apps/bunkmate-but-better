@@ -1,6 +1,6 @@
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
-import {useRouter} from "next/navigation";
+import {useRouter} from "@bprogress/next";
 import React from "react";
 import {FaEye} from "react-icons/fa";
 import {FormDataType} from "./page";

@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { FaHeart } from "react-icons/fa6";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next";
 
 
 interface ImageData {

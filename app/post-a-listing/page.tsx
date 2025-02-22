@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import {Button} from "@/components/ui/button";
 import {PostListingFormContext} from "@/providers/PostListingFormProvider";
 import {createClient} from "@/utils/supabase/client";
-import {useRouter} from "next/navigation";
+import {useRouter} from "@bprogress/next";
 import {useContext, useMemo, useState} from "react";
 import {v4} from "uuid";
 import CategoryStatusIndicator from "./CategoryStatusIndicator";
