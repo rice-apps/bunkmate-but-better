@@ -75,13 +75,17 @@ export default function Index() {
         const startDate = (searchParams && searchParams.get('startDate') ? new Date(searchParams.get('startDate')!) : null);
         const endDate = (searchParams && searchParams.get('endDate') ? new Date(searchParams.get('endDate')!) : null);
         const distance = (searchParams && searchParams.get('distance')) || null;
+        const search = (searchParams && searchParams.get('search')) || null;
 
         // Apply filters
+        if (search) {
+          query = query.or(`title.ilike.%${search}%,address.ilike.%${search}%`);
+        }
         if (startDate) {
           const startRange = new Date(startDate);
           startRange.setMonth(startRange.getMonth() - 1); // One month before
           const endRange = new Date(startDate);
-          endRange.setMonth(endRange.getMonth() + 1); // One month after
+          endRange.setMonth(startRange.getMonth() + 1); // One month after
 
           query = query.gte('start_date', startRange.toISOString());
           query = query.lte('start_date', endRange.toISOString());
@@ -90,7 +94,7 @@ export default function Index() {
           const startRange = new Date(endDate);
           startRange.setMonth(startRange.getMonth() - 1); // One month before
           const endRange = new Date(endDate);
-          endRange.setMonth(endRange.getMonth() + 1); // One month after
+          endRange.setMonth(startRange.getMonth() + 1); // One month after
 
           query = query.gte('end_date', startRange.toISOString());
           query = query.lte('end_date', endRange.toISOString());
