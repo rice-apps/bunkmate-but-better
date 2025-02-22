@@ -74,7 +74,7 @@ const Profile = ({
 
   return (
     <div>
-      <div className="flex flex-row justify-between mr-10">
+      <div className="flex flex-row justify-between flex-wrap-reverse gap-4 pb-2 items-center">
         <div>
           <h1 className="text-2xl font-semibold">Profile</h1>
         </div>
@@ -87,7 +87,7 @@ const Profile = ({
         </Link>
         .
       </h2>
-      <div className="grid grid-cols-[1fr_2fr] items-start gap-4 pl-8 mt-10 mb-10">
+      <div className="flex flex-row flex-wrap items-start gap-4 pl-8 mt-10 mb-10">
         <div>
           <h2 className="text-[1.25rem] font-medium mb-4">Profile Picture</h2>
           {profile.image ? (
@@ -127,7 +127,7 @@ const Profile = ({
           >
             <label className="block cursor-pointer">
             <div
-              className={`flex items-center w-[23rem] space-x-2 p-4 rounded-xl border-2 
+              className={`flex items-center space-x-2 p-4 rounded-xl border-2 
           ${
             formData.affiliation === "student"
               ? "border-[#FF7439] bg-[#FF7439]/30"
@@ -147,7 +147,7 @@ const Profile = ({
             </label>
             <label className="block cursor-pointer">
             <div
-              className={`flex items-center w-[23rem] space-x-2 p-4 rounded-xl border-2 
+              className={`flex items-center space-x-2 p-4 rounded-xl border-2 
           ${formData.affiliation === "alum" ? "border-[#FF7439] bg-[#FF7439]/30" : "border-[#B5B5B5] bg-gray-50"}`}
             >
               <RadioGroupItem
