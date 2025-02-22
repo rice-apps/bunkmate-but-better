@@ -85,18 +85,18 @@ export default function Index() {
         }
         if (startDate) {
           const startRange = new Date(startDate);
-          startRange.setMonth(startRange.getMonth() - 1); // One month before
+          startRange.setDate(startRange.getDate() - 7); // One week before
           const endRange = new Date(startDate);
-          endRange.setMonth(startRange.getMonth() + 1); // One month after
+          endRange.setDate(endRange.getDate() + 7); // One week after
 
           query = query.gte('start_date', startRange.toISOString());
           query = query.lte('start_date', endRange.toISOString());
         }
         if (endDate) {
           const startRange = new Date(endDate);
-          startRange.setMonth(startRange.getMonth() - 1); // One month before
+          startRange.setDate(startRange.getDate() - 7); // One week before
           const endRange = new Date(endDate);
-          endRange.setMonth(startRange.getMonth() + 1); // One month after
+          endRange.setDate(endRange.getDate() + 7); // One week after
 
           query = query.gte('end_date', startRange.toISOString());
           query = query.lte('end_date', endRange.toISOString());
@@ -112,6 +112,40 @@ export default function Index() {
         }
 
         const { data: listings, error } = await query.order('created_at', { ascending: false });
+
+        if (listings && (startDate || endDate)) {
+          listings.sort((a, b) => {
+            let totalDiffA = 0;
+            let totalDiffB = 0;
+
+            if (startDate) {
+              const aStartDate = new Date(a.start_date);
+              const bStartDate = new Date(b.start_date);
+
+              // Calculate start date differences
+              const aStartDiff = Math.abs(aStartDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+              const bStartDiff = Math.abs(bStartDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+
+              totalDiffA += aStartDiff;
+              totalDiffB += bStartDiff;
+            }
+
+            if (endDate) {
+              const aEndDate = new Date(a.end_date);
+              const bEndDate = new Date(b.end_date);
+
+              // Calculate end date differences
+              const aEndDiff = Math.abs(aEndDate.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24);
+              const bEndDiff = Math.abs(bEndDate.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24);
+
+              totalDiffA += aEndDiff;
+              totalDiffB += bEndDiff;
+            }
+
+            // Sort by combined difference (smaller difference = more relevant)
+            return totalDiffA - totalDiffB;
+          });
+        }
 
         if (error) throw error;
 
@@ -164,7 +198,7 @@ export default function Index() {
   );
 
   const renderError = () => (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -184,7 +218,7 @@ export default function Index() {
 
   return (
     <Suspense>
-      <motion.main 
+      <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -196,7 +230,7 @@ export default function Index() {
               <>
                 {listings && (listings.length > 0) ? listings.slice(0, visibleListings).map((listing) => (
                   <motion.div 
-                    key={listing.id} 
+                    key={listing.id}
                     className="w-full"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
