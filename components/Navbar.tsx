@@ -132,6 +132,7 @@ const Navbar = ({
   const handleFilterChange = () => {
     const queryParams = new URLSearchParams(window.location.search);
     if (distance !== distanceTitle) queryParams.set("distance", distance);
+    if (distance === distanceTitle) queryParams.delete("distance");
     if (startDate) queryParams.set("startDate", startDate.toISOString());
     if (!startDate) queryParams.delete("startDate");
     if (endDate) queryParams.set("endDate", endDate.toISOString());

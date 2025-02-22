@@ -201,7 +201,7 @@ export default function Index() {
               <div className='mt-4 flex flex-row justify-between mt-[3vh] flex-wrap-reverse gap-y-4'>
                 <h1 className="text-left text-[24px] text-#000000 font-medium">Your Profile Information</h1>
                 
-                <div className='flex flex-row gap-[20px]'>
+                <div className='flex flex-row gap-[20px] flex-wrap'>
                 <Link href='/edit-profile'>
                   <motion.button 
                     whileHover={{ scale: 1.05 }}
