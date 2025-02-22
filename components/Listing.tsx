@@ -290,7 +290,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
 
           {/* Left Button */}
           <div
-            className="absolute left-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors rounded-r-xl cursor-pointer"
+            className="absolute left-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors rounded-r-xl cursor-pointer z-50"
             onClick={e => {
               e.stopPropagation();
               handlePrev();
@@ -302,7 +302,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           {/* Right Button */}
 
           <div
-            className="absolute right-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors rounded-l-xl cursor-pointer"
+            className="absolute right-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors rounded-l-xl cursor-pointer z-50"
             onClick={e => {
               e.stopPropagation();
               handleNext();
