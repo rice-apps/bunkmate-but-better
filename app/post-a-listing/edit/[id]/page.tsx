@@ -100,7 +100,6 @@ const EditListing = () => {
           acc[index + 100] = cur.caption; // Add 100 to index to match Photos component
           return acc;
         }, {});
-        console.log(captions);
 
         // Verify user owns this listing
         if (listingData.user_id !== authData.user.id) {
@@ -138,7 +137,7 @@ const EditListing = () => {
             durationNotes: listingData.duration_notes || '',
             address: { label: listingData.address, value: { description: listingData.address } },
             locationNotes: listingData.location_notes || '',
-            photos: publicUrls,
+            photos: [],
             rawPhotos: [],
             photoLabels: captions || {},
             imagePaths: listingData.image_paths || [],
@@ -148,7 +147,6 @@ const EditListing = () => {
             bed_num: listingData.bed_num || NaN,
             bath_num: listingData.bath_num || NaN,
           });
-          console.log(listingData.image_paths);
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load data';
