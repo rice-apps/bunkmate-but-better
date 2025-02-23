@@ -415,7 +415,7 @@ const PostListing = () => {
 
             {/* Form Content */}
             <div
-              className="flex-1 md:pl-16 md:border-l border-gray-500 pb-8 pr-8"
+              className="flex-1 md:pl-16 md:border-l border-gray-500 pb-8 md:pr-8"
               style={{height: "85vh", overflowY: "auto"}}
             >
               {renderComponent()}
