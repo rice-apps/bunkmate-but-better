@@ -69,7 +69,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="text-gray-700 text-sm leading-relaxed mt-4 mb-6 break-words"
+        className="text-gray-700 text-sm leading-relaxed mt-4 mb-6 break-words whitespace-pre-wrap"
       >
         {data.description}
       </motion.p>
