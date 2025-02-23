@@ -23,7 +23,7 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
         <div className="relative">
           <Input
             placeholder="Ex: 2"
-            value={formData.bed_num == 0 ? "" : formData.bed_num}
+            value={formData.bed_num}
             onChange={handleBedChange}
             type="number"
             className="w-full rounded-xl border-[1px] border-gray-300 placeholder:text-gray-400 py-6"
@@ -37,7 +37,7 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
         <div className="relative">
           <Input
             placeholder="Ex: 5"
-            value={formData.bath_num == 0 ? "" : formData.bath_num}
+            value={formData.bath_num}
             onChange={handleBathChange}
             type="number"
             className="w-full rounded-xl border-[1px] border-gray-300 placeholder:text-gray-400 py-6"
@@ -63,7 +63,7 @@ const TitleDescription = ({formData, setFormData, onNext}: {formData: any; setFo
 
   return (
     <div>
-      <div className="flex flex-row justify-between mr-10">
+      <div className="flex flex-row justify-between flex-wrap-reverse gap-4 pb-2 items-center">
         <div>
           <h1 className="text-2xl font-semibold mb-3">Title & Description</h1>
         </div>

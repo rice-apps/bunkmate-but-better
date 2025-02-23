@@ -1,6 +1,21 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+function formatPhoneNumber(phone: string): string {
+  if (!phone) return '';
+  const cleaned = phone.toString().replace(/\D/g, '');
+  
+  const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
+  
+  if (!match) return '';
+  
+  const parts = [match[1], match[2], match[3]].filter(Boolean);
+  
+  if (parts.length === 0) return '';
+  if (parts.length === 1) return `(${parts[0]}`;
+  if (parts.length === 2) return `(${parts[0]}) ${parts[1]}`;
+  return `(${parts[0]}) ${parts[1]}-${parts[2]}`;
+}
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
@@ -22,4 +37,4 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 )
 Input.displayName = "Input"
 
-export { Input }
+export { Input, formatPhoneNumber }

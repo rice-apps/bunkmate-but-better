@@ -12,7 +12,7 @@ interface FormContextType {
 export const defaultFormData = {
   title: "",
   description: "",
-  price: 0,
+  price: NaN,
   priceNotes: "",
   startDate: "",
   endDate: "",
@@ -26,8 +26,8 @@ export const defaultFormData = {
   removedImagePaths: [],
   affiliation: "rice",
   phone: "",
-  bed_num: 0,
-  bath_num: 0,
+  bed_num: NaN,
+  bath_num: NaN,
 };
 
 export const PostListingFormContext = createContext<FormContextType>({

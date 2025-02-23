@@ -6,15 +6,16 @@ import { motion } from 'framer-motion';
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import LoadingCircle from "@/components/LoadingCircle";
 import Link from 'next/link';
 import { RiPencilFill } from 'react-icons/ri';
 import { MdLogout } from "react-icons/md";
+import { formatPhoneNumber } from "@/components/ui/input";
 
 
 type Listing = {
@@ -37,6 +38,7 @@ export default function Index() {
     email: string;
     phone: string;
     image: string;
+    affiliation: 'student' | 'alum';
   } | null>();
   const [favoritelistings, setFavoriteListings] = useState<Listing[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
@@ -76,7 +78,8 @@ export default function Index() {
               username: data.data[0].name,
               email: data.data[0].email,
               phone: data.data[0].phone,
-              image: profileImageUrl
+              image: profileImageUrl,
+              affiliation: data.data[0].affiliation
             });
           });
         supabase
@@ -116,7 +119,7 @@ export default function Index() {
                     "listing_images",
                     favorite.listings.image_paths[0]
                   ),
-                  renterType: "Rice Student",
+                  renterType: favorite.listings.affiliation != 'student' ? "Rice Alumni" : "Rice Student",
                   isFavorite: true,
                   image_paths: favorite.listings.image_paths
                 };
@@ -148,7 +151,7 @@ export default function Index() {
                         listing.image_paths[0]
                       )
                     : "",
-                  renterType: "Rice Student",
+                  renterType: listing.affiliation != 'student' ? "Rice Alumni" : "Rice Student",
                   isFavorite: true,
                   image_paths: listing.image_paths
                 };
@@ -165,7 +168,7 @@ export default function Index() {
   const router = useRouter();
 
   return (
-    <>
+    <Suspense>
       <motion.main 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -195,10 +198,10 @@ export default function Index() {
                 </h1>
               </motion.div>
               <div>
-              <div className='mt-4 flex flex-row justify-between mt-[3vh]'>
+              <div className='mt-4 flex flex-row justify-between mt-[3vh] flex-wrap-reverse gap-y-4'>
                 <h1 className="text-left text-[24px] text-#000000 font-medium">Your Profile Information</h1>
                 
-                <div className='flex flex-row gap-[20px]'>
+                <div className='flex flex-row gap-[20px] flex-wrap'>
                 <Link href='/edit-profile'>
                   <motion.button 
                     whileHover={{ scale: 1.05 }}
@@ -261,7 +264,7 @@ export default function Index() {
                           alt="owl"
                           className="w-5 h-5 scale-75"
                         />
-                        <p className="text-[#FF7439] text-sm">Rice Student</p>
+                        <p className="text-[#FF7439] text-sm">Rice {profile.affiliation == 'student' ? "Student" : "Alumni"}</p>
                       </div>
                     </div>
                   </div>
@@ -286,7 +289,7 @@ export default function Index() {
 
                       <div className="gap-4">
                         <h1 className="text-lg font-medium">Phone Number</h1>
-                        <p className="text-lg text-gray-400">{profile?.phone ? profile?.phone : 'Please enter your phone number in "Edit Profile"'}</p>
+                        <p className="text-lg text-gray-400">{profile?.phone ? formatPhoneNumber(profile?.phone) : 'Please enter your phone number in "Edit Profile"'}</p>
                       </div>
                     </div>
                   </motion.div>
@@ -332,7 +335,7 @@ export default function Index() {
                   Your Listings
                 </h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                  {listings.map((listing) => (
+                  {listings.length > 0 ? listings.map((listing) => (
                     <div key={listing.id}>
                       <ListingCard
                         postId={listing.id}
@@ -348,7 +351,9 @@ export default function Index() {
                         onDelete={() => setReload(!reload)}
                       />
                     </div>
-                  ))}
+                  )) : (
+                    <div className="text-gray-400 italic mt-6">- No Listings Yet!</div>
+                  )}
                 </div>
               </motion.div>
             </motion.main>
@@ -357,6 +362,6 @@ export default function Index() {
           {!profile && <LoadingCircle />}
         </div>
       </motion.main>
-    </>
+    </Suspense>
   );
 }

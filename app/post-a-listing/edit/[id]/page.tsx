@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React, { useEffect, useMemo, useState, useContext } from 'react';
+import { useParams } from 'next/navigation';
+import { useRouter } from '@bprogress/next';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,7 @@ import Duration from './../../Duration';
 import CategoryStatusIndicator from './../../CategoryStatusIndicator';
 import LoadingCircle from '@/components/LoadingCircle';
 import { FormDataType } from '../../page';
-import { defaultFormData } from '@/providers/PostListingFormProvider';
+import { defaultFormData, PostListingFormContext } from '@/providers/PostListingFormProvider';
 import Navbar from '@/components/Navbar';
 
 type ImageResponse = {
@@ -45,7 +46,7 @@ const EditListing = () => {
   const params = useParams();
   const listingId = params.id as string;
   const [selectedCategory, setSelectedCategory] = useState('title');
-  const [formData, setFormData] = useState<FormDataType>(defaultFormData);
+  const {formData, setFormData} = useContext(PostListingFormContext);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
@@ -116,28 +117,36 @@ const EditListing = () => {
           .single();
 
         if (userError) throw userError;
+        
+        // Convert image paths to public URLs
+        const publicUrls = await Promise.all(
+          listingData.image_paths.map(async (path: string) => {
+            const publicUrl = await getImagePublicUrl('listing_images', path);
+            return publicUrl;
+          })
+        );
 
         if (isMounted) {
           setFormData({
             // Listing data
             title: listingData.title || '',
             description: listingData.description || '',
-            price: listingData.price || 0,
+            price: listingData.price || NaN,
             priceNotes: listingData.price_notes || '',
             startDate: listingData.start_date || '',
             endDate: listingData.end_date || '',
             durationNotes: listingData.duration_notes || '',
             address: { label: listingData.address, value: { description: listingData.address } },
             locationNotes: listingData.location_notes || '',
-            photos: [],
+            photos: publicUrls,
             rawPhotos: [],
             photoLabels: captions || {},
             imagePaths: listingData.image_paths || [],
             removedImagePaths: [],
             affiliation: userData.affiliation || '',
             phone: listingData.phone_number || listingData.user?.phone || '',
-            bed_num: listingData.bed_num || 0,
-            bath_num: listingData.bath_num || 0,
+            bed_num: listingData.bed_num || NaN,
+            bath_num: listingData.bath_num || NaN,
           });
           console.log(listingData.image_paths);
         }
@@ -156,7 +165,7 @@ const EditListing = () => {
     return () => {
       isMounted = false;
     };
-  }, [listingId, supabase]);
+  }, [listingId]);
 
   const isComplete = Boolean(
     formData.title.length >= 1 &&
@@ -350,6 +359,7 @@ const EditListing = () => {
           handleSubmit={handleSubmit}
           onBack={handlePreviousCategory}
           isPosting={isPosting}
+          editingMode={true}
         />;
       default:
         return <TitleDescription
@@ -436,7 +446,7 @@ const EditListing = () => {
                       {category.name}
                     </div>
                   ))}
-                  {/* Post Button */}
+                  {/* Save Button */}
                   <div className="flex items-center justify-center pt-12 gap-4">
                     <Button
                       className={`w-[5.3rem] rounded-lg px-6 flex items-center ${isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"

@@ -32,7 +32,7 @@ const Pricing = ({
 
   return (
     <div>
-      <div className="flex flex-row justify-between mr-10">
+      <div className="flex flex-row justify-between flex-wrap-reverse gap-4 pb-2 items-center">
         <div>
           <h1 className="text-2xl font-semibold mb-3">Pricing</h1>
         </div>
@@ -75,10 +75,7 @@ const Pricing = ({
             maxLength={500}
             className="min-h-[150px] rounded-xl border border-gray-200 resize-none placeholder:text-gray-400 py-3"
           />
-          <div className="flex justify-between mt-5 text-sm text-gray-400">
-            <span className={formData.priceNotes.length >= 100 ? "text-green-500" : "text-gray-400"}>
-              {formData.priceNotes.length >= 100 ? "✓ Minimum reached" : "Minimum 100 characters"}
-            </span>
+          <div className="flex justify-end mt-5 text-sm text-gray-400">
             <span>
               <span className="text-gray-500 font-semibold">{formData.priceNotes.length}</span>
               /500 characters

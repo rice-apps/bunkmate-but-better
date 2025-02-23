@@ -1,9 +1,10 @@
-import Image from 'next/image'
-import React, { useState } from 'react'
-import { FaPhoneAlt } from 'react-icons/fa'
-import { IoMail } from 'react-icons/io5'
-import { getImagePublicUrl } from '@/utils/supabase/client'
-import { motion } from 'framer-motion'
+import Image from "next/image";
+import React, { useState } from "react";
+import { FaPhoneAlt } from "react-icons/fa";
+import { IoMail } from "react-icons/io5";
+import { getImagePublicUrl } from "@/utils/supabase/client";
+import { motion } from "framer-motion";
+import { formatPhoneNumber } from "./ui/input";
 
 interface MeetSubleaserProps {
   data: {
@@ -98,10 +99,10 @@ const MeetSubleaser: React.FC<MeetSubleaserProps> = ({ data }) => {
                 </div>
               )}
             </div>
-            <div className='flex flex-col gap-[5.69px]'>
-              <div className='flex flex-row gap-[18.7px] items-center'>
-                <FaPhoneAlt className='w-4 h-4' fill='#777777'/>
-                <p className='text-base text-gray-500'>{data.phone_number}</p>
+            <div className="flex flex-col gap-[5.69px]">
+              <div className="flex flex-row gap-[18.7px] items-center">
+                <FaPhoneAlt className="w-4 h-4" fill="#777777" />
+                <p className="text-base text-gray-500">{formatPhoneNumber(data.phone_number)}</p>
               </div>
               {data.user?.email && (
                 <div className='flex flex-row gap-[18.7px] items-center'>

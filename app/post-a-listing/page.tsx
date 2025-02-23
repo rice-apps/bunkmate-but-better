@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import {Button} from "@/components/ui/button";
 import {PostListingFormContext} from "@/providers/PostListingFormProvider";
 import {createClient} from "@/utils/supabase/client";
-import {useRouter} from "next/navigation";
+import {useRouter} from "@bprogress/next";
 import {useContext, useMemo, useState} from "react";
 import {v4} from "uuid";
 import CategoryStatusIndicator from "./CategoryStatusIndicator";
@@ -188,8 +188,9 @@ const PostListing = () => {
       throw new Error("Valid address is required");
     }
     try {
-      const RICE_ADDRESS = "6100 Main St, Houston, TX 77005";
-      const [riceCoords, listingCoords] = await Promise.all([geocodeAddress(RICE_ADDRESS), geocodeAddress(address)]);
+      //const RICE_ADDRESS = "6100 Main St, Houston, TX 77005";
+      const riceCoords = {lat: 29.716791450000002, lon: -95.40478113393792};
+      const listingCoords = await geocodeAddress(address);
       if (!riceCoords || !listingCoords) {
         throw new Error("Could not geocode addresses");
       }

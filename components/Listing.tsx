@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { FaHeart } from "react-icons/fa6";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "@bprogress/next";
 
 
 interface ImageData {
@@ -72,6 +73,8 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [favorite, setFavorite] = useState(data.isFavorited);
   const [images, setImages] = useState<ImageData[]>([]);
+  const router = useRouter();
+
   // TODO: Fetch image captions from Supabase
   useEffect(() => {
     if (data?.imagePaths && data?.loadImages) {
@@ -202,7 +205,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
         transition={{duration: 0.5, delay: 0.2}}
         className="mb-6 w-full"
       >
-        <div className="flex items-center mt-4 mb-2 w-full">
+        <div className="flex items-center mt-4 mb-2 flex-wrap-reverse gap-y-4">
           <h1 className="text-4xl font-semibold">{data.title}</h1>
           <motion.div whileHover={{scale: 1.1}} whileTap={{scale: 0.9}}>
             <FaHeart
@@ -213,13 +216,11 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           </motion.div>
 
           {isPreview && (
-            <div className="ml-auto flex gap-2">
-              <Link href={`/post-a-listing`}>
-                <Button className="rounded-lg px-6 flex items-center bg-[#777777] hover:bg-[#777777]/90">
-                  <Image src="/edit-icon.png" alt="Edit" width={16} height={16} className="" />
-                  BACK TO LISTING EDITOR
-                </Button>
-              </Link>
+            <div className="flex-1 flex justify-end gap-2 pl-4">
+              <Button className="rounded-lg px-6 flex items-center bg-[#777777] hover:bg-[#777777]/90" onClick={() => router.back()}>
+              <Image src="/edit-icon.png" alt="Edit" width={16} height={16} />
+              BACK TO LISTING EDITOR
+              </Button>
             </div>
           )}
         </div>
@@ -281,7 +282,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
               e.stopPropagation();
               closeDialog();
             }}
-            className="absolute top-4 right-4 z-70 w-10 text-white hover:text-gray-300 transition-colors"
+            className="absolute top-4 right-4 z-70 w-10 text-white hover:text-gray-300 transition-colors select-none"
             aria-label="Close gallery"
           >
             <span className="text-4xl">×</span>
@@ -289,26 +290,26 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
 
           {/* Left Button */}
           <div
-            className="absolute left-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors"
+            className="absolute left-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors rounded-r-xl cursor-pointer z-50"
             onClick={e => {
               e.stopPropagation();
               handlePrev();
             }}
             aria-label="Previous image"
           >
-            <span className="text-5xl text-white hover:text-gray-300 transition-colors cursor-pointer">&lt;</span>
+            <span className="text-5xl text-white hover:text-gray-300 transition-colors select-none">&lt;</span>
           </div>
           {/* Right Button */}
 
           <div
-            className="absolute right-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors"
+            className="absolute right-0 top-[33%] bottom-[33%] w-20 flex items-center justify-center hover:bg-black hover:bg-opacity-30 transition-colors rounded-l-xl cursor-pointer z-50"
             onClick={e => {
               e.stopPropagation();
               handleNext();
             }}
             aria-label="Next image"
           >
-            <span className="text-5xl text-white hover:text-gray-300 transition-colors cursor-pointer">&gt;</span>
+            <span className="text-5xl text-white hover:text-gray-300 transition-colors select-none">&gt;</span>
           </div>
 
           {/* Image Container */}
@@ -322,7 +323,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
               src={images[currentImageIndex].src}
               fill={true}
               alt={`${data.title} - Image ${currentImageIndex + 1}`}
-              className="object-contain rounded-lg"
+              className="object-contain rounded-lg select-none"
             />
           </motion.div>
 

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Input } from "@/components/ui/input";
+import React, { useState, useEffect, Suspense } from 'react';
+import { formatPhoneNumber, Input } from "@/components/ui/input";
 import { Upload, PencilIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { v4 as uuidv4 } from 'uuid';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@bprogress/next';
 import { motion } from 'framer-motion';
 
 const EditProfile = () => {
@@ -28,7 +28,7 @@ const EditProfile = () => {
     lastName: '',
     email: '',
     phone: '',
-    riceAffiliation: null as 'student' | 'alumni' | null,
+    riceAffiliation: null as 'student' | 'alum' | null,
     profileImage: ''
   });
 
@@ -50,7 +50,7 @@ const EditProfile = () => {
         if (data) {
           // Split name into first and last name
           const [firstName = '', lastName = ''] = data.name ? data.name.split(' ') : ['', ''];
-          
+          console.log("new data", data);
           setFormData(prev => ({
             ...prev,
             firstName,
@@ -104,6 +104,7 @@ const EditProfile = () => {
         .update({ 
           name: fullName,
           phone: formData.phone,
+          affiliation: formData.riceAffiliation,
         })
         .eq('id', user.data.user.id);
 
@@ -202,6 +203,7 @@ const EditProfile = () => {
   };
 
   return (
+    <Suspense>
     <motion.main 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -229,10 +231,10 @@ const EditProfile = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className='w-full flex justify-between items-center mt-14'
+        className='w-full flex justify-between items-center mt-14 flex-wrap-reverse gap-y-4'
       >
         <h2 className='text-2xl font-medium'>Your Profile Information</h2>
-        <div className='flex space-x-4'>
+        <div className='flex space-x-6'>
           <button 
             onClick={handleCancel}
             className='px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 hover:cursor-pointer hover:scale-105 transition duration-300'
@@ -253,9 +255,9 @@ const EditProfile = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className='flex flex-row w-full h-full space-x-5 mt-14 mb-20'
+        className='flex flex-row w-full h-full gap-x-5 gap-y-6 mt-14 mb-20 flex-wrap'
       >
-        <div className='w-1/3 h-full'>
+        <div className='flex-1 h-full'>
           <motion.h2 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -316,9 +318,11 @@ const EditProfile = () => {
             <p className='mt-2 text-gray-400 text-sm'>Below, select the option that applies to you:</p>
             
             <RadioGroup 
-              className="mt-8 space-y-1 w-3/5"
+              className="mt-8 space-y-1 max-w-[500px]"
               value={formData.riceAffiliation || undefined}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, riceAffiliation: value as 'student' | 'alum' }))}
             >
+              <label className="block cursor-pointer">
               <div className="flex items-center space-x-2 border rounded-lg justify-center py-3">
                 <RadioGroupItem 
                   value="student" 
@@ -327,14 +331,17 @@ const EditProfile = () => {
                 />
                 <Label htmlFor="student" className="text-sm">I am a Rice Student</Label>
               </div>
+              </label>
+              <label className="block cursor-pointer">
               <div className="flex items-center space-x-2 border rounded-lg justify-center py-3">
                 <RadioGroupItem 
-                  value="alumni" 
-                  id="alumni"
+                  value="alum" 
+                  id="alum"
                   className="text-[#FF7439] border-[#FF7439] data-[state=checked]:bg-[#FF7439] data-[state=checked]:text-white"
                 />
-                <Label htmlFor="alumni" className="text-sm">I am a Rice alumni</Label>
+                <Label htmlFor="alum" className="text-sm">I am a Rice alumni</Label>
               </div>
+              </label>
             </RadioGroup>
           </motion.div>
         </div>
@@ -343,7 +350,7 @@ const EditProfile = () => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 1 }}
-          className='w-2/3 h-full mb-20'
+          className='flex-2 h-full mb-20'
         >
           {/* Name Fields */}
           <h2 className='text-2xl font-medium'>Name</h2>
@@ -382,10 +389,17 @@ const EditProfile = () => {
           <h2 className='text-2xl font-medium mt-20'>Phone Number</h2>
           <p className='mt-2 text-gray-400 text-sm'>Use the number you'd like to be contacted with.</p>
           <Input 
+            type="tel"
             name="phone"
-            value={formData.phone}
-            onChange={handleInputChange}
-            placeholder="+1 (xxx) xxx-xxxx" 
+            value={formatPhoneNumber(formData.phone)}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, '');
+              if (value.length <= 10) {
+                setFormData(prev => ({ ...prev, phone: value }));
+              }
+            }}
+            placeholder="(123) 456-7890"
+            maxLength={14}
             className='w-full rounded-xl mt-8 border border-gray-200' 
           />
         </motion.div>
@@ -442,6 +456,7 @@ const EditProfile = () => {
         </DialogContent>
       </Dialog>
     </motion.main>
+    </Suspense>
   );
 };
 

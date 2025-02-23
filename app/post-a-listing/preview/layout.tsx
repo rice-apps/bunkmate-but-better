@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import { Suspense } from "react";
 
 export default async function RootLayout({
   children,
@@ -7,6 +8,7 @@ export default async function RootLayout({
 }) {
 
   return (
+    <Suspense>
     <div className="flex flex-col items-center w-[90%] mx-auto">
       <Navbar />
       <div className="w-full flex-1 flex flex-col items-center">
@@ -14,5 +16,6 @@ export default async function RootLayout({
       </div>
       
     </div>
+    </Suspense>
   );
 }

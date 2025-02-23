@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import ListingCard from "@/components/ListingCard";
 import Navbar from "@/components/Navbar";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next";
 import { BsArrowUpCircleFill } from "react-icons/bs";
 import LoadingCard from '@/components/LoadingCard';
 import { Button } from '@/components/ui/button';
@@ -93,7 +93,7 @@ export default function Favorites() {
               "listing_images",
               favorite.listings.image_paths[0]
             ),
-            renterType: "Rice Student",
+            renterType: favorite.listings.affiliation,
             isFavorite: true,
             image_paths: favorite.listings.image_paths
           };
@@ -109,7 +109,7 @@ export default function Favorites() {
       }
     }
     fetchPosts();
-  }, [router]);
+  }, []);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -229,7 +229,7 @@ export default function Favorites() {
         animate={{ opacity: 1, scale: 1 }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-9 right-9 p-0.5 cursor-pointer rounded-full shadow-lg bg-[#FF7439] border-[#FF7439] hover:bg-white transition-all duration-300"
+        className="fixed bottom-9 left-9 p-0.5 cursor-pointer rounded-full shadow-lg bg-[#FF7439] border-[#FF7439] hover:bg-white transition-all duration-300"
         onClick={scrollToTop}
       >
         <BsArrowUpCircleFill className="w-16 h-16 text-white group-hover:text-[#FF7439]" />

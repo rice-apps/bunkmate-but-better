@@ -14,7 +14,7 @@ const CategoryStatusIndicator = ({ completed, selected }: { completed: boolean, 
     );
   }
   
-  return <div className={`w-2 h-2 mr-2 rounded-full ${selected ? 'bg-[#FF7439]': 'bg-gray-500'}`}/>;
+  return <div className={`ml-1 w-2 h-2 mr-2 rounded-full ${selected ? 'bg-[#FF7439]': 'bg-gray-500'}`}/>;
 };
 
 export default CategoryStatusIndicator;

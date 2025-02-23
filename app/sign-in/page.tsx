@@ -2,10 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next";
 import Image from "next/image";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
+import { useEffect, useState } from "react";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function SignIn() {
   const supabase = createClient();
@@ -17,8 +19,35 @@ export default function SignIn() {
     });
   };
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(
+    () => {
+        if (window.location.hash.startsWith("#error")) {
+          setIsOpen(true);
+        }
+    },
+    []
+  )
   return (
     <div className="min-h-screen bg-white w-full flex">
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-center text-2xl font-bold">Failed to Sign Up</DialogTitle>
+          </DialogHeader>
+          <div className="text-center">
+            <p className="text-gray-500">
+              Bunkmate requires the use of your Rice email to sign up. Please use your Rice email to sign up for an account.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsOpen(false)} className="mt-4">
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       {/* Left Side - Showcase */}
       <div className="hidden lg:flex w-[55.5%] relative overflow-hidden bg-[#FF7439]">
         {/* Background Pattern */}
@@ -104,7 +133,7 @@ export default function SignIn() {
                 Welcome to <span className="text-[#FF7439]">bunkmate</span>
               </h1>
               <p className="text-gray-500">
-                Please sign in through Google to access your account!
+                Please sign in through your Rice Google account to access your account!
               </p>
             </div>
 
