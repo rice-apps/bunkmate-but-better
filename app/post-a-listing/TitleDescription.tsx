@@ -49,7 +49,7 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
 };
 
 const TitleDescription = ({formData, setFormData, onNext}: {formData: any; setFormData: any; onNext: () => void}) => {
-  const isComplete = formData.title.length >= 1 && formData.description.length >= 100;
+  const isComplete = formData.title.length >= 1 && formData.description.length >= 100 && formData.bath_num >= 0 && formData.bed_num >= 0;
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFormData = {...formData, title: e.target.value};
