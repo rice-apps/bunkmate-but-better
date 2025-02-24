@@ -311,7 +311,7 @@ const PostListing = () => {
       {
         id: "photos",
         name: "Photos",
-        completed: formData.photos.length >= 1,
+        completed: formData.photos.length >= 5,
       },
       {
         id: "profile",

@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getImagePublicUrl } from "@/utils/supabase/client";
+import imageCompression from "browser-image-compression";
 import Image from "next/image";
-import PreviewButton from "./PreviewButton";
+import { Dispatch, SetStateAction, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { FormDataType } from "./page";
-import { Dispatch, SetStateAction } from "react";
-import { getImagePublicUrl } from "@/utils/supabase/client";
+import PreviewButton from "./PreviewButton";
 
 const Photos = ({
   formData,
@@ -18,22 +19,32 @@ const Photos = ({
   onNext: () => void;
   onBack: () => void;
 }) => {
+  const [isUploading, setIsUploading] = useState(false);
   // Check total number of photos (existing + new)
-  const isComplete = (formData.photos.length + formData.imagePaths.length) >= 5;
+  const isComplete = formData.photos.length + formData.imagePaths.length >= 5;
 
   const getImageUrl = (path: string) => {
     return getImagePublicUrl("listing_images", path);
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+
     if (e.target.files) {
       const newPhotos = Array.from(e.target.files);
-      const parsedPhotos = newPhotos.map((photo: File) => URL.createObjectURL(photo));
+      setIsUploading(true);
+      const compressedPhotos = await Promise.all(newPhotos.map((photo: File) => imageCompression(photo, options)));
+      const parsedPhotos = compressedPhotos.map((photo: File) => URL.createObjectURL(photo));
       setFormData({
         ...formData,
         photos: [...formData.photos, ...parsedPhotos],
-        rawPhotos: [...formData.rawPhotos, ...newPhotos],
+        rawPhotos: [...formData.rawPhotos, ...compressedPhotos],
       });
+      setIsUploading(false);
     }
   };
 
@@ -49,10 +60,10 @@ const Photos = ({
   const handleRemovePhoto = (indexToRemove: number) => {
     const newPhotos = formData.photos.filter((_: any, index: number) => index !== indexToRemove);
     const newRawPhotos = formData.rawPhotos.filter((_: any, index: number) => index !== indexToRemove);
-    const newLabels = { ...formData.photoLabels };
+    const newLabels = {...formData.photoLabels};
     delete newLabels[indexToRemove];
     // Reindex the remaining labels
-    const reindexedLabels: { [key: number]: string } = {};
+    const reindexedLabels: {[key: number]: string} = {};
     Object.values(newLabels).forEach((label, index) => {
       reindexedLabels[index] = label as string;
     });
@@ -93,12 +104,7 @@ const Photos = ({
             <div key={`existing-${index}`} className="relative group">
               <div className="aspect-square rounded-xl overflow-hidden border border-gray-200">
                 <div className="relative w-full h-full">
-                  <Image
-                    src={getImageUrl(path)}
-                    alt={`Existing Upload ${index + 1}`}
-                    fill
-                    className="object-cover"
-                  />
+                  <Image src={getImageUrl(path)} alt={`Existing Upload ${index + 1}`} fill className="object-cover" />
                   <button
                     onClick={() => handleRemoveExistingPhoto(index)}
                     className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
@@ -116,7 +122,7 @@ const Photos = ({
                     ...formData.photoLabels,
                     [index + 100]: e.target.value,
                   };
-                  setFormData({ ...formData, photoLabels: newLabels });
+                  setFormData({...formData, photoLabels: newLabels});
                 }}
               />
             </div>
@@ -145,7 +151,7 @@ const Photos = ({
                     ...formData.photoLabels,
                     [index]: e.target.value,
                   };
-                  setFormData({ ...formData, photoLabels: newLabels });
+                  setFormData({...formData, photoLabels: newLabels});
                 }}
               />
             </div>
@@ -154,15 +160,18 @@ const Photos = ({
           {formData.photos.length + formData.imagePaths.length >= 0 && (
             <label className="cursor-pointer">
               <div
-                className={`aspect-square rounded-xl border-2 border-dashed flex items-center justify-center ${isComplete ? "border-green-500" : "border-gray-300 hover:border-gray-400"
-                  }`}
+                className={`aspect-square rounded-xl border-2 border-dashed flex items-center justify-center ${
+                  isComplete ? "border-green-500" : "border-gray-300 hover:border-gray-400"
+                }`}
               >
                 <div className="flex flex-col items-center text-center">
                   <span className="flex items-center justify-center w-8 h-8 bg-gray-300 rounded-full text-white text-[35px] font-[200]">
                     +
                   </span>
                   {formData.photos.length + formData.imagePaths.length < 5 && (
-                    <p className="text-sm text-gray-500 mt-2">{5 - (formData.photos.length + formData.imagePaths.length)} more required</p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      {5 - (formData.photos.length + formData.imagePaths.length)} more required
+                    </p>
                   )}
                 </div>
                 <input type="file" multiple accept="image/*" className="hidden" onChange={handlePhotoUpload} />
@@ -170,6 +179,7 @@ const Photos = ({
             </label>
           )}
         </div>
+        {isUploading && <div className="italic text-sm text-gray-500 pt-5">Uploading image(s)...</div>}
       </div>
 
       <div className="flex flex-col pt-10">
@@ -182,8 +192,9 @@ const Photos = ({
             <p>Back</p>
           </Button>
           <Button
-            className={`w-[5.3rem] rounded-lg px-6 flex items-center ${isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
-              }`}
+            className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
+              isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
+            }`}
             onClick={onNext}
             disabled={!isComplete}
           >
