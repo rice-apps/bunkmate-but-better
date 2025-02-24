@@ -7,6 +7,7 @@ import {useEffect, useState} from "react";
 import {FaChevronLeft} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
 import Image from "next/image";
+import { DialogHeader, Dialog, DialogContent, DialogTitle, DialogFooter  } from "@/components/ui/dialog";
 
 
 const Profile = ({
@@ -44,6 +45,8 @@ const Profile = ({
     image: "",
   });
 
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchUser = async () => {
       const user = await supabase.auth.getUser();
@@ -74,6 +77,23 @@ const Profile = ({
 
   return (
     <div>
+      <Dialog open={!!error} onOpenChange={() => setError(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Error</DialogTitle>
+          </DialogHeader>
+          <p>{error}</p>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setError(null)}
+              className="bg-[#FF7439] hover:bg-[#FF7439]/90 text-white"
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <div className="flex flex-row justify-between flex-wrap-reverse gap-4 pb-2 items-center">
         <div>
           <h1 className="text-2xl font-semibold">Profile</h1>
@@ -197,7 +217,14 @@ const Profile = ({
             isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
           }`}
           disabled={!isComplete || isPosting}
-          onClick={e => handleSubmit(e)}
+          onClick={async e => {
+            try {
+              await handleSubmit(e);
+            } catch (error) {
+              console.log("found error", error);
+              setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+            }
+          }}
         >
           <p>{editingMode ? "Save" : "Post"}</p>
         </Button>

@@ -154,6 +154,9 @@ const PostListing = () => {
     } catch (error: any) {
       console.error(error.message);
       await cleanupUploads(error.cause);
+      throw error;
+    } finally {
+      setIsPosting(false);
     }
   };
 
@@ -275,6 +278,7 @@ const PostListing = () => {
             onBack={handlePreviousCategory}
             isPosting={isPosting}
             handleSubmit={handleSubmit}
+            editingMode={false}
           />
         );
       default:
