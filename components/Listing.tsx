@@ -1,5 +1,5 @@
 "use client";
-import { getImagePublicUrl } from "@/utils/supabase/client";
+import { getBlurImage, getImagePublicUrl } from "@/utils/supabase/client";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -205,11 +205,11 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
         transition={{duration: 0.5, delay: 0.2}}
         className="mb-6 w-full"
       >
-        <div className="flex items-center mt-4 mb-2 flex-wrap-reverse gap-y-4">
+        <div className="flex items-center mt-4 mb-2 flex-wrap-reverse gap-y-4 gap-x-4">
           <h1 className="text-4xl font-semibold">{data.title}</h1>
           <motion.div whileHover={{scale: 1.1}} whileTap={{scale: 0.9}}>
             <FaHeart
-              className="ml-3 cursor-pointer w-6 h-6 duration-300"
+              className="cursor-pointer w-6 h-6 duration-300"
               fill={favorite ? "#FF7439" : "gray"}
               onClick={toggleFavorite}
             />
@@ -249,6 +249,8 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           >
             <Image
               src={image.src}
+              placeholder="blur"
+              blurDataURL={getBlurImage(image.src)}
               fill={true}
               alt={`${data.title} - Image ${index + 1}`}
               className="object-cover hover:scale-105 transition-transform duration-300"
@@ -321,6 +323,8 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           >
             <Image
               src={images[currentImageIndex].src}
+              placeholder="blur"
+              blurDataURL={getBlurImage(images[currentImageIndex].src)}
               fill={true}
               alt={`${data.title} - Image ${currentImageIndex + 1}`}
               className="object-contain rounded-lg select-none"

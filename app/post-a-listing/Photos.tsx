@@ -7,6 +7,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { FormDataType } from "./page";
 import PreviewButton from "./PreviewButton";
+import { getBlurImage, getImagePublicUrl } from "@/utils/supabase/client";
 
 const Photos = ({
   formData,
@@ -104,7 +105,14 @@ const Photos = ({
             <div key={`existing-${index}`} className="relative group">
               <div className="aspect-square rounded-xl overflow-hidden border border-gray-200">
                 <div className="relative w-full h-full">
-                  <Image src={getImageUrl(path)} alt={`Existing Upload ${index + 1}`} fill className="object-cover" />
+                  <Image
+                    src={getImageUrl(path)}
+                    placeholder="blur"
+                    blurDataURL={getBlurImage(getImageUrl(path.src))}
+                    alt={`Existing Upload ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
                   <button
                     onClick={() => handleRemoveExistingPhoto(index)}
                     className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
