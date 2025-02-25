@@ -38,7 +38,6 @@ export default function Favorites() {
   const [loadingCardCount, setLoadingCardCount] = useState(4);
 
   useEffect(() => {
-    throw new Error("Function not implemented.");
     const updateLoadingCardCount = () => {
       const width = window.innerWidth;
       if (width >= 1024) setLoadingCardCount(8); // lg: 4 columns
