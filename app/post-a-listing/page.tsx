@@ -72,7 +72,6 @@ const PostListing = () => {
       formData.phone,
   );
 
-
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setIsPosting(true);
     e.preventDefault();
@@ -155,6 +154,9 @@ const PostListing = () => {
     } catch (error: any) {
       console.error(error.message);
       await cleanupUploads(error.cause);
+      throw error;
+    } finally {
+      setIsPosting(false);
     }
   };
 
@@ -175,7 +177,7 @@ const PostListing = () => {
           lon: data[0].lon,
         };
       } else {
-        throw new Error("No results found");
+        throw new Error("No geocode results found for " + address);
       }
     } catch (error) {
       console.error("Error geocoding address:", error);
@@ -276,6 +278,7 @@ const PostListing = () => {
             onBack={handlePreviousCategory}
             isPosting={isPosting}
             handleSubmit={handleSubmit}
+            editingMode={false}
           />
         );
       default:
@@ -308,7 +311,7 @@ const PostListing = () => {
       {
         id: "photos",
         name: "Photos",
-        completed: formData.photos.length >= 1,
+        completed: formData.photos.length >= 5,
       },
       {
         id: "profile",
@@ -415,7 +418,7 @@ const PostListing = () => {
 
             {/* Form Content */}
             <div
-              className="flex-1 md:pl-16 md:border-l border-gray-500 pb-8 pr-8"
+              className="flex-1 md:pl-16 md:border-l border-gray-500 pb-8 md:pr-8"
               style={{height: "85vh", overflowY: "auto"}}
             >
               {renderComponent()}
