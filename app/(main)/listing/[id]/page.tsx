@@ -157,7 +157,7 @@ const ListingPage = () => {
         data={{
           id: listing.id.toString(),
           title: listing.title,
-          distance: `${listing.distance} away`,
+          distance: `${listing.distance} miles`,
           start_date: listing.start_date,
           end_date: listing.end_date, // Use the new format
           price: listing.price,
