@@ -50,7 +50,7 @@ const EditProfile = () => {
         if (data) {
           // Split name into first and last name
           const [firstName = '', lastName = ''] = data.name ? data.name.split(' ') : ['', ''];
-          console.log("new data", data);
+
           setFormData(prev => ({
             ...prev,
             firstName,
