@@ -7,6 +7,8 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { FormDataType } from "./page";
 import PreviewButton from "./PreviewButton";
+import { Dispatch, SetStateAction } from "react";
+import { getBlurImage, getImagePublicUrl, getShimmerData } from "@/utils/supabase/client";
 
 const Photos = ({
   formData,
@@ -106,8 +108,7 @@ const Photos = ({
                 <div className="relative w-full h-full">
                   <Image
                     src={getImageUrl(path)}
-                    placeholder="blur"
-                    blurDataURL={getBlurImage(getImageUrl(path))}
+                    placeholder={`data:image/svg+xml;base64,${getShimmerData()}`}
                     alt={`Existing Upload ${index + 1}`}
                     fill
                     className="object-cover"

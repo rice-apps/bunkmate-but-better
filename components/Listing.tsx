@@ -1,5 +1,5 @@
 "use client";
-import { getBlurImage, getImagePublicUrl } from "@/utils/supabase/client";
+import { getBlurImage, getImagePublicUrl, getShimmerData } from "@/utils/supabase/client";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -249,8 +249,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           >
             <Image
               src={image.src}
-              placeholder="blur"
-              blurDataURL={getBlurImage(image.src)}
+              placeholder={`data:image/svg+xml;base64,${getShimmerData()}`}
               fill={true}
               alt={`${data.title} - Image ${index + 1}`}
               className="object-cover hover:scale-105 transition-transform duration-300"
@@ -323,8 +322,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           >
             <Image
               src={images[currentImageIndex].src}
-              placeholder="blur"
-              blurDataURL={getBlurImage(images[currentImageIndex].src)}
+              placeholder={`data:image/svg+xml;base64,${getShimmerData()}`}
               fill={true}
               alt={`${data.title} - Image ${currentImageIndex + 1}`}
               className="object-contain rounded-lg select-none"
