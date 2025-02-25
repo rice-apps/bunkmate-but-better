@@ -26,11 +26,7 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['framer-motion', 'react-day-picker', '@supabase/ssr', '@supabase/supabase-js'],
-  },
-  images: {
-    loader: 'custom',
-    loaderFile: './supabase-image-loader.js',
-  },
+  }
 };
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
