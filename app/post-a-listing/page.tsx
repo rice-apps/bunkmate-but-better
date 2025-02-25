@@ -177,7 +177,7 @@ const PostListing = () => {
           lon: data[0].lon,
         };
       } else {
-        throw new Error("No results found");
+        throw new Error("No geocode results found for " + address);
       }
     } catch (error) {
       console.error("Error geocoding address:", error);
