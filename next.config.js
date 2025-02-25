@@ -19,6 +19,18 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true, // to:do REMOVE THIS SHIT AS SOON AS POSSIBLE @SATHYA @GABE YES - LUCY
   },
+  compiler: {
+    removeConsole: {
+      exclude: ['error'],
+    },
+  },
+  experimental: {
+    optimizePackageImports: ['framer-motion', 'react-day-picker', '@supabase/ssr', '@supabase/supabase-js'],
+  }
 };
 
-module.exports = nextConfig;
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+module.exports = withBundleAnalyzer(nextConfig);
