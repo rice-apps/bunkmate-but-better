@@ -2,7 +2,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
-import { getImagePublicUrl } from "@/utils/supabase/client";
+import { getImagePublicUrl, getShimmerData } from "@/utils/supabase/client";
 import { motion } from "framer-motion";
 import { formatPhoneNumber } from "./ui/input";
 
@@ -71,6 +71,7 @@ const MeetSubleaser: React.FC<MeetSubleaserProps> = ({ data }) => {
           >
             <Image 
               src={getProfileImage()} 
+              placeholder={`data:image/svg+xml;base64,${getShimmerData()}`}
               fill={true}
               alt='profile pic' 
               className='object-cover'

@@ -39,11 +39,14 @@ export default function Index() {
   const [listings, setListings] = useState<Listing[] | null>(null);
   const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingCardCount, setLoadingCardCount] = useState(4);
+  const [visibleListings, setVisibleListings] = useState(48);
+  const [hasMore, setHasMore] = useState(true);
+  const [lastLoadedIndex, setLastLoadedIndex] = useState(0); // Track last loaded index
 
-  const searchParams = useSearchParams(); // Use useSearchParams
-
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const updateLoadingCardCount = () => {
@@ -75,22 +78,26 @@ export default function Index() {
         const startDate = (searchParams && searchParams.get('startDate') ? new Date(searchParams.get('startDate')!) : null);
         const endDate = (searchParams && searchParams.get('endDate') ? new Date(searchParams.get('endDate')!) : null);
         const distance = (searchParams && searchParams.get('distance')) || null;
+        const search = (searchParams && searchParams.get('search')) || null;
 
         // Apply filters
+        if (search) {
+          query = query.or(`title.ilike.%${search}%,address.ilike.%${search}%`);
+        }
         if (startDate) {
           const startRange = new Date(startDate);
-          startRange.setMonth(startRange.getMonth() - 1); // One month before
+          startRange.setDate(startRange.getDate() - 7); // One week before
           const endRange = new Date(startDate);
-          endRange.setMonth(endRange.getMonth() + 1); // One month after
+          endRange.setDate(endRange.getDate() + 7); // One week after
 
           query = query.gte('start_date', startRange.toISOString());
           query = query.lte('start_date', endRange.toISOString());
         }
         if (endDate) {
           const startRange = new Date(endDate);
-          startRange.setMonth(startRange.getMonth() - 1); // One month before
+          startRange.setDate(startRange.getDate() - 7); // One week before
           const endRange = new Date(endDate);
-          endRange.setMonth(endRange.getMonth() + 1); // One month after
+          endRange.setDate(endRange.getDate() + 7); // One week after
 
           query = query.gte('end_date', startRange.toISOString());
           query = query.lte('end_date', endRange.toISOString());
@@ -107,9 +114,45 @@ export default function Index() {
 
         const { data: listings, error } = await query.order('created_at', { ascending: false });
 
+        if (listings && (startDate || endDate)) {
+          listings.sort((a, b) => {
+            let totalDiffA = 0;
+            let totalDiffB = 0;
+
+            if (startDate) {
+              const aStartDate = new Date(a.start_date);
+              const bStartDate = new Date(b.start_date);
+
+              // Calculate start date differences
+              const aStartDiff = Math.abs(aStartDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+              const bStartDiff = Math.abs(bStartDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+
+              totalDiffA += aStartDiff;
+              totalDiffB += bStartDiff;
+            }
+
+            if (endDate) {
+              const aEndDate = new Date(a.end_date);
+              const bEndDate = new Date(b.end_date);
+
+              // Calculate end date differences
+              const aEndDiff = Math.abs(aEndDate.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24);
+              const bEndDiff = Math.abs(bEndDate.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24);
+
+              totalDiffA += aEndDiff;
+              totalDiffB += bEndDiff;
+            }
+
+            // Sort by combined difference (smaller difference = more relevant)
+            return totalDiffA - totalDiffB;
+          });
+        }
+
         if (error) throw error;
 
         setListings(listings);
+        setHasMore(listings.length > visibleListings);
+        setLastLoadedIndex(0); // Reset last loaded index on new search
 
         const { data: favorites } = await supabase.from('users_favorites').select('listing_id').eq('user_id', user?.id);
 
@@ -137,6 +180,18 @@ export default function Index() {
     fetchPosts();
   }, [searchParams]);
 
+  const loadMore = async () => {
+    setIsLoadingMore(true);
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate loading
+    setVisibleListings(prev => {
+      const next = prev + 24;
+      setHasMore(listings ? listings.length > next : false);
+      setLastLoadedIndex(prev); // Update last loaded index
+      return next;
+    });
+    setIsLoadingMore(false);
+  };
+
   const renderLoadingState = () => (
     <>
       {[...Array(loadingCardCount)].map((_, index) => (
@@ -146,7 +201,7 @@ export default function Index() {
   );
 
   const renderError = () => (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -166,7 +221,7 @@ export default function Index() {
 
   return (
     <Suspense>
-      <motion.main 
+      <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -176,13 +231,16 @@ export default function Index() {
           {isLoading ? renderLoadingState() : error ? renderError() :
             (
               <>
-                {listings && (listings.length > 0)  ? listings.map((listing, index) => (
+                {listings && (listings.length > 0) ? listings.slice(0, visibleListings).map((listing, index) => (
                   <motion.div 
-                    key={listing.id} 
+                    key={listing.id}
                     className="w-full"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    transition={{ 
+                      duration: 0.5,
+                      delay: index < lastLoadedIndex ? 0 : (index - lastLoadedIndex) * 0.1 // Only delay new items
+                    }}
                   >
                     <ListingCard
                       postId={listing.id.toString()}
@@ -199,12 +257,41 @@ export default function Index() {
                   </motion.div>
                 )) : (
                   <motion.div 
-                  className="col-span-full flex flex-col items-center justify-center py-12"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
+                    className="col-span-full flex flex-col items-center justify-center py-12"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
                   >
-                  <p className="text-gray-500 text-lg">No listings found</p>
+                    <p className="text-gray-500 text-lg">No listings found</p>
+                  </motion.div>
+                )}
+                {isLoadingMore && (
+                  <>
+                    {[...Array(4)].map((_, index) => (
+                      <LoadingCard key={`loading-more-${index}`} />
+                    ))}
+                  </>
+                )}
+                {hasMore && listings && listings.length > 0 && (
+                  <motion.div 
+                    className="col-span-full flex justify-center mt-8"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Button 
+                      onClick={loadMore}
+                      className="bg-[#FF7439] hover:bg-[#FF7439]/90 text-white"
+                      disabled={isLoadingMore}
+                    >
+                      {isLoadingMore ? (
+                        <div className="flex items-center gap-2">
+                          <LoadingCircle /> Loading...
+                        </div>
+                      ) : (
+                        'Load More'
+                      )}
+                    </Button>
                   </motion.div>
                 )}
               </>
@@ -226,7 +313,7 @@ export default function Index() {
         >
           <Button className="bg-[#FF7439] hover:bg-[#FF7439]/90 text-white font-semibold px-6 py-3 rounded-full shadow-lg flex items-center space-x-1">
             <MdChatBubble />
-            <p>Give Feedback</p>
+            <p className="text-white hidden md:block">Give Feedback</p>
           </Button>
         </motion.a>
       </motion.div>

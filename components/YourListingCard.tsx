@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { useRouter } from "@bprogress/next";
 import { IconContext } from "react-icons";
+import { getShimmerData } from "@/utils/supabase/client";
 
 interface CardProps {
   postId: string;
@@ -48,6 +49,7 @@ const YourListingCard: React.FC<CardProps> = ({
         <div className="relative w-full aspect-square">
           <Image
             src={imagePath || "/house1.jpeg"}
+            placeholder={`data:image/svg+xml;base64,${getShimmerData()}`}
             alt={name}
             fill
             className="object-cover rounded-2xl"

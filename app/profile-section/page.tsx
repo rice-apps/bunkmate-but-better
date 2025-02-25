@@ -5,7 +5,7 @@ import YourListingCard from "@/components/YourListingCard";
 import { motion } from 'framer-motion';
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
+import { createClient, getImagePublicUrl, getShimmerData } from "@/utils/supabase/client";
 import { useRouter } from "@bprogress/next";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
@@ -247,6 +247,7 @@ export default function Index() {
                       >
                         <Image
                           src={profile?.image || "/profile_pic.jpeg"}
+                          placeholder={`data:image/svg+xml;base64,${getShimmerData()}`}
                           fill={true}
                           alt="profile pic"
                           className="object-cover"

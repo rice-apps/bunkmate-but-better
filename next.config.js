@@ -16,6 +16,22 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
+  compiler: {
+    removeConsole: {
+      exclude: ['error'],
+    },
+  },
+  experimental: {
+    optimizePackageImports: ['framer-motion', 'react-day-picker', '@supabase/ssr', '@supabase/supabase-js'],
+  },
+  images: {
+    loader: 'custom',
+    loaderFile: './supabase-image-loader.js',
+  },
 };
 
-module.exports = nextConfig;
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+module.exports = withBundleAnalyzer(nextConfig);

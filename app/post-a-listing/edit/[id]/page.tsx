@@ -101,7 +101,6 @@ const EditListing = () => {
           return acc;
         }, {});
 
-
         // Verify user owns this listing
         if (listingData.user_id !== authData.user.id) {
           // If not, route to profile-section
@@ -138,7 +137,7 @@ const EditListing = () => {
             durationNotes: listingData.duration_notes || '',
             address: { label: listingData.address, value: { description: listingData.address } },
             locationNotes: listingData.location_notes || '',
-            photos: publicUrls,
+            photos: [],
             rawPhotos: [],
             photoLabels: captions || {},
             imagePaths: listingData.image_paths || [],
@@ -148,7 +147,6 @@ const EditListing = () => {
             bed_num: listingData.bed_num || NaN,
             bath_num: listingData.bath_num || NaN,
           });
-
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load data';
@@ -209,21 +207,17 @@ const EditListing = () => {
           insertions.push(insertion);
         });
 
-        try {
-          const imageUploads = await Promise.all(insertions);
-          const successfulUploads = imageUploads.filter(upload => upload.data);
+        const imageUploads = await Promise.all(insertions);
+        const successfulUploads = imageUploads.filter(upload => upload.data);
 
-          if (successfulUploads.length !== formData.rawPhotos.length) {
-            throw new Error('Some image(s) failed to upload');
-          }
-
-          // Add new file paths to the existing ones
-          uploadedPaths = successfulUploads.map(upload => upload.data!.path);
-          newImagePaths = [...formData.imagePaths, ...uploadedPaths];
-        } catch (error) {
-          console.error('Error uploading new images:', error);
-          return;
+        if (successfulUploads.length !== formData.rawPhotos.length) {
+          throw new Error('Some image(s) failed to upload');
         }
+
+        // Add new file paths to the existing ones
+        uploadedPaths = successfulUploads.map(upload => upload.data!.path);
+        newImagePaths = [...formData.imagePaths, ...uploadedPaths];
+        
       }
 
       // Update the listing with all fields including new image paths
@@ -281,7 +275,7 @@ const EditListing = () => {
             .insert(allCaptions);
 
           if (captionError) {
-            console.error('Error updating captions:', captionError);
+            throw new Error(`Error inserting captions: ${captionError.message}`);
           }
         }
       }
@@ -311,6 +305,7 @@ const EditListing = () => {
       router.push(`/listing/${listingId}`);
     } catch (error: any) {
       console.error('Error updating listing:', error.message);
+      throw error;
     } finally {
       setIsPosting(false);
     }
@@ -469,7 +464,7 @@ const EditListing = () => {
                 </div>
               </> :
               <>
-                <div className="flex-1 md:pl-16 md:border-l border-gray-500 pb-8 pr-8" style={{height: "85vh", overflowY: "auto"}}>
+                <div className="flex-1 md:pl-16 md:border-l border-gray-500 pb-8 md:pr-8" style={{height: "85vh", overflowY: "auto"}}>
                   {renderComponent()}
                 </div>
               </>}

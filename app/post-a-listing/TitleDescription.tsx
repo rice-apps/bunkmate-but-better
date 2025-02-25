@@ -24,8 +24,14 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
           <Input
             placeholder="Ex: 2"
             value={formData.bed_num}
-            onChange={handleBedChange}
+            onChange={(e) => {
+              const value = e.target.value.replace('\.', '')
+              handleBedChange({ ...e, target: { ...e.target, value } });
+            }}
             type="number"
+            min={0}
+            step={1}
+            pattern="[0-9]"
             className="w-full rounded-xl border-[1px] border-gray-300 placeholder:text-gray-400 py-6"
           />
         </div>
@@ -38,8 +44,15 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
           <Input
             placeholder="Ex: 5"
             value={formData.bath_num}
-            onChange={handleBathChange}
+            onChange={(e) => {
+              // don't allow decimals or negative numbers
+              const value = e.target.value.replace('\.', '')
+              handleBathChange({ ...e, target: { ...e.target, value } });
+            }}
             type="number"
+            min={0}
+            step={1}
+            pattern="[0-9]"
             className="w-full rounded-xl border-[1px] border-gray-300 placeholder:text-gray-400 py-6"
           />
         </div>
@@ -49,7 +62,15 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
 };
 
 const TitleDescription = ({formData, setFormData, onNext}: {formData: any; setFormData: any; onNext: () => void}) => {
-  const isComplete = formData.title.length >= 1 && formData.description.length >= 100;
+  console.log("TitleDescription", formData);
+  const isComplete = formData.title.length >= 1 && 
+    formData.description.length >= 100 && 
+    !isNaN(formData.bath_num) && 
+    !isNaN(formData.bed_num) && 
+    Number.isInteger(Number(formData.bath_num)) && 
+    Number.isInteger(Number(formData.bed_num)) && 
+    Number(formData.bath_num) >= 0 && 
+    Number(formData.bed_num) >= 0;
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFormData = {...formData, title: e.target.value};
