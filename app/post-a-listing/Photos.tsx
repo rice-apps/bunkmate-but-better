@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { getImagePublicUrl, getShimmerData } from "@/utils/supabase/client";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {getImagePublicUrl, getShimmerData} from "@/utils/supabase/client";
 import imageCompression from "browser-image-compression";
 import Image from "next/image";
-import { Dispatch, SetStateAction, useState } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-import { FormDataType } from "./page";
+import {Dispatch, SetStateAction, useState} from "react";
+import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
+import {FormDataType} from "./page";
 import PreviewButton from "./PreviewButton";
 
 const Photos = ({
