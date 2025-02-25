@@ -3,7 +3,7 @@ import { ThemeProvider } from "next-themes";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import PostListingFormProvider from "@/providers/PostListingFormProvider";
-import { GoogleTagManager } from '@next/third-parties/google'
+import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { Suspense } from "react";
 import ProgressBarProvider from "@/providers/ProgressBarProvider";
 
@@ -28,7 +28,8 @@ export default async function RootLayout({
   return (
     <Suspense>
       <html lang="en" className={GeistSans.className} suppressHydrationWarning>
-        <GoogleTagManager gtmId="G-F6DT1CZ9YT" />
+        <GoogleTagManager gtmId="GTM-P5XWK4MK" />
+        <GoogleAnalytics gaId="G-F6DT1CZ9YT" />
         <body className={`${dmsans.className} bg-background text-foreground`}>
           <ThemeProvider
             attribute="class"
