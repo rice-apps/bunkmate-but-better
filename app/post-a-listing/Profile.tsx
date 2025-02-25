@@ -222,7 +222,11 @@ const Profile = ({
               await handleSubmit(e);
             } catch (error) {
               console.log("found error", error);
-              setError(error instanceof Error ? error.message + "\n" + error.stack : 'An unexpected error occurred');     
+              setError(error instanceof Error ? error.message + "\n" + error.stack : 'An unexpected error occurred');   
+              window.gtag("event", "exception", {
+                description: error instanceof Error ? error.message + "\n" + error.stack : 'An unexpected error occurred',
+                fatal: true,
+              });
             }
           }}
         >
