@@ -45,7 +45,6 @@ export default function Index() {
   const [reload, setReload] = useState<boolean>(false);
 
   const handleLogout = async () => {
-    console.log("LOGOUT CLICKED")
     await supabase.auth.signOut();
     // Redirect to Sign-in page
     router.push("/sign-in");
