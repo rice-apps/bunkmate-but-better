@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getImagePublicUrl } from "@/utils/supabase/client";
+import { getBlurImage, getImagePublicUrl } from "@/utils/supabase/client";
 import imageCompression from "browser-image-compression";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { FormDataType } from "./page";
 import PreviewButton from "./PreviewButton";
-import { getBlurImage, getImagePublicUrl } from "@/utils/supabase/client";
 
 const Photos = ({
   formData,
@@ -101,14 +100,14 @@ const Photos = ({
 
         <div className="grid grid-cols-3 gap-4">
           {/* Display existing images first */}
-          {formData.imagePaths.map((path: string, index: number) => (
+          {formData.imagePaths.map((path, index: number) => (
             <div key={`existing-${index}`} className="relative group">
               <div className="aspect-square rounded-xl overflow-hidden border border-gray-200">
                 <div className="relative w-full h-full">
                   <Image
                     src={getImageUrl(path)}
                     placeholder="blur"
-                    blurDataURL={getBlurImage(getImageUrl(path.src))}
+                    blurDataURL={getBlurImage(getImageUrl(path))}
                     alt={`Existing Upload ${index + 1}`}
                     fill
                     className="object-cover"
