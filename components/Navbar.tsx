@@ -3,7 +3,7 @@
 import React, { Suspense, useEffect } from "react";
 import Image from "next/image";
 import { FaMagnifyingGlass } from "react-icons/fa6";
-import { FaHeart, FaTimes } from "react-icons/fa";
+import { FaHeart, FaSignOutAlt, FaTimes } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { MdHome } from "react-icons/md";
@@ -33,6 +33,7 @@ interface ModularDropDownProps {
   title: string;
   value: string;
   setValue: (value: string) => void;
+  className?: string;
 }
 
 const ModularDropDown: React.FC<ModularDropDownProps> = ({
@@ -193,12 +194,6 @@ const Navbar = ({
   return (
     <div className="w-full">
       {/* Mobile Search Button */}
-      <button
-        onClick={() => setShowMobileFilter(!showMobileFilter)}
-        className="lg:hidden fixed bottom-20 right-4 z-40 bg-[#FF7439] p-4 rounded-full shadow-lg"
-      >
-        <FaMagnifyingGlass className="h-6 w-6 text-white" />
-      </button>
 
       {/* Mobile Filter Overlay */}
       {showMobileFilter && (
@@ -206,13 +201,13 @@ const Navbar = ({
           <div className="w-full max-w-md mx-4 bg-white rounded-3xl p-6 relative">
             <button
               onClick={() => setShowMobileFilter(false)}
-              className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+              className="absolute right-8 top-6 text-gray-500 hover:text-gray-700"
             >
               <FaTimes className="w-6 h-6" />
             </button>
             <div className="pt-4">
               {/* Mobile filter options */}
-              <div className="space-y-6 flex flex-col justify-center items-center text-center">
+              <div className="space-y-6 ml-[20px] mr-[20px] mb-[20px] flex flex-col justify-center items-left text-left">
                 {/* Search Input */}
                 <div className="w-full">
                   <div className="relative flex items-center">
@@ -235,10 +230,9 @@ const Navbar = ({
                     )}
                   </div>
                 </div>
-
                 {/* Distance from Rice */}
                 <div>
-                  <p className="text-[14px] font-semibold text-[#777777] mb-2">
+                  <p className="text-[18px] font-semibold text-[#777777] mb-2">
                     Distance from Rice
                   </p>
                   <ModularDropDown
@@ -251,12 +245,14 @@ const Navbar = ({
                     title={distanceTitle}
                     value={distance}
                     setValue={setDistance}
+                    className="w-full"
                   />
                 </div>
+                <hr></hr>
 
                 {/* Start Date */}
                 <div>
-                  <p className="text-[14px] font-semibold text-[#777777] mb-2">
+                  <p className="text-[18px] font-semibold text-[#777777] mb-2">
                     Start Date
                   </p>
                   <Popover>
@@ -283,9 +279,11 @@ const Navbar = ({
                   </Popover>
                 </div>
 
+                <hr></hr>
+
                 {/* End Date */}
                 <div>
-                  <p className="text-[14px] font-semibold text-[#777777] mb-2">
+                  <p className="text-[18px] font-semibold text-[#777777] mb-2">
                     End Date
                   </p>
                   <Popover>
@@ -339,6 +337,24 @@ const Navbar = ({
           </Link>
         </button>
 
+        {/* Mobile Icons (grouped search & menu icons) */}
+        {/* Again, note that these icons will only appear on mobile! */}
+        <div className="flex ml-auto items-center justify-end gap-4 lg:hidden">
+          {/* MOBILE-ONLY search icon. */}
+          <button
+            onClick={() => setShowMobileFilter(!showMobileFilter)}
+            className="p-1"
+          >
+            <FaMagnifyingGlass className="h-6 w-6 text-[#FF7439]" />
+          </button>
+
+          <div className="flex-grow"></div>
+
+          {/* MOBILE-ONLY hamburger icon. */}
+          <button onClick={() => setIsOpen(true)}>
+            <RxHamburgerMenu className="w-[35px] h-[35px] text-[#FF7439]" />
+          </button>
+        </div>
         {includeFilter && (
           <div className="hidden max-w-[780px] lg:flex h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3 relative">
             {/* Show search input when search is active */}
@@ -393,7 +409,6 @@ const Navbar = ({
                   />
                 </div>
               </div>
-
               {/* Start Date. */}
               <div className="flex justify-center items-center flex-col w-[212px] border-r">
                 <div className="text-left ">
@@ -467,7 +482,6 @@ const Navbar = ({
                 </div>
               </div>
             </div>
-
             {/* Search button */}
             <button 
               className="pr-8"
@@ -516,82 +530,75 @@ const Navbar = ({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsOpen(true)}
-          className="flex hide-icons:hidden ml-auto"
-        >
-          <RxHamburgerMenu className="w-[35px] h-[35px]" color="#FF7439" />
-        </button>
       </div>
 
       {/* Mobile Menu */}
       <AnimatePresence>
-      {isOpen && (
-        <motion.div
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="fixed inset-y-0 right-0 w-64 bg-[#FF7439] z-50">
-          <div className="p-4 pl-10 text-white space-y-6 flex flex-col text-[18px] mt-12">
-            <button
-              onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 text-white"
-            >
-              <FaTimes className="w-6 h-6" />
-            </button>
+        {isOpen && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="fixed inset-y-0 right-0 w-64 bg-[#FF7439] z-50">
+            <div className="p-4 pl-10 text-white space-y-6 flex flex-col text-[18px] mt-20">
+              <hr className="mt-3"></hr>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="absolute top-8 right-7 text-white"
+              >
+                <FaTimes className="w-8 h-8" />
+              </button>
 
-            <Link
-              href="/"
-              className="flex items-center space-x-3"
-              onClick={() => setIsOpen(false)}
-            >
-              <MdHome className="w-6 h-6" />
-              <span>Home</span>
-            </Link>
+              <Link
+                href="/"
+                className="flex items-center space-x-3"
+                onClick={() => setIsOpen(false)}
+              >
+                <MdHome className="w-6 h-6" />
+                <span>Home</span>
+              </Link>
 
-            <Link
-              href="/post-a-listing"
-              className="flex items-center space-x-3"
-              onClick={() => setIsOpen(false)}
-            >
-              <FaPlus className="w-6 h-6" />
-              <span>Post a Listing</span>
-            </Link>
+              <Link
+                href="/post-a-listing"
+                className="flex items-center space-x-3"
+                onClick={() => setIsOpen(false)}
+              >
+                <FaPlus className="w-6 h-6" />
+                <span>Post a Listing</span>
+              </Link>
 
-            <Link
-              href="/favorites"
-              className="flex items-center space-x-3"
-              onClick={() => setIsOpen(false)}
-            >
-              <FaHeart className="w-6 h-6" />
-              <span>Favorite Listings</span>
-            </Link>
+              <Link
+                href="/favorites"
+                className="flex items-center space-x-3"
+                onClick={() => setIsOpen(false)}
+              >
+                <FaHeart className="w-6 h-6" />
+                <span>Favorite Listings</span>
+              </Link>
 
-            <Link
-              href="/profile-section"
-              className="flex items-center space-x-3"
-              onClick={() => setIsOpen(false)}
-            >
-              <CgProfile className="w-6 h-6" />
-              <span>Your Profile</span>
-            </Link>
+              <Link
+                href="/profile-section"
+                className="flex items-center space-x-3"
+                onClick={() => setIsOpen(false)}
+              >
+                <CgProfile className="w-6 h-6" />
+                <span>Your Profile</span>
+              </Link>
 
-            <button
-              onClick={() => {
-                handleLogout();
-                setIsOpen(false);
-              }}
-              className="flex items-center space-x-3"
-            >
-              <FaTimes className="w-6 h-6" />
-              <span>Logout</span>
-            </button>
-          </div>
-        </motion.div>
-      )}
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setIsOpen(false);
+                }}
+                className="flex items-center space-x-3"
+              >
+                <FaSignOutAlt className="w-6 h-6" />
+                <span>Logout</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );
