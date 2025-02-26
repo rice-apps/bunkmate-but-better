@@ -33,6 +33,7 @@ interface ModularDropDownProps {
   title: string;
   value: string;
   setValue: (value: string) => void;
+  className?: string;
 }
 
 const ModularDropDown: React.FC<ModularDropDownProps> = ({
@@ -149,8 +150,8 @@ const Navbar = ({
       endDate != null ||
       distance != "Search Properties"
     ) {
-      console.log("HI");
-      console.log(pathname, startDate, endDate, distance);
+      // console.log("HI");
+      // console.log(pathname, startDate, endDate, distance);
       handleFilterChange();
     }
   }, [startDate, endDate, distance]);
@@ -178,16 +179,16 @@ const Navbar = ({
           <div className="w-full max-w-md mx-4 bg-white rounded-3xl p-6 relative">
             <button
               onClick={() => setShowMobileFilter(false)}
-              className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+              className="absolute right-8 top-6 text-gray-500 hover:text-gray-700"
             >
               <FaTimes className="w-6 h-6" />
             </button>
             <div className="pt-4">
               {/* Mobile filter options */}
-              <div className="space-y-6 flex flex-col justify-center items-center text-center">
+              <div className="space-y-6 ml-[20px] mr-[20px] mb-[20px] flex flex-col justify-center items-left text-left">
                 {/* Distance from Rice */}
                 <div>
-                  <p className="text-[14px] font-semibold text-[#777777] mb-2">
+                  <p className="text-[18px] font-semibold text-[#777777] mb-2">
                     Distance from Rice
                   </p>
                   <ModularDropDown
@@ -200,12 +201,14 @@ const Navbar = ({
                     title={distanceTitle}
                     value={distance}
                     setValue={setDistance}
+                    className="w-full"
                   />
                 </div>
+                <hr></hr>
 
                 {/* Start Date */}
                 <div>
-                  <p className="text-[14px] font-semibold text-[#777777] mb-2">
+                  <p className="text-[18px] font-semibold text-[#777777] mb-2">
                     Start Date
                   </p>
                   <Popover>
@@ -232,9 +235,11 @@ const Navbar = ({
                   </Popover>
                 </div>
 
+                <hr></hr>
+
                 {/* End Date */}
                 <div>
-                  <p className="text-[14px] font-semibold text-[#777777] mb-2">
+                  <p className="text-[18px] font-semibold text-[#777777] mb-2">
                     End Date
                   </p>
                   <Popover>
