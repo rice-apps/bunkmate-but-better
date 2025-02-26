@@ -149,7 +149,8 @@ const ListingPage = () => {
   };
 
   return (
-    <div className="px-10 lg:px-5"> 
+    // Removed mobile margin here. Can add again with more precise measures!
+    <div className=""> 
       <Suspense>
         <Listing
           data={{

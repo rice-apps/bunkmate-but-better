@@ -287,12 +287,25 @@ const Navbar = ({
             </p>
           </Link>
         </button>
-        <button
-        onClick={() => setShowMobileFilter(!showMobileFilter)}
-        className="lg:hidden z-40 p-1 ml-20"
-      >
-        <FaMagnifyingGlass className="h-6 w-6 text-[#FF7439]" />
-      </button>
+
+        {/* Mobile Icons (grouped search & menu icons) */}
+        {/* Again, note that these icons will only appear on mobile! */}
+        <div className="flex ml-auto items-center justify-end gap-4 lg:hidden">
+          {/* MOBILE-ONLY search icon. */}
+          <button
+            onClick={() => setShowMobileFilter(!showMobileFilter)}
+            className="p-1"
+          >
+            <FaMagnifyingGlass className="h-6 w-6 text-[#FF7439]" />
+          </button>
+
+          <div className="flex-grow"></div>
+
+          {/* MOBILE-ONLY hamburger icon. */}
+          <button onClick={() => setIsOpen(true)}>
+            <RxHamburgerMenu className="w-[35px] h-[35px] text-[#FF7439]" />
+          </button>
+        </div>
         {includeFilter && (
           <div className="hidden max-w-[780px] lg:flex h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3">
             {/* Distance from Rice. */}
@@ -326,12 +339,11 @@ const Navbar = ({
                   <PopoverTrigger asChild>
                     <button className="text-left self-start">
                       <p
-                        className={`text-base ${
-                          startDate &&
+                        className={`text-base ${startDate &&
                           startDate.toDateString() !== "Select Start Date"
-                            ? "text-[#FF7439] font-semibold"
-                            : "text-[#777777] font-light"
-                        }`}
+                          ? "text-[#FF7439] font-semibold"
+                          : "text-[#777777] font-light"
+                          }`}
                       >
                         {startDate ? startDate.toDateString() : "Select date"}
                       </p>
@@ -388,7 +400,7 @@ const Navbar = ({
                 </Popover>
               </div>
             </div>
-            <button className="pr-8">
+            <button className="pr-8 ">
               <FaMagnifyingGlass className="hover:cursor-pointer h-[29px] w-[25px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105" />
             </button>
           </div>
@@ -432,82 +444,74 @@ const Navbar = ({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsOpen(true)}
-          className="flex hide-icons:hidden ml-auto"
-        >
-          <RxHamburgerMenu className="w-[35px] h-[35px]" color="#FF7439" />
-        </button>
       </div>
 
       {/* Mobile Menu */}
       <AnimatePresence>
-      {isOpen && (
-        <motion.div
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="fixed inset-y-0 right-0 w-64 bg-[#FF7439] z-50">
-          <div className="p-4 pl-10 text-white space-y-6 flex flex-col text-[18px] mt-12">
-            <button
-              onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 text-white"
-            >
-              <FaTimes className="w-6 h-6" />
-            </button>
+        {isOpen && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="fixed inset-y-0 right-0 w-64 bg-[#FF7439] z-50">
+            <div className="p-4 pl-10 text-white space-y-6 flex flex-col text-[18px] mt-12">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="absolute top-4 right-4 text-white"
+              >
+                <FaTimes className="w-6 h-6" />
+              </button>
 
-            <Link
-              href="/"
-              className="flex items-center space-x-3"
-              onClick={() => setIsOpen(false)}
-            >
-              <MdHome className="w-6 h-6" />
-              <span>Home</span>
-            </Link>
+              <Link
+                href="/"
+                className="flex items-center space-x-3"
+                onClick={() => setIsOpen(false)}
+              >
+                <MdHome className="w-6 h-6" />
+                <span>Home</span>
+              </Link>
 
-            <Link
-              href="/post-a-listing"
-              className="flex items-center space-x-3"
-              onClick={() => setIsOpen(false)}
-            >
-              <FaPlus className="w-6 h-6" />
-              <span>Post a Listing</span>
-            </Link>
+              <Link
+                href="/post-a-listing"
+                className="flex items-center space-x-3"
+                onClick={() => setIsOpen(false)}
+              >
+                <FaPlus className="w-6 h-6" />
+                <span>Post a Listing</span>
+              </Link>
 
-            <Link
-              href="/favorites"
-              className="flex items-center space-x-3"
-              onClick={() => setIsOpen(false)}
-            >
-              <FaHeart className="w-6 h-6" />
-              <span>Favorite Listings</span>
-            </Link>
+              <Link
+                href="/favorites"
+                className="flex items-center space-x-3"
+                onClick={() => setIsOpen(false)}
+              >
+                <FaHeart className="w-6 h-6" />
+                <span>Favorite Listings</span>
+              </Link>
 
-            <Link
-              href="/profile-section"
-              className="flex items-center space-x-3"
-              onClick={() => setIsOpen(false)}
-            >
-              <CgProfile className="w-6 h-6" />
-              <span>Your Profile</span>
-            </Link>
+              <Link
+                href="/profile-section"
+                className="flex items-center space-x-3"
+                onClick={() => setIsOpen(false)}
+              >
+                <CgProfile className="w-6 h-6" />
+                <span>Your Profile</span>
+              </Link>
 
-            <button
-              onClick={() => {
-                handleLogout();
-                setIsOpen(false);
-              }}
-              className="flex items-center space-x-3"
-            >
-              <FaTimes className="w-6 h-6" />
-              <span>Logout</span>
-            </button>
-          </div>
-        </motion.div>
-      )}
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setIsOpen(false);
+                }}
+                className="flex items-center space-x-3"
+              >
+                <FaTimes className="w-6 h-6" />
+                <span>Logout</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );
