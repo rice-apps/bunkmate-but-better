@@ -205,7 +205,7 @@ const Navbar = ({
             >
               <FaTimes className="w-6 h-6" />
             </button>
-            <div className="pt-4">
+            <div className="pt-8">
               {/* Mobile filter options */}
               <div className="space-y-6 ml-[20px] mr-[20px] mb-[20px] flex flex-col justify-center items-left text-left">
                 {/* Search Input */}
