@@ -16,7 +16,7 @@ const DescriptionItem = ({ icon, title, description, delay = 0 }: DescriptionIte
       transition={{ duration: 0.5, delay }}
       className="flex items-center gap-4"
     >
-      <div className="p-2 rounded-full bg-gray-50">
+      <div className="p-2 min-w-[50px] max-w-[50px] rounded-full bg-gray-50">
         {icon}
       </div>
       <div>
