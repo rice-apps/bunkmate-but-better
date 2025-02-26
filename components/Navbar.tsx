@@ -3,7 +3,7 @@
 import React, { Suspense, useEffect } from "react";
 import Image from "next/image";
 import { FaMagnifyingGlass } from "react-icons/fa6";
-import { FaHeart, FaTimes } from "react-icons/fa";
+import { FaHeart, FaSignOutAlt, FaTimes } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { MdHome } from "react-icons/md";
@@ -512,7 +512,7 @@ const Navbar = ({
                 }}
                 className="flex items-center space-x-3"
               >
-                <FaTimes className="w-6 h-6" />
+                <FaSignOutAlt className="w-6 h-6" />
                 <span>Logout</span>
               </button>
             </div>
