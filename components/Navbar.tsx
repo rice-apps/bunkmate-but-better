@@ -460,12 +460,13 @@ const Navbar = ({
             exit={{ x: '100%' }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="fixed inset-y-0 right-0 w-64 bg-[#FF7439] z-50">
-            <div className="p-4 pl-10 text-white space-y-6 flex flex-col text-[18px] mt-12">
+            <div className="p-4 pl-10 text-white space-y-6 flex flex-col text-[18px] mt-20">
+              <hr className="mt-3"></hr>
               <button
                 onClick={() => setIsOpen(false)}
-                className="absolute top-4 right-4 text-white"
+                className="absolute top-8 right-7 text-white"
               >
-                <FaTimes className="w-6 h-6" />
+                <FaTimes className="w-8 h-8" />
               </button>
 
               <Link
