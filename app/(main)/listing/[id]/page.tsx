@@ -153,7 +153,7 @@ const ListingPage = () => {
 
   return (
     // Removed mobile margin here. Can add again with more precise measures!
-    <div className=""> 
+    <div className="w-full"> 
       <Suspense>
         <Listing
           data={{
