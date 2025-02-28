@@ -118,7 +118,7 @@ const MeetSubleaser: React.FC<MeetSubleaserProps> = ({ data }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className='flex flex-row items-center gap-[20px] ml-5'
+          className='flex flex-row justify-center items-center gap-[20px] ml-5'
         >
           <motion.button 
             whileHover={{ scale: 1.05 }}
