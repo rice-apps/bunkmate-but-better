@@ -14,7 +14,7 @@ import Photos from "./Photos";
 import Pricing from "./Pricing";
 import Profile from "./Profile";
 import TitleDescription from "./TitleDescription";
-
+import Footer from "@/components/Footer";
 export interface FormDataType {
   title: string;
   description: string;
@@ -426,6 +426,7 @@ const PostListing = () => {
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };

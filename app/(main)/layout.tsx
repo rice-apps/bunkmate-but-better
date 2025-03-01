@@ -1,5 +1,5 @@
 import Navbar from "@/components/Navbar";
-
+import Footer from "@/components/Footer";
 export default async function RootLayout({
   children,
 }: {
@@ -11,6 +11,7 @@ export default async function RootLayout({
       <Navbar />
       <div className="w-full flex-1 flex flex-col items-center">
         {children}
+        <Footer/>
       </div>
       
     </div>

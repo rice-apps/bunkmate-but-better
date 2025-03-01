@@ -11,6 +11,7 @@ import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { v4 as uuidv4 } from 'uuid';
 import { useRouter } from '@bprogress/next';
 import { motion } from 'framer-motion';
+import Footer from "@/components/Footer";
 
 const EditProfile = () => {
   const router = useRouter();

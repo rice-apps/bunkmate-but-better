@@ -83,7 +83,7 @@ const Photos = ({
         </div>
         <PreviewButton formData={formData} />
       </div>
-      <h2 className="text-sm font-[500] text-gray-800">Add photos and optional descriptions to your lease! </h2>
+      <h2 className="text-sm font-bold text-gray-800">Add photos and optional descriptions to your lease! </h2>
       <p className="mb-6 text-gray-500 text-sm">
         You are required to upload at least 5 relevant photos to post your listing. Captions are optional but highly
         encouraged!
