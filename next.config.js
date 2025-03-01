@@ -16,11 +16,6 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  compiler: {
-    removeConsole: {
-      exclude: ['error'],
-    },
-  },
   experimental: {
     optimizePackageImports: ['framer-motion', 'react-day-picker', '@supabase/ssr', '@supabase/supabase-js'],
   },
