@@ -24,6 +24,7 @@ import LoadingCircle from '@/components/LoadingCircle';
 import { FormDataType } from '../../page';
 import { defaultFormData, PostListingFormContext } from '@/providers/PostListingFormProvider';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 type ImageResponse = {
   data: {
@@ -472,6 +473,7 @@ const EditListing = () => {
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };

@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { RiPencilFill } from 'react-icons/ri';
 import { MdLogout } from "react-icons/md";
 import { formatPhoneNumber } from "@/components/ui/input";
-
+import Footer from "@/components/Footer";
 
 type Listing = {
   id: string;
@@ -168,6 +168,7 @@ export default function Index() {
 
   return (
     <Suspense>
+      <div>
       <motion.main 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -354,6 +355,7 @@ export default function Index() {
                   )) : (
                     <div className="text-gray-400 italic mt-6">- No Listings Yet!</div>
                   )}
+                  
                 </div>
               </motion.div>
             </motion.main>
@@ -362,6 +364,10 @@ export default function Index() {
           {!profile && <LoadingCircle />}
         </div>
       </motion.main>
+      <Footer/>
+
+      </div>
     </Suspense>
+    
   );
 }
