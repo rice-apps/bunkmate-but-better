@@ -18,6 +18,7 @@ import { MdLogout } from "react-icons/md";
 import { formatPhoneNumber } from "@/components/ui/input";
 import Footer from "@/components/Footer";
 
+
 type Listing = {
   id: string;
   title: string;
@@ -146,9 +147,9 @@ export default function Index() {
                   location: listing.address,
                   imageUrl: listing.image_paths[0]
                     ? getImagePublicUrl(
-                        "listing_images",
-                        listing.image_paths[0]
-                      )
+                      "listing_images",
+                      listing.image_paths[0]
+                    )
                     : "",
                   renterType: listing.affiliation != 'student' ? "Rice Alumni" : "Rice Student",
                   isFavorite: true,
@@ -168,8 +169,7 @@ export default function Index() {
 
   return (
     <Suspense>
-      <div>
-      <motion.main 
+      <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -179,13 +179,13 @@ export default function Index() {
           <Navbar />
 
           {profile && (
-            <motion.main 
+            <motion.main
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               className="flex flex-col sm:gap-[20px] w-full h-full items-left mb-20"
             >
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
@@ -198,37 +198,37 @@ export default function Index() {
                 </h1>
               </motion.div>
               <div>
-              <div className='mt-4 flex flex-row justify-between mt-[3vh] flex-wrap-reverse gap-y-4'>
-                <h1 className="text-left text-[24px] text-#000000 font-medium">Your Profile Information</h1>
-                
-                <div className='flex flex-row gap-[20px] flex-wrap'>
-                <Link href='/edit-profile'>
-                  <motion.button 
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="group mr-50mr-50 w-[200px] h-[43px] bg-[#F0F0F0] gap-[5.69px] hover:bg-[#777777] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150"
-                  >
-                    <RiPencilFill className="text-[#777777] group-hover:fill-[#F0F0F0]"/>
-                    <p className="text-[16px] text-[#777777] group-hover:text-[#F0F0F0] font-600">EDIT PROFILE</p>
-                  </motion.button>
-                </Link>
+                <div className='mt-4 flex flex-row justify-between mt-[3vh] flex-wrap-reverse gap-y-4'>
+                  <h1 className="text-left text-[24px] text-#000000 font-medium">Your Profile Information</h1>
 
-                  <motion.button 
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleLogout} 
-                    className="w-[160px] h-[43px] bg-[#CC3333] gap-[5.69px] hover:bg-[#990000] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150"
-                  >
-                    <MdLogout className="text-[#FFFFFF]" />
-                    <p className="text-[16px] text-[#FFFFFF] font-600">LOG OUT</p>
-                  </motion.button>
+                  <div className='flex flex-row gap-[20px] flex-wrap'>
+                    <Link href='/edit-profile'>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="group mr-50mr-50 w-[200px] h-[43px] bg-[#F0F0F0] gap-[5.69px] hover:bg-[#777777] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150"
+                      >
+                        <RiPencilFill className="text-[#777777] group-hover:fill-[#F0F0F0]" />
+                        <p className="text-[16px] text-[#777777] group-hover:text-[#F0F0F0] font-600">EDIT PROFILE</p>
+                      </motion.button>
+                    </Link>
+
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleLogout}
+                      className="w-[160px] h-[43px] bg-[#CC3333] gap-[5.69px] hover:bg-[#990000] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150"
+                    >
+                      <MdLogout className="text-[#FFFFFF]" />
+                      <p className="text-[16px] text-[#FFFFFF] font-600">LOG OUT</p>
+                    </motion.button>
+                  </div>
+
                 </div>
-
-              </div>
                 {/* <h1 className="text-left text-2xl font-medium mb-6">
                   Your Profile Information
                 </h1> */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
@@ -240,7 +240,7 @@ export default function Index() {
                       <h1 className="text-lg sm:text-xl font-medium text-left sm:text-left">
                         Profile Picture
                       </h1>
-                      <motion.div 
+                      <motion.div
                         initial={{ scale: 0.8 }}
                         animate={{ scale: 1 }}
                         transition={{ duration: 0.5, delay: 0.5 }}
@@ -271,7 +271,7 @@ export default function Index() {
                   </div>
 
                   {/* Additional Information */}
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.6 }}
@@ -355,7 +355,6 @@ export default function Index() {
                   )) : (
                     <div className="text-gray-400 italic mt-6">- No Listings Yet!</div>
                   )}
-                  
                 </div>
               </motion.div>
             </motion.main>
@@ -364,10 +363,7 @@ export default function Index() {
           {!profile && <LoadingCircle />}
         </div>
       </motion.main>
-      <Footer/>
-
-      </div>
+      <Footer />
     </Suspense>
-    
   );
 }
