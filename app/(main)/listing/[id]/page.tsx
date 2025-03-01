@@ -39,6 +39,7 @@ interface ListingData {
   distance: number;
 }
 
+
 const ListingPage = () => {
   const params = useParams();
   const listingId = params.id as string;
@@ -47,11 +48,38 @@ const ListingPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
+  const [geocodeData, setGeocodeData] = useState<{ lat: number; lng: number } | null>(null);
 
   // Grabbing the isFavorited value & converting from the URL of Listing.
   const searchParams = useSearchParams();
   const isFavorited = searchParams?.get("isFavorited");
   const isFavoritedValue = isFavorited === "true";
+
+  const geocodeAddress = async (address: string) => {
+    if (!address) {
+      throw new Error("Valid address is required");
+    }
+    try {
+      const API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
+      const response = await fetch(`https://geocode.maps.co/search?q=${address}&api_key=${API_KEY}`);
+      if (!response.ok) {
+        throw new Error("Failed to geocode address");
+      }
+      const data = await response.json();
+      if (data && data.length > 0) {
+        return {
+          lat: data[0].lat,
+          lon: data[0].lon,
+        };
+      } else {
+        throw new Error("No results found");
+      }
+    } catch (error) {
+      console.error("Error geocoding address:", error);
+      throw error;
+    }
+  };
+
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -99,6 +127,15 @@ const ListingPage = () => {
           return acc;
         }, {});
         setCaptions(captions);
+
+        //fetch geocode data
+        
+        const geoData = await geocodeAddress(data.address);
+        // Convert from lon to lng for Google Maps
+        setGeocodeData({
+          lat: parseFloat(geoData.lat),
+          lng: parseFloat(geoData.lon) 
+        });
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to load listing";
@@ -136,6 +173,7 @@ const ListingPage = () => {
       </div>
     );
   }
+  
 
   const formatDateRange = (startDate: string, endDate: string) => {
     const formatDate = (dateString: string) => {
@@ -219,7 +257,13 @@ const ListingPage = () => {
           />
         </div>
       </div>
-      <ListingMap name={listing.title} coords={{lat: 29.70568824215991, lng: -95.40426859376323}} />
+      {geocodeData ? (
+        <ListingMap name={listing.title} coords={geocodeData} />
+        ) : (
+          <div className="w-full h-[400px] my-12 flex items-center justify-center bg-gray-100 rounded-lg">
+            <p className="text-gray-500">Location map unavailable</p>
+          </div>
+        )}
     </Suspense>
   );
 };

@@ -42,6 +42,7 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
           <AdvancedMarker
             position={{ lat: 29.717081272326745, lng: -95.40363313442711 }}
           >
+            
             <Pin
               background={'#0f9d58'}
               borderColor={'#006425'}
