@@ -3,15 +3,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FaChevronRight } from "react-icons/fa";
 import PreviewButton from "./PreviewButton";
+import { FormDataType } from "./page";
 
-const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => {
+const BedBath = ({formData, setFormData}: {formData: FormDataType; setFormData: any}) => {
   const handleBedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFormData = {...formData, bed_num: e.target.value};
+    const newFormData = {...formData, bed_num: e.target.valueAsNumber};
     setFormData(newFormData);
   };
 
   const handleBathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFormData = {...formData, bath_num: e.target.value};
+    const newFormData = {...formData, bath_num: e.target.valueAsNumber};
     setFormData(newFormData);
   };
 
@@ -24,11 +25,7 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
           <Input
             placeholder="Ex: 2"
             value={formData.bed_num}
-            onChange={(e) => {
-              const value = e.target.value.replace('\.', '')
-              if (isNaN(Number(value)) || !Number.isInteger(Number(value))) return;
-              handleBedChange({ ...e, target: { ...e.target, value } });
-            }}
+            onChange={handleBedChange}
             type="number"
             min={0}
             step={1}
@@ -45,12 +42,7 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
           <Input
             placeholder="Ex: 5"
             value={formData.bath_num}
-            onChange={(e) => {
-              // don't allow decimals or negative numbers
-              const value = e.target.value.replace('\.', '')
-              if (isNaN(Number(value)) || !Number.isInteger(Number(value))) return;
-              handleBathChange({ ...e, target: { ...e.target, value } });
-            }}
+            onChange={handleBathChange}
             type="number"
             min={0}
             step={1}

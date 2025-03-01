@@ -19,11 +19,7 @@ const Pricing = ({
   const isComplete = Boolean(formData.price);
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Ensure the rent is a positive number
-    if (Number(value) >= 0 || value === "") {
-      setFormData({...formData, price: value});
-    }
+    setFormData({...formData, price: e.target.valueAsNumber});
   };
 
   const handlePriceNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -52,6 +48,7 @@ const Pricing = ({
             value={formData.price}
             onChange={handlePriceChange}
             className={`w-full rounded-xl border border-gray-200 pl-7`}
+            min={0}
           />
           {/* {!formData.price && (
             <span className="text-sm text-gray-400 mt-1 block">

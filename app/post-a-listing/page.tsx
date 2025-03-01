@@ -7,6 +7,7 @@ import {createClient} from "@/utils/supabase/client";
 import {useRouter} from "@bprogress/next";
 import {useContext, useMemo, useState} from "react";
 import {v4} from "uuid";
+import {z} from "zod";
 import CategoryStatusIndicator from "./CategoryStatusIndicator";
 import Duration from "./Duration";
 import Location from "./Location";
@@ -14,6 +15,75 @@ import Photos from "./Photos";
 import Pricing from "./Pricing";
 import Profile from "./Profile";
 import TitleDescription from "./TitleDescription";
+
+const titleDescriptionSchema = z.object({
+  title: z.string().min(1, "Title is required").max(50, "Title is required"),
+  bed_num: z.number().min(0, "Bed number is required"),
+  bath_num: z.number().min(0, "Bath number is required"),
+  description: z.string().min(100, "Description must be at least 100 characters").max(500, "Description must be less than 500 characters")
+});
+
+
+const pricingSchema = z.object({
+  price: z.number().min(1, "Monthly rent is required")
+});
+
+const locationSchema = z.object({
+  address: z.object({
+    label: z.string().min(1, "Address is required"),
+    value: z.object({
+      description: z.string()
+    })
+  })
+});
+
+const durationSchema = z.object({
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime()
+});
+
+const photosSchema = z.object({
+  photos: z.array(z.string()).min(5, "At least 5 photos are required")
+});
+
+const profileSchema = z.object({
+  affiliation: z.string().min(1, "Rice Affiliation is required"),
+  phone: z.string().min(10, "Phone number must be at least 10 characters")
+});
+
+// type TitleDescriptionData = z.infer<typeof titleDescriptionSchema>;
+// type PricingData = z.infer<typeof pricingSchema>;
+// type LocationData = z.infer<typeof locationSchema>;
+// type DurationData = z.infer<typeof durationSchema>;
+// type PhotosData = z.infer<typeof photosSchema>;
+// type ProfileData = z.infer<typeof profileSchema>;
+
+const listingFormSchema = z.object({
+  title: z.string().min(1, "Title is required").max(50, "Title must be less than 50 characters"),
+  description: z.string().min(100, "Description must be at least 100 characters").max(500, "Description must be less than 500 characters"),
+  price: z.number().min(1, "Monthly rent is required"),
+  priceNotes: z.string().optional(),
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime(),
+  durationNotes: z.string().optional(),
+  address: z.object({
+    label: z.string().min(1, "Address is required"),
+    value: z.object({
+      description: z.string()
+    })
+  }),
+  locationNotes: z.string().optional(),
+  // photos: z.array(z.string()).min(5, "At least 5 photos are required"),
+  // rawPhotos: z.array(z.instanceof(File)).min(5, "At least 5 photos are required"),
+  // photoLabels: z.record(z.number(), z.string()),
+  // imagePaths: z.array(z.string()).optional(),
+  phone: z.string().min(10, "Phone number must be at least 10 characters"),
+  bed_num: z.number().min(0, "Bed number is required"),
+  bath_num: z.number().min(0, "Bath number is required"),
+  // affiliation: z.string().min(1, "Rice Affiliation is required")
+});
+
+type FormData = z.infer<typeof listingFormSchema>;
 
 export interface FormDataType {
   title: string;
@@ -61,17 +131,6 @@ const PostListing = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
 
-  const isComplete = Boolean(
-    formData.title.length >= 1 &&
-      formData.description.length >= 100 &&
-      formData.price &&
-      formData.address.label.length > 0 &&
-      formData.startDate &&
-      formData.endDate &&
-      formData.photos.length >= 5 &&
-      formData.phone,
-  );
-
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setIsPosting(true);
     e.preventDefault();
@@ -106,25 +165,27 @@ const PostListing = () => {
         throw new Error("Unable to validate address or calculate distance. Please check the address.");
       }
 
+      const validateData: FormData = listingFormSchema.parse(formData)
+
       const {data, error} = await supabase
         .from("listings")
         .insert([
           {
             user_id: userId,
-            phone_number: formData.phone,
-            title: formData.title,
-            description: formData.description,
-            price: formData.price,
-            price_notes: formData.priceNotes,
-            start_date: formData.startDate,
-            end_date: formData.endDate,
-            duration_notes: formData.durationNotes,
-            address: formData.address.label,
-            location_notes: formData.locationNotes,
+            phone_number: validateData.phone,
+            title: validateData.title,
+            description: validateData.description,
+            price: validateData.price,
+            price_notes: validateData.priceNotes,
+            start_date: validateData.startDate,
+            end_date: validateData.endDate,
+            duration_notes: validateData.durationNotes,
+            address: validateData.address.label,
+            location_notes: validateData.locationNotes,
             distance: distance,
             image_paths: filePaths,
-            bed_num: formData.bed_num,
-            bath_num: formData.bath_num,
+            bed_num: validateData.bed_num,
+            bath_num: validateData.bath_num,
           },
         ])
         .select()
@@ -152,6 +213,9 @@ const PostListing = () => {
       resetFormData();
       router.push("/");
     } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        console.error("ZOD Issues", error.issues);
+      }
       console.error(error.message);
       await cleanupUploads(error.cause);
       throw error;
@@ -291,32 +355,45 @@ const PostListing = () => {
       {
         id: "title",
         name: "Title & Description",
-        completed: formData.title.length >= 1 && formData.description.length >= 100 && !isNaN(formData.bed_num) && !isNaN(formData.bath_num)
+        completed: titleDescriptionSchema.safeParse({
+          title: formData.title,
+          bed_num: formData.bed_num,
+          bath_num: formData.bath_num,
+          description: formData.description
+        }).success
       },
       {
         id: "pricing",
         name: "Pricing",
-        completed: Boolean(formData.price),
+        completed: pricingSchema.safeParse({price: formData.price}).success,
       },
       {
         id: "location",
         name: "Location",
-        completed: Boolean(formData.address.label),
+        completed: locationSchema.safeParse({address: formData.address}).success,
       },
       {
         id: "duration",
         name: "Duration",
-        completed: Boolean(formData.startDate && formData.endDate),
+        completed: durationSchema.safeParse({
+          startDate: formData.startDate, 
+          endDate: formData.endDate
+        }).success,
       },
       {
         id: "photos",
         name: "Photos",
-        completed: formData.photos.length >= 5,
+        completed: photosSchema.safeParse({
+          photos: formData.photos
+        }).success,
       },
       {
         id: "profile",
         name: "Profile",
-        completed: Boolean(formData.phone),
+        completed: profileSchema.safeParse({
+          affiliation: formData.affiliation,
+          phone: formData.phone
+        }).success,
       },
     ],
     [formData],
@@ -369,7 +446,7 @@ const PostListing = () => {
               <div className="w-full md:w-80 pr-0 h-auto mb-8 md:mb-0">
                 <h1 className="text-2xl font-semibold mb-8">Listing Editor</h1>
                 <div className="space-y-3">
-                  {categories.map(category => (
+                  {categories.map((category) => (
                     <div
                       key={category.id}
                       className={`flex items-center p-3 rounded-xl cursor-pointer w-full ${
@@ -404,9 +481,9 @@ const PostListing = () => {
                     </Button>
                     <Button
                       className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
-                        isComplete ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
+                        categories.every(category => category.completed) ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
                       }`}
-                      disabled={!isComplete || isPosting}
+                      disabled={!categories.every(category => category.completed) || isPosting}
                       onClick={e => handleSubmit(e)}
                     >
                       <p>Post</p>
