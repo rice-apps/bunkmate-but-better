@@ -26,6 +26,7 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
             value={formData.bed_num}
             onChange={(e) => {
               const value = e.target.value.replace('\.', '')
+              if (isNaN(Number(value)) || !Number.isInteger(Number(value))) return;
               handleBedChange({ ...e, target: { ...e.target, value } });
             }}
             type="number"
@@ -47,6 +48,7 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
             onChange={(e) => {
               // don't allow decimals or negative numbers
               const value = e.target.value.replace('\.', '')
+              if (isNaN(Number(value)) || !Number.isInteger(Number(value))) return;
               handleBathChange({ ...e, target: { ...e.target, value } });
             }}
             type="number"
