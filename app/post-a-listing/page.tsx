@@ -66,7 +66,7 @@ const profileSchema = z.object({
   phone: z.string().min(10, "Phone number must be at least 10 characters")
 });
 
-const listingFormSchema = z.object({
+export const listingFormSchema = z.object({
   ...titleDescriptionSchema.shape,
   ...pricingSchema.shape,
   ...locationSchema.shape,
@@ -74,13 +74,6 @@ const listingFormSchema = z.object({
   ...photosSchema._def.schema.shape, // need _def.schema because of refine
   ...profileSchema.shape
 });
-
-// type TitleDescriptionData = z.infer<typeof titleDescriptionSchema>;
-// type PricingData = z.infer<typeof pricingSchema>;
-// type LocationData = z.infer<typeof locationSchema>;
-// type DurationData = z.infer<typeof durationSchema>;
-// type PhotosData = z.infer<typeof photosSchema>;
-// type ProfileData = z.infer<typeof profileSchema>;
 
 export type FormDataType = z.infer<typeof listingFormSchema>;
 
@@ -275,7 +268,12 @@ const PostListing = () => {
   const renderComponent = () => {
     switch (selectedCategory) {
       case "title":
-        return <TitleDescription formData={formData} setFormData={setFormData} onNext={handleNextCategory} />;
+        return <TitleDescription 
+          formData={formData} 
+          setFormData={setFormData} 
+          onNext={handleNextCategory} 
+          complete={categories.filter(category => category.id === "title")[0].completed}
+        />;
       case "pricing":
         return (
           <Pricing
@@ -283,6 +281,7 @@ const PostListing = () => {
             setFormData={setFormData}
             onNext={handleNextCategory}
             onBack={handlePreviousCategory}
+            complete={categories.filter(category => category.id === "pricing")[0].completed}
           />
         );
       case "location":
@@ -292,6 +291,7 @@ const PostListing = () => {
             setFormData={setFormData}
             onNext={handleNextCategory}
             onBack={handlePreviousCategory}
+            complete={categories.filter(category => category.id === "location")[0].completed}
           />
         );
       case "duration":
@@ -301,6 +301,7 @@ const PostListing = () => {
             setFormData={setFormData}
             onNext={handleNextCategory}
             onBack={handlePreviousCategory}
+            complete={categories.filter(category => category.id === "duration")[0].completed}
           />
         );
       case "photos":
@@ -310,6 +311,7 @@ const PostListing = () => {
             setFormData={setFormData}
             onNext={handleNextCategory}
             onBack={handlePreviousCategory}
+            complete={categories.filter(category => category.id === "photos")[0].completed}
           />
         );
       case "profile":
@@ -321,10 +323,16 @@ const PostListing = () => {
             isPosting={isPosting}
             handleSubmit={handleSubmit}
             editingMode={false}
+            complete={categories.filter(category => category.id === "profile")[0].completed}
           />
         );
       default:
-        return <TitleDescription formData={formData} setFormData={setFormData} onNext={handleNextCategory} />;
+        return <TitleDescription 
+          formData={formData} 
+          setFormData={setFormData} 
+          onNext={handleNextCategory} 
+          complete={categories.filter(category => category.id === "title")[0].completed}
+        />;
     }
   };
 

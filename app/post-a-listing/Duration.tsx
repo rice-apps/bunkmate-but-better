@@ -16,13 +16,15 @@ const Duration = ({
   setFormData,
   onNext,
   onBack,
+  complete
 }: {
   formData: FormDataType;
   setFormData: any;
   onNext: () => void;
   onBack: () => void;
+  complete: boolean
 }) => {
-  const isComplete = Boolean(formData.startDate && formData.endDate);
+  const isComplete = complete;
 
   const handleStartDateSelect = (date: Date | undefined) => {
     setFormData({

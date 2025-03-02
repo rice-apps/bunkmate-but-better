@@ -24,7 +24,7 @@ const BedBath = ({formData, setFormData}: {formData: FormDataType; setFormData: 
         <div className="relative">
           <Input
             placeholder="Ex: 2"
-            value={formData.bed_num}
+            value={formData.bed_num.toString()}
             onChange={handleBedChange}
             type="number"
             min={0}
@@ -41,7 +41,7 @@ const BedBath = ({formData, setFormData}: {formData: FormDataType; setFormData: 
         <div className="relative">
           <Input
             placeholder="Ex: 5"
-            value={formData.bath_num}
+            value={formData.bath_num.toString()}
             onChange={handleBathChange}
             type="number"
             min={0}
@@ -55,16 +55,8 @@ const BedBath = ({formData, setFormData}: {formData: FormDataType; setFormData: 
   );
 };
 
-const TitleDescription = ({formData, setFormData, onNext}: {formData: any; setFormData: any; onNext: () => void}) => {
-  console.log("TitleDescription", formData);
-  const isComplete = formData.title.length >= 1 && 
-    formData.description.length >= 100 && 
-    !isNaN(formData.bath_num) && 
-    !isNaN(formData.bed_num) && 
-    Number.isInteger(Number(formData.bath_num)) && 
-    Number.isInteger(Number(formData.bed_num)) && 
-    Number(formData.bath_num) >= 0 && 
-    Number(formData.bed_num) >= 0;
+const TitleDescription = ({formData, setFormData, onNext, complete}: {formData: any; setFormData: any; onNext: () => void, complete: boolean;}) => {
+  const isComplete = complete;
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFormData = {...formData, title: e.target.value};

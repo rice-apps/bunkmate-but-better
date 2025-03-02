@@ -11,13 +11,15 @@ const Pricing = ({
   setFormData,
   onNext,
   onBack,
+  complete
 }: {
   formData: FormDataType;
   setFormData: any;
   onNext: () => void;
   onBack: () => void;
+  complete: boolean
 }) => {
-  const isComplete = Boolean(formData.price);
+  const isComplete = complete;
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({...formData, price: e.target.valueAsNumber});
@@ -46,7 +48,7 @@ const Pricing = ({
           <Input
             type="number"
             placeholder="Ex. 1300"
-            value={formData.price}
+            value={formData.price.toString()}
             onChange={handlePriceChange}
             className={`w-full rounded-xl border border-gray-200 pl-7`}
             min={0}

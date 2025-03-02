@@ -13,15 +13,17 @@ const Photos = ({
   setFormData,
   onNext,
   onBack,
+  complete
 }: {
   formData: FormDataType;
   setFormData: Dispatch<SetStateAction<FormDataType>>;
   onNext: () => void;
   onBack: () => void;
+  complete: boolean
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   // Check total number of photos (existing + new)
-  const isComplete = formData.photos.length + formData.imagePaths.length >= 5;
+  const isComplete = complete;
 
   const getImageUrl = (path: string) => {
     return getImagePublicUrl("listing_images", path);

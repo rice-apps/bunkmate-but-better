@@ -10,13 +10,15 @@ const Location = ({
   setFormData,
   onNext,
   onBack,
+  complete
 }: {
   formData: FormDataType;
   setFormData: any;
   onNext: () => void;
   onBack: () => void;
+  complete: boolean;
 }) => {
-  const isComplete = Boolean(formData.address);
+  const isComplete = complete;
 
   const handleSelect = (value: any) => {
     if (value && value.label) {

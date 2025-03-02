@@ -8,7 +8,7 @@ import {FaChevronLeft} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
 import Image from "next/image";
 import { DialogHeader, Dialog, DialogContent, DialogTitle, DialogFooter  } from "@/components/ui/dialog";
-import { FormDataType } from "./page";
+import { FormDataType, listingFormSchema } from "./page";
 
 const Profile = ({
   formData,
@@ -17,6 +17,7 @@ const Profile = ({
   handleSubmit,
   isPosting,
   editingMode = false,
+  complete
 }: {
   formData: FormDataType;
   setFormData: any;
@@ -24,17 +25,9 @@ const Profile = ({
   handleSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   isPosting: boolean;
   editingMode?: boolean;
+  complete: boolean
 }) => {
-  const isComplete = Boolean(
-    formData.title.length >= 1 &&
-      formData.description.length >= 100 &&
-      formData.price &&
-      formData.address &&
-      formData.startDate &&
-      formData.endDate &&
-      formData.photos.length >= 5 &&
-      formData.phone,
-  );
+  const isComplete = listingFormSchema.safeParse(formData).success;
 
   const supabase = createClient();
 
