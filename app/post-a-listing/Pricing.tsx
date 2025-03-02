@@ -3,6 +3,7 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
+import { FormDataType } from "./page";
 
 // Pricing Component
 const Pricing = ({
@@ -11,7 +12,7 @@ const Pricing = ({
   onNext,
   onBack,
 }: {
-  formData: any;
+  formData: FormDataType;
   setFormData: any;
   onNext: () => void;
   onBack: () => void;

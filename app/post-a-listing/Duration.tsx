@@ -9,6 +9,7 @@ import {format} from "date-fns";
 import {CalendarIcon} from "lucide-react";
 import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
+import { FormDataType } from "./page";
 
 const Duration = ({
   formData,
@@ -16,7 +17,7 @@ const Duration = ({
   onNext,
   onBack,
 }: {
-  formData: any;
+  formData: FormDataType;
   setFormData: any;
   onNext: () => void;
   onBack: () => void;
@@ -71,7 +72,7 @@ const Duration = ({
                   selected={formData.startDate ? new Date(formData.startDate) : undefined}
                   onSelect={handleStartDateSelect}
                   initialFocus
-                  disabled={date => date < new Date()}
+                  disabled={date => date < new Date() || (formData.endDate != "" && date > new Date(formData.endDate))}
                 />
               </PopoverContent>
             </Popover>
@@ -101,7 +102,7 @@ const Duration = ({
                   selected={formData.endDate ? new Date(formData.endDate) : undefined}
                   onSelect={handleEndDateSelect}
                   initialFocus
-                  disabled={date => date < new Date() || (formData.startDate && date < new Date(formData.startDate))}
+                  disabled={date => date < new Date() || (formData.startDate != "" && date < new Date(formData.startDate))}
                 />
               </PopoverContent>
             </Popover>

@@ -3,6 +3,7 @@ import {Textarea} from "@/components/ui/textarea";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
+import { FormDataType } from "./page";
 
 const Location = ({
   formData,
@@ -10,7 +11,7 @@ const Location = ({
   onNext,
   onBack,
 }: {
-  formData: any;
+  formData: FormDataType;
   setFormData: any;
   onNext: () => void;
   onBack: () => void;

@@ -8,7 +8,7 @@ import {FaChevronLeft} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
 import Image from "next/image";
 import { DialogHeader, Dialog, DialogContent, DialogTitle, DialogFooter  } from "@/components/ui/dialog";
-
+import { FormDataType } from "./page";
 
 const Profile = ({
   formData,
@@ -18,7 +18,7 @@ const Profile = ({
   isPosting,
   editingMode = false,
 }: {
-  formData: any;
+  formData: FormDataType;
   setFormData: any;
   onBack: () => void;
   handleSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
