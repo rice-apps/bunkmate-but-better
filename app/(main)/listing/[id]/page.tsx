@@ -225,7 +225,6 @@ const ListingPage = () => {
           </div>
         </div>
       </Suspense>
-      <Footer/>
     </div>
   );
 };

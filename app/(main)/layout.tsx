@@ -12,7 +12,7 @@ export default async function RootLayout({
       <div className="w-full flex-1 flex flex-col items-center">
         {children}
       </div>
-      
+      <Footer/>
     </div>
   );
 }
