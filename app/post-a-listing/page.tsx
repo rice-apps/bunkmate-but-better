@@ -23,9 +23,9 @@ const titleDescriptionSchema = z.object({
   description: z.string().min(100, "Description must be at least 100 characters").max(500, "Description must be less than 500 characters")
 });
 
-
 const pricingSchema = z.object({
-  price: z.number().min(1, "Monthly rent is required")
+  price: z.number().min(1, "Monthly rent is required"),
+  priceNotes: z.string()
 });
 
 const locationSchema = z.object({
@@ -34,21 +34,45 @@ const locationSchema = z.object({
     value: z.object({
       description: z.string()
     })
-  })
+  }),
+  locationNotes: z.string()
 });
 
 const durationSchema = z.object({
   startDate: z.string().datetime(),
-  endDate: z.string().datetime()
+  endDate: z.string().datetime(),
+  durationNotes: z.string()
 });
 
+/**
+ * This is funky. See Gabriel for questions.
+ */
 const photosSchema = z.object({
-  photos: z.array(z.string()).min(5, "At least 5 photos are required")
+  photos: z.array(z.string()),
+  rawPhotos: z.array(z.instanceof(File).or(z.instanceof(Blob))),
+  photoLabels: z.record(z.string().regex(new RegExp(/[0-9]+/)), z.string()),
+  imagePaths: z.array(z.string()),
+  removedImagePaths: z.array(z.string())
+})
+.refine((input) => {
+  return input.photos.length + input.imagePaths.length >= 5
+}, {
+  message: "At least 5 photos are required"
 });
+
 
 const profileSchema = z.object({
   affiliation: z.string().min(1, "Rice Affiliation is required"),
   phone: z.string().min(10, "Phone number must be at least 10 characters")
+});
+
+const listingFormSchema = z.object({
+  ...titleDescriptionSchema.shape,
+  ...pricingSchema.shape,
+  ...locationSchema.shape,
+  ...durationSchema.shape,
+  ...photosSchema._def.schema.shape, // need _def.schema because of refine
+  ...profileSchema.shape
 });
 
 // type TitleDescriptionData = z.infer<typeof titleDescriptionSchema>;
@@ -58,53 +82,7 @@ const profileSchema = z.object({
 // type PhotosData = z.infer<typeof photosSchema>;
 // type ProfileData = z.infer<typeof profileSchema>;
 
-const listingFormSchema = z.object({
-  title: z.string().min(1, "Title is required").max(50, "Title must be less than 50 characters"),
-  description: z.string().min(100, "Description must be at least 100 characters").max(500, "Description must be less than 500 characters"),
-  price: z.number().min(1, "Monthly rent is required"),
-  priceNotes: z.string().optional(),
-  startDate: z.string().datetime(),
-  endDate: z.string().datetime(),
-  durationNotes: z.string().optional(),
-  address: z.object({
-    label: z.string().min(1, "Address is required"),
-    value: z.object({
-      description: z.string()
-    })
-  }),
-  locationNotes: z.string().optional(),
-  // photos: z.array(z.string()).min(5, "At least 5 photos are required"),
-  // rawPhotos: z.array(z.instanceof(File)).min(5, "At least 5 photos are required"),
-  // photoLabels: z.record(z.number(), z.string()),
-  // imagePaths: z.array(z.string()).optional(),
-  phone: z.string().min(10, "Phone number must be at least 10 characters"),
-  bed_num: z.number().min(0, "Bed number is required"),
-  bath_num: z.number().min(0, "Bath number is required"),
-  // affiliation: z.string().min(1, "Rice Affiliation is required")
-});
-
-type FormData = z.infer<typeof listingFormSchema>;
-
-export interface FormDataType {
-  title: string;
-  description: string;
-  price: number;
-  priceNotes: string;
-  startDate: string;
-  endDate: string;
-  durationNotes: string;
-  address: {label: string; value: {description: string}};
-  locationNotes: string;
-  photos: string[];
-  rawPhotos: File[];
-  photoLabels: {[key: number]: string};
-  imagePaths: string[];
-  removedImagePaths: string[];
-  affiliation: string;
-  phone: string;
-  bed_num: number;
-  bath_num: number;
-}
+export type FormDataType = z.infer<typeof listingFormSchema>;
 
 type ImageResponse =
   | {
@@ -165,7 +143,7 @@ const PostListing = () => {
         throw new Error("Unable to validate address or calculate distance. Please check the address.");
       }
 
-      const validateData: FormData = listingFormSchema.parse(formData)
+      const validateData: FormDataType = listingFormSchema.parse(formData)
 
       const {data, error} = await supabase
         .from("listings")
@@ -365,26 +343,37 @@ const PostListing = () => {
       {
         id: "pricing",
         name: "Pricing",
-        completed: pricingSchema.safeParse({price: formData.price}).success,
+        completed: pricingSchema.safeParse({
+          price: formData.price,
+          priceNotes: formData.priceNotes
+        }).success,
       },
       {
         id: "location",
         name: "Location",
-        completed: locationSchema.safeParse({address: formData.address}).success,
+        completed: locationSchema.safeParse({
+          address: formData.address,
+          locationNotes: formData.locationNotes
+        }).success,
       },
       {
         id: "duration",
         name: "Duration",
         completed: durationSchema.safeParse({
           startDate: formData.startDate, 
-          endDate: formData.endDate
+          endDate: formData.endDate,
+          durationNotes: formData.durationNotes
         }).success,
       },
       {
         id: "photos",
         name: "Photos",
         completed: photosSchema.safeParse({
-          photos: formData.photos
+          photos: formData.photos,
+          rawPhotos: formData.rawPhotos,
+          photoLabels: formData.photoLabels,
+          imagePaths: formData.imagePaths,
+          removedImagePaths: formData.removedImagePaths
         }).success,
       },
       {

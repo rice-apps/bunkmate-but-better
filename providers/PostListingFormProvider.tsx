@@ -9,7 +9,7 @@ interface FormContextType {
   resetFormData: () => void;
 }
 
-export const defaultFormData = {
+export const defaultFormData: FormDataType = {
   title: "",
   description: "",
   price: NaN,
