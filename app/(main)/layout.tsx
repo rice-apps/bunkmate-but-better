@@ -11,7 +11,6 @@ export default async function RootLayout({
       <Navbar />
       <div className="w-full flex-1 flex flex-col items-center">
         {children}
-        <Footer/>
       </div>
       
     </div>
