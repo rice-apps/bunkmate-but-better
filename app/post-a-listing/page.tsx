@@ -16,6 +16,9 @@ import Pricing from "./Pricing";
 import Profile from "./Profile";
 import TitleDescription from "./TitleDescription";
 
+/**
+ * Schema for the TitleDescription section.
+ */
 const titleDescriptionSchema = z.object({
   title: z.string().min(1, "Title is required").max(50, "Title is required"),
   bed_num: z.number().min(0, "Bed number is required"),
@@ -23,11 +26,17 @@ const titleDescriptionSchema = z.object({
   description: z.string().min(100, "Description must be at least 100 characters").max(500, "Description must be less than 500 characters")
 });
 
+/**
+ * Schema for the Pricing section.
+ */
 const pricingSchema = z.object({
   price: z.number().min(1, "Monthly rent is required"),
   priceNotes: z.string()
 });
 
+/**
+ * Schema for the Location section.
+ */
 const locationSchema = z.object({
   address: z.object({
     label: z.string().min(1, "Address is required"),
@@ -38,6 +47,9 @@ const locationSchema = z.object({
   locationNotes: z.string()
 });
 
+/**
+ * Schema for the Duration section.
+ */
 const durationSchema = z.object({
   startDate: z.string().datetime(),
   endDate: z.string().datetime(),
@@ -45,6 +57,8 @@ const durationSchema = z.object({
 });
 
 /**
+ * Schema for the Photos section.
+ * 
  * This is funky. See Gabriel for questions.
  */
 const photosSchema = z.object({
@@ -60,12 +74,17 @@ const photosSchema = z.object({
   message: "At least 5 photos are required"
 });
 
-
+/**
+ * Schema for the Profile section.
+ */
 const profileSchema = z.object({
   affiliation: z.string().min(1, "Rice Affiliation is required"),
   phone: z.string().min(10, "Phone number must be at least 10 characters")
 });
 
+/**
+ * Schema for the whole listing form.
+ */
 export const listingFormSchema = z.object({
   ...titleDescriptionSchema.shape,
   ...pricingSchema.shape,
@@ -75,6 +94,9 @@ export const listingFormSchema = z.object({
   ...profileSchema.shape
 });
 
+/**
+ * A type for form data derived from the listingFormSchema zod schema.
+ */
 export type FormDataType = z.infer<typeof listingFormSchema>;
 
 type ImageResponse =
@@ -271,7 +293,8 @@ const PostListing = () => {
         return <TitleDescription 
           formData={formData} 
           setFormData={setFormData} 
-          onNext={handleNextCategory} 
+          onNext={handleNextCategory}
+          // Use zod validation to indicate that a section is complete.
           complete={categories.filter(category => category.id === "title")[0].completed}
         />;
       case "pricing":
@@ -341,6 +364,7 @@ const PostListing = () => {
       {
         id: "title",
         name: "Title & Description",
+        // Use zod validation to indicate that a section is complete.
         completed: titleDescriptionSchema.safeParse({
           title: formData.title,
           bed_num: formData.bed_num,
