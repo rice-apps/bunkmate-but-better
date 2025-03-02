@@ -31,7 +31,7 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="bottom-0 w-full p-4 text-center text-gray-600 z-50">
+    <footer className="bottom-0 w-full mt-auto p-4 text-center text-gray-600 z-50">
       Made with{" "}
       <FaHeart className="inline text-orange-500" />{" "}
       by{" "}
