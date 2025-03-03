@@ -27,6 +27,9 @@ interface Listing {
   start_date: string;
   title: string;
   user_id: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  property_type?: string;
 }
 
 interface Favorite {
@@ -79,6 +82,14 @@ export default function Index() {
         const endDate = (searchParams && searchParams.get('endDate') ? new Date(searchParams.get('endDate')!) : null);
         const distance = (searchParams && searchParams.get('distance')) || null;
         const search = (searchParams && searchParams.get('search')) || null;
+        
+        // Get category and filter params
+        const category = searchParams.get('category');
+        const minPrice = searchParams.get('minPrice');
+        const maxPrice = searchParams.get('maxPrice');
+        const bedrooms = searchParams.get('bedrooms');
+        const bathrooms = searchParams.get('bathrooms');
+        const propertyTypes = searchParams.get('propertyTypes');
 
         // Apply filters
         if (search) {
@@ -110,6 +121,34 @@ export default function Index() {
           else if (distance == "> 5 miles") query = query.gte('distance', 5);
 
           query = query.order('distance');
+        }
+        
+        // Apply price range filters
+        if (minPrice) {
+          query = query.gte('price', parseInt(minPrice));
+        }
+        if (maxPrice) {
+          query = query.lte('price', parseInt(maxPrice));
+        }
+        
+        // Apply bedroom filter
+        if (bedrooms) {
+          query = query.eq('bed_num', parseInt(bedrooms));
+        }
+        
+        // Apply bathroom filter
+        if (bathrooms) {
+          query = query.eq('bath_num', parseInt(bathrooms));
+        }
+        
+        // Apply property type filters
+        if (category) {
+          // Convert category to property_type format (singular form)
+          const propertyType = category.slice(0, -1); // Remove 's' from the end
+          query = query.eq('property_type', propertyType);
+        } else if (propertyTypes) {
+          const types = propertyTypes.split(',');
+          query = query.in('property_type', types);
         }
 
         const { data: listings, error } = await query.order('created_at', { ascending: false });

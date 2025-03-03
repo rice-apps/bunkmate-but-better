@@ -7,6 +7,7 @@ import {createClient} from "@/utils/supabase/client";
 import {useRouter} from "@bprogress/next";
 import {useContext, useMemo, useState} from "react";
 import {v4} from "uuid";
+import {z} from "zod";
 import CategoryStatusIndicator from "./CategoryStatusIndicator";
 import Duration from "./Duration";
 import Location from "./Location";
