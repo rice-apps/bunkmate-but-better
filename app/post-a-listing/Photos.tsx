@@ -3,14 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getImagePublicUrl, getShimmerData } from "@/utils/supabase/client";
-import imageCompression from "browser-image-compression";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { FormDataType } from "./page";
 import PreviewButton from "./PreviewButton";
 import { useProgress } from "@bprogress/next";
-import { heicTo } from "heic-to";
 
 const Photos = ({
   formData,
@@ -76,6 +74,14 @@ const Photos = ({
       },
     };
 
+    const [heicToModule, imageCompressionModule] = await Promise.all([
+      import('heic-to'),
+      import('browser-image-compression')
+    ]);
+    
+    const heicTo = heicToModule.heicTo;
+    const imageCompression = imageCompressionModule.default;
+
     const newPhotos = Array.from(e.target.files);
     if (newPhotos) {
       // use a runtime import to avoid issues with SSR
@@ -99,18 +105,18 @@ const Photos = ({
 
       setIsUploading(true);
 
-      const compressedPhotos = [];
+            const compressedPhotos = [];
       for (let i = 0; i < newPhotos.length; i++) {
         currentFileIndex = i;
-        const compressed = await imageCompression(newPhotos[i], options);
+                const compressed = await imageCompression(newPhotos[i], options);
         compressedPhotos.push(compressed);
       }
 
       set(95); // Almost done
 
       const parsedPhotos = compressedPhotos.map((photo: File) =>
-        URL.createObjectURL(photo)
-      );
+URL.createObjectURL(photo)
+    );
       setFormData({
         ...formData,
         photos: [...formData.photos, ...parsedPhotos],
