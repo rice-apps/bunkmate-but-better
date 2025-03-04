@@ -7,6 +7,7 @@ import {Dispatch, SetStateAction, useState} from "react";
 import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
 import {FormDataType} from "./page";
 import PreviewButton from "./PreviewButton";
+import heic2any from 'heic2any';
 
 const Photos = ({
   formData,
@@ -29,12 +30,28 @@ const Photos = ({
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const options = {
-      maxSizeMB: 0.5,
+      maxSizeMB: 1,
       maxWidthOrHeight: 1920,
       useWebWorker: true,
+      preserveExif: false,
+      maxResolution: 72
     };
 
     if (e.target.files) {
+      // Convert any HEIC files to JPEG first
+      for (let i = 0; i < e.target.files.length; i++) {
+        const file = e.target.files[i];
+        if (file.type === "image/heic" || file.type === "image/heif") {
+          const blob = await heic2any({
+            blob: file,
+            toType: "image/jpeg",
+          });
+          e.target.files[i] = new File([blob as Blob], file.name.replace(/\.[^/.]+$/, ".jpg"), {
+            type: "image/jpeg",
+          });
+        }
+      }
+
       const newPhotos = Array.from(e.target.files);
       setIsUploading(true);
       const compressedPhotos = await Promise.all(newPhotos.map((photo: File) => imageCompression(photo, options)));
