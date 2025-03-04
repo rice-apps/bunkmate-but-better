@@ -43,7 +43,7 @@ module.exports = withSentryConfig(
     // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
     org: "riceapps",
-    project: "javascript-nextjs",
+    project: "bunkmate",
 
     // Only print logs for uploading source maps in CI
     silent: !process.env.CI,
