@@ -7,6 +7,7 @@ import MeetSubleaser from "@/components/MeetSubleaser";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+import Footer from "@/components/Footer";
 
 interface UserData {
   id: string;
@@ -108,11 +109,14 @@ const ListingPage = () => {
           err instanceof Error ? err.message : "Failed to load listing";
         setError(errorMessage);
 
-        if (err) {
-          console.warn("Supabase error:", err.message, err.details, err.hint);
-        } else if (err instanceof Error) {
+        const isSupabasError = typeof err === "object" && err !== null && "message" in err && "details" in err && "hint" in err;
+        if (err instanceof Error) {
           console.warn("Error fetching listing:", err.message);
-        } else {
+        }
+        else if (isSupabasError) {
+          console.warn("Supabase error:", err.message, err.details, err.hint);
+        } 
+        else {
           console.warn("Unknown error:", err);
         }
       } finally {
@@ -171,82 +175,85 @@ const ListingPage = () => {
   };
 
   return (
-    <Suspense>
-      <Listing
-        data={{
-          id: listing.id.toString(),
-          title: listing.title,
-          distance: `${listing.distance} away`,
-          start_date: listing.start_date,
-          end_date: listing.end_date, // Use the new format
-          price: listing.price,
-          location: listing.address,
-          isFavorited: isFavoritedValue,
-          imagePaths: listing.image_paths,
-          loadImages: true,
-          description: listing.description,
-          phoneNumber: listing.phone_number,
-          durationNotes: listing.duration_notes,
-          priceNotes: listing.price_notes,
-          captions: captions,
-          user: listing.user
-            ? {
-              fullName: listing.user.name,
-              avatarUrl: listing.user.profile_image_path,
-              email: listing.user.email,
-              isRiceStudent: listing.user.affiliation === "Rice Student",
-            }
-            : null,
-        }}
-      />
-      <div className="flex flex-col lg:flex-row w-full mt-4 justify-between mb-10 gap-10">
-        <div className="lg:w-1/2 xl:w-2/3">
-          <ListingDescription
-            data={{
-              location: listing.address,
-              description: listing.description,
-              price: listing.price,
-              priceNotes: listing.price_notes,
-              start_date: listing.start_date,
-              end_date: listing.end_date,
-              durationNotes: listing.duration_notes,
-              distance: listing.distance,
-              bed_num: listing.bed_num,
-              bath_num: listing.bath_num,
-            }}
-          />
-        </div>
-        <div className="lg:w-1/2 xl:w-1/3">
-          <div
+    // Removed mobile margin here. Can add again with more precise measures!
+    <div className="w-full"> 
+      <Suspense>
+        <Listing
+          data={{
+            id: listing.id.toString(),
+            title: listing.title,
+            distance: `${listing.distance} miles`,
+            start_date: listing.start_date,
+            end_date: listing.end_date, // Use the new format
+            price: listing.price,
+            location: listing.address,
+            isFavorited: isFavoritedValue,
+            imagePaths: listing.image_paths,
+            loadImages: true,
+            description: listing.description,
+            phoneNumber: listing.phone_number,
+            durationNotes: listing.duration_notes,
+            priceNotes: listing.price_notes,
+            captions: captions,
+            user: listing.user
+              ? {
+                fullName: listing.user.name,
+                avatarUrl: listing.user.profile_image_path,
+                email: listing.user.email,
+                isRiceStudent: listing.user.affiliation === "Rice Student",
+              }
+              : null,
+          }}
+        />
+        <div className="flex flex-col lg:flex-row w-full mt-4 justify-between mb-10 gap-10">
+          <div className="lg:w-1/2 xl:w-2/3">
+            <ListingDescription
+              data={{
+                location: listing.address,
+                description: listing.description,
+                price: listing.price,
+                priceNotes: listing.price_notes,
+                start_date: listing.start_date,
+                end_date: listing.end_date,
+                durationNotes: listing.duration_notes,
+                distance: listing.distance,
+                bed_num: listing.bed_num,
+                bath_num: listing.bath_num,
+              }}
+            />
+          </div>
+          <div className="lg:w-1/2 xl:w-1/3">
+            <div
             ref={subleaserRef}
             className="sticky"
             style={{ top: `calc(50vh - ${subleaserHeight / 2}px)` }}
           >
             <MeetSubleaser
-              data={{
-                phone_number: listing.phone_number,
-                user: listing.user
-                  ? {
-                    full_name: listing.user.name,
-                    email: listing.user.email,
-                    profile_image_path:
-                      listing.user.profile_image_path || undefined,
-                    avatar_url: listing.user.profile_image_path
-                      ? getImagePublicUrl(
-                        "profiles",
-                        listing.user.profile_image_path
-                      )
-                      : undefined,
-                    is_rice_student:
-                      listing.user.affiliation === "Rice Student",
-                  }
-                  : undefined,
-              }}
-            />
-          </div>
+                data={{
+                  phone_number: listing.phone_number,
+                  user: listing.user
+                    ? {
+                      full_name: listing.user.name,
+                      email: listing.user.email,
+                      profile_image_path:
+                        listing.user.profile_image_path || undefined,
+                      avatar_url: listing.user.profile_image_path
+                        ? getImagePublicUrl(
+                          "profiles",
+                          listing.user.profile_image_path
+                        )
+                        : undefined,
+                      is_rice_student:
+                        listing.user.affiliation === "Rice Student",
+                    }
+                    : undefined,
+                }}
+              />
+            </div>
         </div>
-      </div>
-    </Suspense>
+        </div>
+      </Suspense>
+    </div>
   );
 };
 

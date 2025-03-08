@@ -90,9 +90,7 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
           mapId={name}
           onClick={handleMapClick}
         >
-          <AdvancedMarker
-            position={coords}
-          >
+          <AdvancedMarker position={coords}> 
             <Pin />
           </AdvancedMarker>
 

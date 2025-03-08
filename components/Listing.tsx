@@ -1,5 +1,5 @@
 "use client";
-import { getImagePublicUrl } from "@/utils/supabase/client";
+import { getBlurImage, getImagePublicUrl, getShimmerData } from "@/utils/supabase/client";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,7 +8,6 @@ import { FaHeart } from "react-icons/fa6";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "@bprogress/next";
-
 
 interface ImageData {
   src: string;
@@ -205,11 +204,11 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
         transition={{duration: 0.5, delay: 0.2}}
         className="mb-6 w-full"
       >
-        <div className="flex items-center mt-4 mb-2 flex-wrap-reverse gap-y-4">
+        <div className="flex items-center mt-4 mb-2 flex-wrap-reverse gap-y-4 gap-x-4">
           <h1 className="text-4xl font-semibold">{data.title}</h1>
           <motion.div whileHover={{scale: 1.1}} whileTap={{scale: 0.9}}>
             <FaHeart
-              className="ml-3 cursor-pointer w-6 h-6 duration-300"
+              className="cursor-pointer w-6 h-6 duration-300"
               fill={favorite ? "#FF7439" : "gray"}
               onClick={toggleFavorite}
             />
@@ -225,7 +224,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           )}
         </div>
         <p className="text-gray-600">
-          {`${data.distance} from Rice  •  ${formatDateRange(data.start_date, data.end_date)}  •  $${data.price.toLocaleString()} / month`}
+          {`${data.distance} away from Rice  •  ${formatDateRange(data.start_date, data.end_date)}  •  $${data.price.toLocaleString()} / month`}
         </p>
       </motion.div>
 
@@ -249,6 +248,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           >
             <Image
               src={image.src}
+              placeholder={`data:image/svg+xml;base64,${getShimmerData()}`}
               fill={true}
               alt={`${data.title} - Image ${index + 1}`}
               className="object-cover hover:scale-105 transition-transform duration-300"
@@ -264,7 +264,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           onClick={() => openDialog(0)}
           className="absolute bottom-4 right-4 py-2 px-4 bg-black bg-opacity-50 text-white rounded-lg hover:bg-black hover:bg-opacity-70 hover:text-white transition-colors"
         >
-          View All
+          View All  ({images.length})
         </motion.button>
       </motion.div>
 
@@ -321,6 +321,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           >
             <Image
               src={images[currentImageIndex].src}
+              placeholder={`data:image/svg+xml;base64,${getShimmerData()}`}
               fill={true}
               alt={`${data.title} - Image ${currentImageIndex + 1}`}
               className="object-contain rounded-lg select-none"
@@ -334,7 +335,10 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
             className="text-white absolute bottom-14"
           >
             <p className="text-center font-semibold">{getCaption(currentImageIndex)}</p>
+            <p className="text-center">{currentImageIndex + 1}/{images.length}</p>
+
           </motion.div>
+
         </motion.div>
       )}
     </motion.div>

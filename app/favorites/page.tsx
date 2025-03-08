@@ -9,7 +9,7 @@ import { BsArrowUpCircleFill } from "react-icons/bs";
 import LoadingCard from '@/components/LoadingCard';
 import { Button } from '@/components/ui/button';
 import { motion } from "framer-motion";
-
+import Footer from '@/components/Footer';
 
 interface Listing {
   id: string;
@@ -176,7 +176,7 @@ export default function Favorites() {
 
   
   return (
-    <div className="mb-20 w-[90%] mx-auto">
+    <div className="flex flex-col min-h-screen w-[80%] sm: w-[90%] mx-auto">
       <Navbar />
       <div className="mx-auto py-0 w-full mt-4">
         <motion.div 
@@ -234,6 +234,7 @@ export default function Favorites() {
       >
         <BsArrowUpCircleFill className="w-16 h-16 text-white group-hover:text-[#FF7439]" />
       </motion.div>
+      <Footer/>
     </div>
   );
 }

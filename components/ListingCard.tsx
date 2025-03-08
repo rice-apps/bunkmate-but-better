@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { createClient } from "@/utils/supabase/client";
+import { createClient, getBlurImage, getShimmerData } from "@/utils/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
 interface CardProps {
@@ -139,6 +139,7 @@ const ListingCard: React.FC<CardProps> = ({
         <div className="relative w-full aspect-square">
           <Image
             src={imagePath || "/house1.jpeg"}
+            placeholder={`data:image/svg+xml;base64,${getShimmerData()}`}
             alt={name}
             fill
             className="object-cover rounded-2xl"
