@@ -111,7 +111,9 @@ const FilterModal: React.FC<FilterModalProps> = ({
     setStartDate(undefined);
     setEndDate(undefined);
     setLocalSearchQuery("");
-    setSearchQuery("");
+    if (setSearchQuery) {
+      setSearchQuery("");
+    }
     
     // Clear URL parameters
     router.push("/");
@@ -123,11 +125,13 @@ const FilterModal: React.FC<FilterModalProps> = ({
   };
 
   const handleSearchSubmit = () => {
-    setSearchQuery(localSearchQuery);
+    if (setSearchQuery) {
+      setSearchQuery(localSearchQuery);
+    }
   };
 
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && setSearchQuery) {
       setSearchQuery(localSearchQuery);
       applyFilters();
       onClose();
@@ -136,7 +140,9 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
   const clearSearch = () => {
     setLocalSearchQuery("");
-    setSearchQuery("");
+    if (setSearchQuery) {
+      setSearchQuery("");
+    }
   };
 
   return (
