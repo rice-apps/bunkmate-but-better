@@ -79,30 +79,60 @@ export default function Index() {
         const endDate = (searchParams && searchParams.get('endDate') ? new Date(searchParams.get('endDate')!) : null);
         const distance = (searchParams && searchParams.get('distance')) || null;
         const search = (searchParams && searchParams.get('search')) || null;
+        const leaseDuration = (searchParams && searchParams.get('leaseDuration')) || null;
+        const location = (searchParams && searchParams.get('location')) || null;
 
         // Apply filters
         if (search) {
           query = query.or(`title.ilike.%${search}%,address.ilike.%${search}%`);
         }
-        if (startDate) {
-          const startRange = new Date(startDate);
-          startRange.setDate(startRange.getDate() - 7); // One week before
-          const endRange = new Date(startDate);
-          endRange.setDate(endRange.getDate() + 7); // One week after
 
-          query = query.gte('start_date', startRange.toISOString());
-          query = query.lte('start_date', endRange.toISOString());
+        // Location filtering
+        if (location) {
+          query = query.or(`title.ilike.%${location}%,address.ilike.%${location}%`);
+        }
+
+        // Date filtering with flexibility for lease durations
+        if (startDate) {
+          query = query.gte('start_date', startDate.toISOString());
         }
         if (endDate) {
-          const startRange = new Date(endDate);
-          startRange.setDate(startRange.getDate() - 7); // One week before
-          const endRange = new Date(endDate);
-          endRange.setDate(endRange.getDate() + 7); // One week after
-
-          query = query.gte('end_date', startRange.toISOString());
-          query = query.lte('end_date', endRange.toISOString());
+          query = query.lte('end_date', endDate.toISOString());
         }
-        // Implement distance filtering logic here if applicable
+
+        // Add lease duration handling
+        if (leaseDuration) {
+          const now = new Date();
+          const year = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+          
+          switch(leaseDuration) {
+            case 'academic':
+              query = query
+                .gte('start_date', new Date(year, 7, 1).toISOString())  // August 1st
+                .lte('end_date', new Date(year + 1, 4, 31).toISOString());  // May 31st
+              break;
+            case 'fall':
+              query = query
+                .gte('start_date', new Date(year, 7, 1).toISOString())  // August 1st
+                .lte('end_date', new Date(year, 11, 31).toISOString());  // December 31st
+              break;
+            case 'spring':
+              query = query
+                .gte('start_date', new Date(year + 1, 0, 1).toISOString())  // January 1st
+                .lte('end_date', new Date(year + 1, 4, 30).toISOString());  // April 30th
+              break;
+            case 'summer':
+              query = query
+                .gte('start_date', new Date(year + 1, 4, 1).toISOString())  // May 1st
+                .lte('end_date', new Date(year + 1, 6, 31).toISOString());  // July 31st
+              break;
+            case 'yearly':
+              // For yearly, we'll look for listings that span approximately a year
+              query = query
+                .gte('end_date', new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString());
+              break;
+          }
+        }
         if (distance) {
           if (distance == "< 1 mile") query = query.lte('distance', 1);
           else if (distance == "< 3 miles") query = query.lte('distance', 3);
@@ -110,6 +140,18 @@ export default function Index() {
           else if (distance == "> 5 miles") query = query.gte('distance', 5);
 
           query = query.order('distance');
+        }
+        if (searchParams.get('minPrice')) {
+          query = query.gte('price', parseInt(searchParams.get('minPrice')!));
+        }
+        if (searchParams.get('maxPrice')) {
+          query = query.lte('price', parseInt(searchParams.get('maxPrice')!));
+        }
+        if (searchParams.get('bedNum')) {
+          query = query.eq('bed_num', parseInt(searchParams.get('bedNum')!));
+        }
+        if (searchParams.get('bathNum')) {
+          query = query.eq('bath_num', parseInt(searchParams.get('bathNum')!));
         }
 
         const { data: listings, error } = await query.order('created_at', { ascending: false });
@@ -122,11 +164,8 @@ export default function Index() {
             if (startDate) {
               const aStartDate = new Date(a.start_date);
               const bStartDate = new Date(b.start_date);
-
-              // Calculate start date differences
-              const aStartDiff = Math.abs(aStartDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
-              const bStartDiff = Math.abs(bStartDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
-
+              const aStartDiff = Math.abs(aStartDate.getTime() - startDate.getTime());
+              const bStartDiff = Math.abs(bStartDate.getTime() - startDate.getTime());
               totalDiffA += aStartDiff;
               totalDiffB += bStartDiff;
             }
@@ -134,16 +173,13 @@ export default function Index() {
             if (endDate) {
               const aEndDate = new Date(a.end_date);
               const bEndDate = new Date(b.end_date);
-
-              // Calculate end date differences
-              const aEndDiff = Math.abs(aEndDate.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24);
-              const bEndDiff = Math.abs(bEndDate.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24);
-
+              const aEndDiff = Math.abs(aEndDate.getTime() - endDate.getTime());
+              const bEndDiff = Math.abs(bEndDate.getTime() - endDate.getTime());
               totalDiffA += aEndDiff;
               totalDiffB += bEndDiff;
             }
 
-            // Sort by combined difference (smaller difference = more relevant)
+            // Sort by total difference (smaller difference = more relevant)
             return totalDiffA - totalDiffB;
           });
         }
