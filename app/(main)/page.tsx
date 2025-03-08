@@ -73,7 +73,7 @@ export default function Index() {
         setIsLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
 
-        let query = supabase.from('listings').select();
+        let query = supabase.from('listings').select().eq('archived', false);
 
         const startDate = (searchParams && searchParams.get('startDate') ? new Date(searchParams.get('startDate')!) : null);
         const endDate = (searchParams && searchParams.get('endDate') ? new Date(searchParams.get('endDate')!) : null);
@@ -253,6 +253,7 @@ export default function Index() {
                       ownListing={false}
                       isFavorited={listing.id in favorites}
                       imagePaths={listing.image_paths}
+                      isArchived={false}
                     />
                   </motion.div>
                 )) : (
