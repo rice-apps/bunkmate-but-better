@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { useRouter } from "@bprogress/next";
 import { IconContext } from "react-icons";
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdOutlineArchive } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
 import {
   DropdownMenu,
@@ -29,7 +29,9 @@ interface CardProps {
   isFavorited: boolean;
   ownListing: boolean;
   imagePaths: string[];
+  isArchived: boolean;
   onDelete?: () => void;
+  onArchive?: () => void;
 }
 
 const ListingCard: React.FC<CardProps> = ({
@@ -43,12 +45,34 @@ const ListingCard: React.FC<CardProps> = ({
   isFavorited,
   ownListing,
   imagePaths,
-  onDelete
+  isArchived,
+  onDelete,
+  onArchive,
 }) => {
   const [favorite, setFavorite] = useState(isFavorited);
   const router = useRouter();
 
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [archived, setArchived] = useState<boolean>(false);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchArchivedStatus = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("listings")
+        .select("archived")
+        .eq("id", postId)
+        .single();
+  
+      if (!error && data) {
+        setArchived(data.archived);
+      }
+    };
+  
+    fetchArchivedStatus();
+  }, [postId]);
+  
 
   const handleAddOrRemoveFavorite = async (
     e: React.MouseEvent<HTMLButtonElement>
@@ -80,7 +104,6 @@ const ListingCard: React.FC<CardProps> = ({
     }
   };
 
-
   const handleCardClick = () => {
     // Passing the favorites.
     const url = `/listing/${postId}?isFavorited=${favorite.toString()}`;
@@ -91,7 +114,7 @@ const ListingCard: React.FC<CardProps> = ({
 
 
   const handleDelete = async () => {
-    setIsModalOpen(false);
+    setIsDeleteModalOpen(false);
 
     const supabase = createClient();
 
@@ -117,7 +140,7 @@ const ListingCard: React.FC<CardProps> = ({
 
       if (response.status != 204) {
         if (response.status == 403) {
-          throw new Error("Unauthrozied access");
+          throw new Error("Unauthorized access");
         }
         else if (response.status == 400) {
           throw new Error("Unable to process request");
@@ -129,11 +152,55 @@ const ListingCard: React.FC<CardProps> = ({
     } catch (error) {
       console.error(error);
     }
+
   }
 
-  return (
-    <>
-    <div className="w-full cursor-pointer" onClick={handleCardClick}>
+  const handleArchive = async () => {
+    setIsArchiveModalOpen(false);
+
+    const supabase = createClient();
+
+    try {      
+      let response = await supabase.from('listings')
+        .update({ archived: true })
+        .eq('id', postId);
+  
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+  
+      setArchived(true);
+      onArchive && onArchive();
+  
+    } catch (error) {
+      console.error("Failed to archive listing:", error);
+    }
+  };
+
+  const handleUnarchive = async () => {
+    setIsArchiveModalOpen(false);
+  
+    const supabase = createClient();
+  
+    try {      
+      let response = await supabase.from('listings')
+        .update({ archived: false })
+        .eq('id', postId);
+  
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+  
+      setArchived(false);
+      onArchive && onArchive();
+  
+    } catch (error) {
+      console.error("Failed to unarchive listing:", error);
+    }
+  };
+    return (
+      <>
+      <div className="w-full cursor-pointer" onClick={handleCardClick}>
       <div className="relative overflow-hidden bg-white">
         {/* Image Container */}
         <div className="relative w-full aspect-square">
@@ -194,9 +261,19 @@ const ListingCard: React.FC<CardProps> = ({
                       </p>
                     </DropdownMenuItem>
                     <DropdownMenuItem
+                      key={"archive"}
+                      className="flex justify-left group"
+                      onSelect={archived ? handleUnarchive : () => setIsArchiveModalOpen(true)}
+                    >
+                      <MdOutlineArchive className="group-hover:text-[#FF7439]" />
+                      <p className="group-hover:text-[#FF7439] text-left">
+                        {archived ? "Unarchive" : "Archive"}
+                      </p>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
                       key={"delete"}
                       className="flex justify-left group"
-                      onSelect={() => setIsModalOpen(true)}
+                      onSelect={() => setIsDeleteModalOpen(true)}
                     >
                       <RiDeleteBinLine className="group-hover:text-[#FF7439]" />
                       <p className="group-hover:text-[#FF7439] text-left">
@@ -235,7 +312,7 @@ const ListingCard: React.FC<CardProps> = ({
         </div>
       </div>
     </div>
-    <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+    <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
       <DialogContent className="max-w-md p-8">
         <DialogHeader>
           <DialogTitle>You're about to delete your listing: {name}</DialogTitle>
@@ -248,7 +325,7 @@ const ListingCard: React.FC<CardProps> = ({
           <div className="flex justify-end gap-4">
             <Button
               variant="outline"
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => setIsDeleteModalOpen(false)}
             >
               Cancel
             </Button>
@@ -257,6 +334,33 @@ const ListingCard: React.FC<CardProps> = ({
               onClick={handleDelete}
             >
               Delete
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+    <Dialog open={isArchiveModalOpen} onOpenChange={setIsArchiveModalOpen}>
+      <DialogContent className="max-w-md p-8">
+        <DialogHeader>
+          <DialogTitle>You're about to archive your listing: {name}</DialogTitle>
+        </DialogHeader>
+        <div>
+          <p className="text-sm text-gray-500 mb-8">
+            Are you sure you want to archive <strong>{name}</strong>? You can still access this listing in your Archived Listings below.
+          </p>
+
+          <div className="flex justify-end gap-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsArchiveModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleArchive}
+            >
+              Archive
             </Button>
           </div>
         </div>
