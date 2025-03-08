@@ -210,7 +210,7 @@ const PostListing = () => {
         foot: 'routed-foot/route/v1/foot'
       };
       
-      const serviceUrl = `674233cca3a5e240045122mjx06165c`;
+      const serviceUrl = `https://routing.openstreetmap.de/${routingService[mode]}/${lon1},${lat1};${lon2},${lat2}?overview=false`;
       
       const response = await fetch(serviceUrl);
       if (!response.ok) {
