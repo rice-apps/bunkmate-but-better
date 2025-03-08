@@ -2,12 +2,11 @@
 
 import Listing from "@/components/Listing";
 import ListingDescription from "@/components/ListingDescription";
-import ListingMap from "@/components/ListingMap";
 import LoadingCircle from "@/components/LoadingCircle";
 import MeetSubleaser from "@/components/MeetSubleaser";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useParams, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 interface UserData {
   id: string;
@@ -48,37 +47,13 @@ const ListingPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
-  const [geocodeData, setGeocodeData] = useState<{ lat: number; lng: number } | null>(null);
+  const [subleaserHeight, setSubleaserHeight] = useState(0);
+  const subleaserRef = useRef<HTMLDivElement>(null);
 
   // Grabbing the isFavorited value & converting from the URL of Listing.
   const searchParams = useSearchParams();
   const isFavorited = searchParams?.get("isFavorited");
   const isFavoritedValue = isFavorited === "true";
-
-  const geocodeAddress = async (address: string) => {
-    if (!address) {
-      throw new Error("Valid address is required");
-    }
-    try {
-      const API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
-      const response = await fetch(`https://geocode.maps.co/search?q=${address}&api_key=${API_KEY}`);
-      if (!response.ok) {
-        throw new Error("Failed to geocode address");
-      }
-      const data = await response.json();
-      if (data && data.length > 0) {
-        return {
-          lat: data[0].lat,
-          lon: data[0].lon,
-        };
-      } else {
-        throw new Error("No results found");
-      }
-    } catch (error) {
-      console.error("Error geocoding address:", error);
-      throw error;
-    }
-  };
 
 
   useEffect(() => {
@@ -128,14 +103,6 @@ const ListingPage = () => {
         }, {});
         setCaptions(captions);
 
-        //fetch geocode data
-        
-        const geoData = await geocodeAddress(data.address);
-        // Convert from lon to lng for Google Maps
-        setGeocodeData({
-          lat: parseFloat(geoData.lat),
-          lng: parseFloat(geoData.lon) 
-        });
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to load listing";
@@ -156,6 +123,22 @@ const ListingPage = () => {
     fetchListing();
   }, [listingId]);
 
+  // Update subleaser height on resize
+  useEffect(() => {
+    const updateHeight = () => {
+      if (subleaserRef.current) {
+        setSubleaserHeight(subleaserRef.current.offsetHeight);
+      }
+    };
+
+    updateHeight();
+    window.addEventListener("resize", updateHeight);
+
+    return () => {
+      window.removeEventListener("resize", updateHeight);
+    };
+  }, [subleaserRef]);
+
   if (isLoading) {
     return <LoadingCircle />;
   }
@@ -173,7 +156,7 @@ const ListingPage = () => {
       </div>
     );
   }
-  
+
 
   const formatDateRange = (startDate: string, endDate: string) => {
     const formatDate = (dateString: string) => {
@@ -234,36 +217,35 @@ const ListingPage = () => {
           />
         </div>
         <div className="lg:w-1/2 xl:w-1/3">
-          <MeetSubleaser
-            data={{
-              phone_number: listing.phone_number,
-              user: listing.user
-                ? {
-                  full_name: listing.user.name,
-                  email: listing.user.email,
-                  profile_image_path:
-                    listing.user.profile_image_path || undefined,
-                  avatar_url: listing.user.profile_image_path
-                    ? getImagePublicUrl(
-                      "profiles",
-                      listing.user.profile_image_path
-                    )
-                    : undefined,
-                  is_rice_student:
-                    listing.user.affiliation === "Rice Student",
-                }
-                : undefined,
-            }}
-          />
+          <div
+            ref={subleaserRef}
+            className="sticky"
+            style={{ top: `calc(50vh - ${subleaserHeight / 2}px)` }}
+          >
+            <MeetSubleaser
+              data={{
+                phone_number: listing.phone_number,
+                user: listing.user
+                  ? {
+                    full_name: listing.user.name,
+                    email: listing.user.email,
+                    profile_image_path:
+                      listing.user.profile_image_path || undefined,
+                    avatar_url: listing.user.profile_image_path
+                      ? getImagePublicUrl(
+                        "profiles",
+                        listing.user.profile_image_path
+                      )
+                      : undefined,
+                    is_rice_student:
+                      listing.user.affiliation === "Rice Student",
+                  }
+                  : undefined,
+              }}
+            />
+          </div>
         </div>
       </div>
-      {geocodeData ? (
-        <ListingMap name={listing.title} coords={geocodeData} />
-        ) : (
-          <div className="w-full h-[400px] my-12 flex items-center justify-center bg-gray-100 rounded-lg">
-            <p className="text-gray-500">Location map unavailable</p>
-          </div>
-        )}
     </Suspense>
   );
 };
