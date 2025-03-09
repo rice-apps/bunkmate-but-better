@@ -121,7 +121,7 @@ const PostListing = () => {
             duration_notes: formData.durationNotes,
             address: formData.address.label,
             location_notes: formData.locationNotes,
-            distance: distance,
+            distance: distance.walking.distance,
             image_paths: filePaths,
             bed_num: formData.bed_num,
             bath_num: formData.bath_num,
@@ -159,7 +159,6 @@ const PostListing = () => {
       setIsPosting(false);
     }
   };
-
   const geocodeAddress = async (address: string) => {
     if (!address) {
       throw new Error("Valid address is required");
@@ -184,7 +183,64 @@ const PostListing = () => {
       throw error;
     }
   };
+  const calculateStraightLineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const toRadians = (degree: number) => degree * (Math.PI / 180);
+    const lat1Rad = toRadians(lat1);
+    const lon1Rad = toRadians(lon1);
+    const lat2Rad = toRadians(lat2);
+    const lon2Rad = toRadians(lon2);
+  
+    const dLat = lat2Rad - lat1Rad;
+    const dLon = lon2Rad - lon1Rad;
+  
+    const a =
+      Math.pow(Math.sin(dLat / 2), 2) +
+      Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.pow(Math.sin(dLon / 2), 2);
+    const rad = 6371; // earths radius in km
+    const c = 2 * Math.asin(Math.sqrt(a));  
+    const miles = rad * c * 0.621371;
+    return parseFloat(miles.toFixed(1));
+  };
 
+  const calculateRouteDistanceAndTime = async (lat1: number, lon1: number, lat2: number, lon2: number, 
+    mode: 'driving' | 'cycling' | 'foot') => {
+    try {
+      // select the appropriate routing service based on mode
+      const routingService = {
+        driving: 'routed-car/route/v1/driving',
+        cycling: 'routed-bike/route/v1/cycling',
+        foot: 'routed-foot/route/v1/foot'
+      };
+      
+      const serviceUrl = `https://routing.openstreetmap.de/${routingService[mode]}/${lon1},${lat1};${lon2},${lat2}?overview=false`;
+      
+      const response = await fetch(serviceUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to calculate ${mode} route`);
+      }
+      
+      const data = await response.json();
+      if (!data.routes || data.routes.length === 0) {
+        throw new Error(`No ${mode} route found`);
+      }
+      
+      const distanceMeters = data.routes[0].distance;
+      const durationSeconds = data.routes[0].duration;
+      
+      // convert to miles and minutes
+      const distanceMiles = parseFloat((distanceMeters * 0.000621371).toFixed(1));
+      const durationMinutes = Math.ceil(durationSeconds / 60);
+
+      return {
+        distance: distanceMiles,
+        duration: durationMinutes
+      };
+    } catch (error) {
+      console.error(`Error calculating ${mode} route:`, error);
+      throw error;
+    }
+  };
+  
   const calculateDistance = async (address: string) => {
     if (!address) {
       throw new Error("Valid address is required");
@@ -196,19 +252,42 @@ const PostListing = () => {
       if (!riceCoords || !listingCoords) {
         throw new Error("Could not geocode addresses");
       }
-      const osrmResponse = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${riceCoords.lon},${riceCoords.lat};${listingCoords.lon},${listingCoords.lat}?overview=false`,
+
+      const straightLine = calculateStraightLineDistance(
+        riceCoords.lat,
+        riceCoords.lon,
+        listingCoords.lat,
+        listingCoords.lon,
       );
-      if (!osrmResponse.ok) {
-        throw new Error("Failed to calculate distance");
-      }
-      const osrmData = await osrmResponse.json();
-      if (!osrmData.routes || osrmData.routes.length === 0) {
-        throw new Error("No distance results found");
-      }
-      const distanceMeters = osrmData.routes[0].distance;
-      const distanceMiles = (distanceMeters * 0.000621371).toFixed(1);
-      return distanceMiles;
+      const driving = await calculateRouteDistanceAndTime(
+        riceCoords.lat,
+        riceCoords.lon,
+        listingCoords.lat,
+        listingCoords.lon,
+        'driving',
+      );
+      const cycling = await calculateRouteDistanceAndTime(
+        riceCoords.lat,
+        riceCoords.lon,
+        listingCoords.lat,
+        listingCoords.lon,
+        'cycling',
+      );
+      const walking = await calculateRouteDistanceAndTime(
+        riceCoords.lat,
+        riceCoords.lon,
+        listingCoords.lat,
+        listingCoords.lon,
+        'foot',
+      );
+      return {
+        straightLine,
+        driving,
+        cycling,
+        walking
+      };
+      
+      
     } catch (error) {
       console.error("Error calculating distance:", error);
       throw error;
