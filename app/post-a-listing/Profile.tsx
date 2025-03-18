@@ -8,7 +8,7 @@ import {FaChevronLeft} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
 import Image from "next/image";
 import { DialogHeader, Dialog, DialogContent, DialogTitle, DialogFooter  } from "@/components/ui/dialog";
-import { FormDataType, listingFormSchema } from "./page";
+import { FormDataType, listingFormSchema } from "./PostForm";
 
 const Profile = ({
   formData,
@@ -17,7 +17,8 @@ const Profile = ({
   handleSubmit,
   isPosting,
   editingMode = false,
-  complete
+  complete,
+  editing
 }: {
   formData: FormDataType;
   setFormData: any;
@@ -25,7 +26,8 @@ const Profile = ({
   handleSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   isPosting: boolean;
   editingMode?: boolean;
-  complete: boolean
+  complete: boolean;
+  editing: boolean;
 }) => {
   const isComplete = listingFormSchema.safeParse(formData).success;
 
@@ -91,7 +93,7 @@ const Profile = ({
         <div>
           <h1 className="text-2xl font-semibold">Profile</h1>
         </div>
-        <PreviewButton formData={formData} />
+        <PreviewButton formData={formData} editing={editing} />
       </div>
       <h2 className="mb-2 text-sm text-[#222222] font-bold whitespace mt-2">
         Below is your current profile information. If you want to change this information, go to the{" "}

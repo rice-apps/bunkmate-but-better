@@ -3,7 +3,7 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
-import { FormDataType } from "./page";
+import { FormDataType } from "./PostForm";
 
 // Pricing Component
 const Pricing = ({
@@ -11,13 +11,15 @@ const Pricing = ({
   setFormData,
   onNext,
   onBack,
-  complete
+  complete,
+  editing
 }: {
   formData: FormDataType;
   setFormData: any;
   onNext: () => void;
   onBack: () => void;
-  complete: boolean
+  complete: boolean;
+  editing: boolean;
 }) => {
   const isComplete = complete;
 
@@ -36,7 +38,7 @@ const Pricing = ({
           <h1 className="text-2xl font-semibold mb-3">Pricing</h1>
         </div>
 
-        <PreviewButton formData={formData} />
+        <PreviewButton formData={formData} editing={editing} />
       </div>
       <h2 className="text-sm font-bold">Add details about all things money here. </h2>
 

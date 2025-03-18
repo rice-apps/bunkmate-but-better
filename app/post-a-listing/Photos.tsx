@@ -5,7 +5,7 @@ import imageCompression from "browser-image-compression";
 import Image from "next/image";
 import {Dispatch, SetStateAction, useState} from "react";
 import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
-import {FormDataType} from "./page";
+import {FormDataType} from "./PostForm";
 import PreviewButton from "./PreviewButton";
 
 const Photos = ({
@@ -13,13 +13,15 @@ const Photos = ({
   setFormData,
   onNext,
   onBack,
-  complete
+  complete,
+  editing
 }: {
   formData: FormDataType;
   setFormData: Dispatch<SetStateAction<FormDataType>>;
   onNext: () => void;
   onBack: () => void;
-  complete: boolean
+  complete: boolean;
+  editing: boolean;
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   // Check total number of photos (existing + new)
@@ -83,7 +85,7 @@ const Photos = ({
         <div>
           <h1 className="text-2xl font-semibold mb-3">Photos</h1>
         </div>
-        <PreviewButton formData={formData} />
+        <PreviewButton formData={formData} editing={editing} />
       </div>
       <h2 className="text-sm font-[500] text-gray-800">Add photos and optional descriptions to your lease! </h2>
       <p className="mb-6 text-gray-500 text-sm">

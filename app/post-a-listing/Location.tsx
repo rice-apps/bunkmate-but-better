@@ -3,20 +3,22 @@ import {Textarea} from "@/components/ui/textarea";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
-import { FormDataType } from "./page";
+import { FormDataType } from "./PostForm";
 
 const Location = ({
   formData,
   setFormData,
   onNext,
   onBack,
-  complete
+  complete,
+  editing
 }: {
   formData: FormDataType;
   setFormData: any;
   onNext: () => void;
   onBack: () => void;
   complete: boolean;
+  editing: boolean;
 }) => {
   const isComplete = complete;
 
@@ -37,7 +39,7 @@ const Location = ({
           <h1 className="text-2xl font-semibold mb-3">Location</h1>
         </div>
 
-        <PreviewButton formData={formData} />
+        <PreviewButton formData={formData} editing={editing} />
       </div>
       <h2 className="text-sm font-bold">Add details about where your listing is.</h2>
 
@@ -66,6 +68,9 @@ const Location = ({
                   color: "#aaa", 
                 }),
               },
+            }}
+            autocompletionRequest={{
+              types: ["street_address", "street_number"]
             }}
           />
         </div>

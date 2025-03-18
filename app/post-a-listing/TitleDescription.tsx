@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FaChevronRight } from "react-icons/fa";
 import PreviewButton from "./PreviewButton";
-import { FormDataType } from "./page";
+import { FormDataType } from "./PostForm";
 
 const BedBath = ({formData, setFormData}: {formData: FormDataType; setFormData: any}) => {
   const handleBedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +55,19 @@ const BedBath = ({formData, setFormData}: {formData: FormDataType; setFormData: 
   );
 };
 
-const TitleDescription = ({formData, setFormData, onNext, complete}: {formData: any; setFormData: any; onNext: () => void, complete: boolean;}) => {
+const TitleDescription = ({
+  formData, 
+  setFormData, 
+  onNext, 
+  complete,
+  editing
+}: {
+  formData: any; 
+  setFormData: any; 
+  onNext: () => void, 
+  complete: boolean;
+  editing: boolean;
+}) => {
   const isComplete = complete;
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,7 +86,7 @@ const TitleDescription = ({formData, setFormData, onNext, complete}: {formData: 
         <div>
           <h1 className="text-2xl font-semibold mb-3">Title & Description</h1>
         </div>
-        <PreviewButton formData={formData} />
+        <PreviewButton formData={formData} editing={editing} />
       </div>
       <h2 className="text-sm font-bold mt-0 leading-tight">Add details about what your listing is like here.</h2>
 

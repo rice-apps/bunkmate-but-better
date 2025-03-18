@@ -1,20 +1,12 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
-import {Button} from "@/components/ui/button";
 import {PostListingFormContext} from "@/providers/PostListingFormProvider";
 import {createClient} from "@/utils/supabase/client";
 import {useRouter} from "@bprogress/next";
 import {useContext, useMemo, useState} from "react";
 import {v4} from "uuid";
 import {z} from "zod";
-import CategoryStatusIndicator from "./CategoryStatusIndicator";
-import Duration from "./Duration";
-import Location from "./Location";
-import Photos from "./Photos";
-import Pricing from "./Pricing";
-import Profile from "./Profile";
-import TitleDescription from "./TitleDescription";
+import PostForm, { FormDataType } from "./PostForm";
 
 /**
  * Schema for the TitleDescription section.
@@ -97,7 +89,7 @@ export const listingFormSchema = z.object({
 /**
  * A type for form data derived from the listingFormSchema zod schema.
  */
-export type FormDataType = z.infer<typeof listingFormSchema>;
+// export type FormDataType = z.infer<typeof listingFormSchema>;
 
 type ImageResponse =
   | {
@@ -118,10 +110,7 @@ type ImagePromiseType = Promise<ImageResponse>;
 // Main PostListing component
 const PostListing = () => {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState("title");
-  const {formData, setFormData, resetFormData} = useContext(PostListingFormContext);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const {postFormData, setPostFormData, resetPostFormData} = useContext(PostListingFormContext);
   const [isPosting, setIsPosting] = useState(false);
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -134,7 +123,7 @@ const PostListing = () => {
     // Cache the name of our file paths
     const filePaths: string[] = [];
 
-    formData.rawPhotos.forEach(photo => {
+    postFormData.rawPhotos.forEach(photo => {
       const filePath = `${userId}/${v4()}`;
       const insertion = supabase.storage.from("listing_images").upload(filePath, photo);
       insertions.push(insertion);
@@ -153,12 +142,12 @@ const PostListing = () => {
       }
 
       // Calculate distance from address to Rice University
-      const distance = await calculateDistance(formData.address.label);
+      const distance = await calculateDistance(postFormData.address.label);
       if (!distance) {
         throw new Error("Unable to validate address or calculate distance. Please check the address.");
       }
 
-      const validateData: FormDataType = listingFormSchema.parse(formData)
+      const validateData: FormDataType = listingFormSchema.parse(postFormData)
 
       const {data, error} = await supabase
         .from("listings")
@@ -193,7 +182,7 @@ const PostListing = () => {
       const imageCaptions = filePaths.map((path, index) => ({
         user_id: userId,
         image_path: path,
-        caption: formData.photoLabels[index] || "",
+        caption: postFormData.photoLabels[index] || "",
       }));
 
       const filteredImageCaptions = imageCaptions.filter(imageCaption => imageCaption.caption !== "");
@@ -203,7 +192,7 @@ const PostListing = () => {
       if (captionError) {
         throw new Error(captionError.message, {cause: filePaths});
       }
-      resetFormData();
+      resetPostFormData();
       router.push("/");
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -278,254 +267,15 @@ const PostListing = () => {
     await supabase.from("images_captions").delete().in("image_path", paths);
   }
 
-  const handlePreviewClick = () => {
-    const previewData = {
-      ...formData,
-      photos: formData.photos,
-    };
-    localStorage.setItem("listingFormData", JSON.stringify(previewData));
-    router.push("/post-a-listing/preview");
-  };
-
-  const renderComponent = () => {
-    switch (selectedCategory) {
-      case "title":
-        return <TitleDescription 
-          formData={formData} 
-          setFormData={setFormData} 
-          onNext={handleNextCategory}
-          // Use zod validation to indicate that a section is complete.
-          complete={categories.filter(category => category.id === "title")[0].completed}
-        />;
-      case "pricing":
-        return (
-          <Pricing
-            formData={formData}
-            setFormData={setFormData}
-            onNext={handleNextCategory}
-            onBack={handlePreviousCategory}
-            complete={categories.filter(category => category.id === "pricing")[0].completed}
-          />
-        );
-      case "location":
-        return (
-          <Location
-            formData={formData}
-            setFormData={setFormData}
-            onNext={handleNextCategory}
-            onBack={handlePreviousCategory}
-            complete={categories.filter(category => category.id === "location")[0].completed}
-          />
-        );
-      case "duration":
-        return (
-          <Duration
-            formData={formData}
-            setFormData={setFormData}
-            onNext={handleNextCategory}
-            onBack={handlePreviousCategory}
-            complete={categories.filter(category => category.id === "duration")[0].completed}
-          />
-        );
-      case "photos":
-        return (
-          <Photos
-            formData={formData}
-            setFormData={setFormData}
-            onNext={handleNextCategory}
-            onBack={handlePreviousCategory}
-            complete={categories.filter(category => category.id === "photos")[0].completed}
-          />
-        );
-      case "profile":
-        return (
-          <Profile
-            formData={formData}
-            setFormData={setFormData}
-            onBack={handlePreviousCategory}
-            isPosting={isPosting}
-            handleSubmit={handleSubmit}
-            editingMode={false}
-            complete={categories.filter(category => category.id === "profile")[0].completed}
-          />
-        );
-      default:
-        return <TitleDescription 
-          formData={formData} 
-          setFormData={setFormData} 
-          onNext={handleNextCategory} 
-          complete={categories.filter(category => category.id === "title")[0].completed}
-        />;
-    }
-  };
-
-  const categories = useMemo(
-    () => [
-      {
-        id: "title",
-        name: "Title & Description",
-        // Use zod validation to indicate that a section is complete.
-        completed: titleDescriptionSchema.safeParse({
-          title: formData.title,
-          bed_num: formData.bed_num,
-          bath_num: formData.bath_num,
-          description: formData.description
-        }).success
-      },
-      {
-        id: "pricing",
-        name: "Pricing",
-        completed: pricingSchema.safeParse({
-          price: formData.price,
-          priceNotes: formData.priceNotes
-        }).success,
-      },
-      {
-        id: "location",
-        name: "Location",
-        completed: locationSchema.safeParse({
-          address: formData.address,
-          locationNotes: formData.locationNotes
-        }).success,
-      },
-      {
-        id: "duration",
-        name: "Duration",
-        completed: durationSchema.safeParse({
-          startDate: formData.startDate, 
-          endDate: formData.endDate,
-          durationNotes: formData.durationNotes
-        }).success,
-      },
-      {
-        id: "photos",
-        name: "Photos",
-        completed: photosSchema.safeParse({
-          photos: formData.photos,
-          rawPhotos: formData.rawPhotos,
-          photoLabels: formData.photoLabels,
-          imagePaths: formData.imagePaths,
-          removedImagePaths: formData.removedImagePaths
-        }).success,
-      },
-      {
-        id: "profile",
-        name: "Profile",
-        completed: profileSchema.safeParse({
-          affiliation: formData.affiliation,
-          phone: formData.phone
-        }).success,
-      },
-    ],
-    [formData],
-  );
-
-  const handleNextCategory = () => {
-    const currentIndex = categories.findIndex(cat => cat.id === selectedCategory);
-    if (currentIndex < categories.length - 1) {
-      setSelectedCategory(categories[currentIndex + 1].id);
-    }
-  };
-
-  const handlePreviousCategory = () => {
-    const currentIndex = categories.findIndex(cat => cat.id === selectedCategory);
-    if (currentIndex > 0) {
-      setSelectedCategory(categories[currentIndex - 1].id);
-    }
-  };
-
-  const supabase = createClient();
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    // Redirect to Sign-in page
-    router.push("/sign-in");
-  };
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!isSidebarOpen);
-  };
-
-  return (
-    <div className="min-h-screen w-[90%] mx-auto bg-white">
-      <Navbar includeFilter={false} includePostBtn={false} />
-
-      {/* Main Content */}
-      <div className={`mx-auto relative `}>
-        <div className="mx-auto">
-          <div className="flex flex-col md:flex-row gap-8 md:gap-24">
-            {/* Mobile Sidebar Toggle */}
-            <button
-              className="md:hidden flex items-center w-fit mb-4 bg-[#FF7439] text-white py-2 px-4 rounded-full"
-              onClick={toggleSidebar}
-            >
-              <span>{isSidebarOpen ? "Close" : "Expand"} Categories</span>
-            </button>
-
-            {/* Responsive Sidebar */}
-            <div className={`${isSidebarOpen ? "block" : "hidden"} md:block w-full md:w-80`}>
-              <div className="w-full md:w-80 pr-0 h-auto mb-8 md:mb-0">
-                <h1 className="text-2xl font-semibold mb-8">Listing Editor</h1>
-                <div className="space-y-3">
-                  {categories.map((category) => (
-                    <div
-                      key={category.id}
-                      className={`flex items-center p-3 rounded-xl cursor-pointer w-full ${
-                        selectedCategory === category.id
-                          ? "text-[#FF7439] border-[#FF7439] border bg-orange-50"
-                          : "text-gray-500"
-                      }`}
-                      onClick={() => {
-                        setSelectedCategory(category.id);
-                        setSidebarOpen(false); // Close sidebar on mobile after selection
-                      }}
-                    >
-                      <div className="mr-3">
-                        <CategoryStatusIndicator
-                          selected={selectedCategory === category.id}
-                          completed={category.completed}
-                        />
-                      </div>
-                      {category.name}
-                    </div>
-                  ))}
-
-                  {/* Bottom Buttons */}
-                  <div className="flex items-center justify-center pt-12 gap-4">
-                    <Button
-                      className={
-                        "w-[5.3rem] rounded-lg px-6 flex items-center border border-red-500 bg-white text-red-500 hover:bg-red-500 hover:text-white"
-                      }
-                      onClick={() => resetFormData()}
-                    >
-                      <p>Clear All</p>
-                    </Button>
-                    <Button
-                      className={`w-[5.3rem] rounded-lg px-6 flex items-center ${
-                        categories.every(category => category.completed) ? "bg-[#FF7439] hover:bg-[#FF7439]/90" : "bg-gray-300"
-                      }`}
-                      disabled={!categories.every(category => category.completed) || isPosting}
-                      onClick={e => handleSubmit(e)}
-                    >
-                      <p>Post</p>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Form Content */}
-            <div
-              className="flex-1 md:pl-16 md:border-l border-gray-500 pb-8 md:pr-8"
-              style={{height: "85vh", overflowY: "auto"}}
-            >
-              {renderComponent()}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return (<PostForm 
+    handleSubmit={handleSubmit} 
+    isLoading={false}
+    isPosting={isPosting} 
+    formData={postFormData} 
+    setFormData={setPostFormData} 
+    resetFormData={resetPostFormData} 
+    editing={false}
+  />)
 };
 
 export default PostListing;
