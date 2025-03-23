@@ -349,7 +349,7 @@ export default function Index() {
                 <h1 className="text-left text-2xl font-medium mb-5">
                   Your Active Listings
                 </h1>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-6 gap-8">
                   {activeListings.length > 0 ? activeListings.map((listing) => (
                     <div key={listing.id}>
                       <ListingCard
