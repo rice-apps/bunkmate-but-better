@@ -57,6 +57,11 @@ const ListingCard: React.FC<CardProps> = ({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
+    // Gabe - this is sussy, especially since we have isArchived as a prop (which is unused),
+    // but we can let it go for now since this was already pushed to main.
+    // Also, archiving removes a record from someone's favorites... I'm not
+    // sure why this happens since we shouldn't be editing that table, and
+    // I'm not sure if that's the desired behavior.
     const fetchArchivedStatus = async () => {
       const supabase = createClient();
       const { data, error } = await supabase
@@ -110,9 +115,6 @@ const ListingCard: React.FC<CardProps> = ({
     router.push(url);
   };
   
-  
-
-
   const handleDelete = async () => {
     setIsDeleteModalOpen(false);
 
