@@ -157,7 +157,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-white rounded-3xl p-6 w-full max-w-2xl mx-4 relative max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-2xl p-6 w-full max-w-2xl mx-4 relative max-h-[80vh] lg:max-h-[95vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <button
