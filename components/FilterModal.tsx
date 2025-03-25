@@ -289,7 +289,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   key={option.value}
                   className={`p-3 text-sm rounded-lg border transition-colors ${
                     selectedLeaseDuration === option.value
-                      ? "bg-[#FF7439] text-white border-[#FF7439]"
+                      ? "bg-[#FFE3D7] text-[#FF7439] font-semibold border-[#FF7439]"
                       : "bg-white text-neutral-700 hover:bg-gray-200"
                   }`}
                   onClick={() => handleLeaseDurationChange(option)}
@@ -309,7 +309,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   key={location.value}
                   className={`p-3 text-sm rounded-lg border transition-colors ${
                     selectedLocation === location.value
-                      ? "bg-[#FF7439] text-white border-[#FF7439]"
+                      ? "bg-[#FFE3D7] text-[#FF7439] font-semibold border-[#FF7439]"
                       : "bg-white text-neutral-700 hover:bg-gray-200"
                   }`}
                   onClick={() => {
