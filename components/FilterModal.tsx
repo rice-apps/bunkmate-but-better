@@ -195,8 +195,10 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </div>
         </div>
 
+        <hr className = "lg:hidden"></hr>
+
         {/* Price Range */}
-        <div className="block lg:hidden space-y-6 mb-8">
+        <div className="block lg:hidden space-y-6 mt-6 mb-8">
           <h2 className="text-xl text-neutral-800 mb-3">Price Range</h2>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
