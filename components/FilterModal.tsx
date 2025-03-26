@@ -96,8 +96,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
     { label: "Life Tower", value: "Life Tower" },
     { label: "Latitude", value: "Latitude" },
     { label: "Nest", value: "Nest" },
-    { label: "Circle at Hermann Park", value: "Circle at Hermann" },
     { label: "Bolsover", value: "Bolsover" },
+    { label: "Circle at Hermann Park", value: "Circle at Hermann" },
   ];
 
   const clearAllFilters = () => {
@@ -157,7 +157,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-white rounded-3xl p-6 w-full max-w-2xl mx-4 relative max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-2xl p-6 w-full max-w-2xl mx-4 relative max-h-[80vh] lg:max-h-[95vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -167,19 +167,38 @@ const FilterModal: React.FC<FilterModalProps> = ({
           <FaTimes className="w-6 h-6" />
         </button>
 
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold text-[#FF7439]">Advanced Filters</h2>
+        <div className="flex justify-center items-center mt-2">
+          <h2 className="text-2xl font-semibold text-center text-[#FF7439]">Advanced Filters</h2>
         </div>
 
-        <button
-          onClick={clearAllFilters}
-          className="text-[#FF7439] hover:underline font-medium mb-2"
-        >
-          Clear all
-        </button>
+        {/* Add Search Bar */}
+        <div className="mb-8 mt-6">
+          <h2 className="text-xl text-neutral-800 mb-3">Search</h2>
+          <div className="relative flex items-center">
+            <FaMagnifyingGlass className="absolute left-3 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              value={localSearchQuery}
+              onChange={handleSearchChange}
+              onKeyDown={handleSearchKeyDown}
+              placeholder="Search by name or location..."
+              className="w-full pl-10 pr-10 py-2 border bg-white rounded-lg focus:outline-none focus:border-[#FF7439]"
+            />
+            {localSearchQuery && (
+              <button
+                onClick={clearSearch}
+                className="absolute right-3 text-gray-400 hover:text-gray-600"
+              >
+                <FaTimes className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        <hr className = "lg:hidden"></hr>
 
         {/* Price Range */}
-        <div className="block lg:hidden space-y-6 mb-8">
+        <div className="block lg:hidden space-y-6 mt-6 mb-8">
           <h2 className="text-xl text-neutral-800 mb-3">Price Range</h2>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
@@ -205,9 +224,11 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </div>
         </div>
 
+        <hr></hr>
+
         {/* Rooms and Beds */}
-        <div className="space-y-6 mb-8">
-          <h2 className="text-xl text-neutral-800 mb-3">Rooms and Beds</h2>
+        <div className="space-y-6 mt-6 mb-8">
+          <h2 className="text-xl text-neutral-800">Rooms and Beds</h2>
           <div className="flex flex-col gap-6">
             {/* Beds */}
             <div className="flex items-center gap-2 justify-between">
@@ -255,18 +276,20 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </div>
         </div>
 
+        <hr></hr>
+
         {/* Lease Duration and Popular Locations in a responsive grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-6">
           {/* Lease Duration */}
           <div className="space-y-6">
-            <h2 className="text-xl text-neutral-800 mb-3">Lease Duration</h2>
+            <h2 className="text-xl text-neutral-800">Lease Duration</h2>
             <div className="grid grid-cols-2 gap-2">
               {leaseDurationOptions.map((option) => (
                 <button
                   key={option.value}
                   className={`p-3 text-sm rounded-lg border transition-colors ${
                     selectedLeaseDuration === option.value
-                      ? "bg-[#FF7439] text-white border-[#FF7439]"
+                      ? "bg-[#FFE3D7] text-[#FF7439] font-semibold border-[#FF7439]"
                       : "bg-white text-neutral-700 hover:bg-gray-200"
                   }`}
                   onClick={() => handleLeaseDurationChange(option)}
@@ -279,14 +302,14 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
           {/* Popular Locations */}
           <div className="space-y-6">
-            <h2 className="text-xl text-neutral-800 mb-3">Popular Locations</h2>
+            <h2 className="text-xl text-neutral-800">Popular Locations</h2>
             <div className="grid grid-cols-2 gap-2">
               {popularLocations.map((location) => (
                 <button
                   key={location.value}
                   className={`p-3 text-sm rounded-lg border transition-colors ${
                     selectedLocation === location.value
-                      ? "bg-[#FF7439] text-white border-[#FF7439]"
+                      ? "bg-[#FFE3D7] text-[#FF7439] font-semibold border-[#FF7439]"
                       : "bg-white text-neutral-700 hover:bg-gray-200"
                   }`}
                   onClick={() => {
@@ -302,41 +325,27 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </div>
         </div>
 
-        {/* Add Search Bar */}
-        <div className="mb-8 mt-8">
-          <h2 className="text-xl text-neutral-800 mb-3">Search</h2>
-          <div className="relative flex items-center">
-            <FaMagnifyingGlass className="absolute left-3 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              value={localSearchQuery}
-              onChange={handleSearchChange}
-              onKeyDown={handleSearchKeyDown}
-              placeholder="Search by name or location..."
-              className="w-full pl-10 pr-10 py-3 border bg-white rounded-lg focus:outline-none focus:border-[#FF7439]"
-            />
-            {localSearchQuery && (
-              <button
-                onClick={clearSearch}
-                className="absolute right-3 text-gray-400 hover:text-gray-600"
-              >
-                <FaTimes className="w-5 h-5" />
-              </button>
-            )}
-          </div>
+        {/* Bottom two buttons! */}
+        <div className = "flex flex-row gap-5">
+          {/* Clear All Button */}
+          <button
+            onClick={clearAllFilters}
+            className="w-full mt-8 py-3 bg-[#CC3233] text-white rounded-md hover:bg-[#8E1F20] transition-colors"
+          >
+            Clear all
+          </button>
+          {/* Apply Button */}
+          <button
+            onClick={() => {
+              handleSearchSubmit();
+              applyFilters();
+              onClose();
+            }}
+            className="w-full mt-8 py-3 bg-[#FF7439] text-white rounded-md hover:bg-[#BB5529] transition-colors"
+          >
+            Apply Filters
+          </button>
         </div>
-
-        {/* Apply Button */}
-        <button
-          onClick={() => {
-            handleSearchSubmit();
-            applyFilters();
-            onClose();
-          }}
-          className="w-full mt-8 py-3 bg-[#FF7439] text-white rounded-lg hover:bg-[#BB5529] transition-colors"
-        >
-          Apply Filters
-        </button>
       </motion.div>
     </motion.div>
   );
