@@ -35,7 +35,9 @@ export default function TermsOfService() {
         <div className="w-full text-gray-700 text-left space-y-6">
           <p>
             Welcome to Bunkmate! These Terms and Conditions ("Terms") govern your use of the Bunkmate website (the "Service").
-            By using the Service, you agree to be bound by these <strong>Terms</strong> and our <strong>Privacy Policy</strong>.
+            By using the Service, you agree to be bound by these <strong>Terms</strong> and our {" "}
+            <Link href="/sign-in/privacy" className="text-[#FF7439] hover:underline">
+              Privacy Policy</Link>.
             If you do not agree, please do not use the Service.
           </p>
 

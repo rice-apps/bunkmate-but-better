@@ -33,11 +33,15 @@ export default function Privacy() {
         <hr className="h-px w-full my-[40px] bg-gray-200 border-1 dark:bg-gray-700"></hr>
 
         <div className="w-full text-gray-700 text-left space-y-6">
-          <p>
-            Welcome to Bunkmate! This Privacy Policy explains how we collect, use, and protect your information when you use our website and services (the “Service”). By using Bunkmate, you agree to the collection and use of information in accordance with this policy.
+        <p>
+            Welcome to Bunkmate! These Terms and Conditions ("Terms") govern your use of the Bunkmate website (the "Service").
+            By using the Service, you agree to be bound by our <strong>Privacy Policy</strong> and our {" "}
+            <Link href="/sign-in/terms" className="text-[#FF7439] hover:underline">
+              Terms</Link>.
+            If you do not agree, please do not use the Service.
           </p>
 
-          {/* Start of Terms. */}
+          {/* Start of Policy. */}
 
           <Term title="1. Information We Collect">
             <p className = "pb-[10px]">
