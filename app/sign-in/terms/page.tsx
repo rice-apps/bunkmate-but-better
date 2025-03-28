@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 // import { IoMdArrowRoundBack } from "react-icons/io";
 
+
 export default function TermsOfService() {
   return (
     <div>
@@ -55,6 +56,7 @@ export default function TermsOfService() {
           </ul>
 
           <h2 className="text-xl font-semibold">5. Prohibited Conduct</h2>
+          <p>You agree not to:</p>
           <ul className="list-disc pl-5 space-y-2">
             <li>Post false, misleading, or illegal listings.</li>
             <li>Use the Service for any unauthorized or illegal activities.</li>
@@ -62,9 +64,18 @@ export default function TermsOfService() {
           </ul>
 
           <h2 className="text-xl font-semibold">6. Termination of Use</h2>
-          <p>Bunkmate reserves the right to suspend or terminate access to the Service for users who violate these Terms.</p>
+          <p>Bunkmate reserves the right to suspend or terminate access to the Service for users who violate these Terms or engage in prohibited activities.</p>
 
-          <h2 className="text-xl font-semibold">7. Contact Information</h2>
+          <h2 className="text-xl font-semibold">7. No Guarantees or Endorsements</h2>
+          <p>Bunkmate does not guarantee the quality, safety, legality, or availability of any listing. Users should exercise caution and perform due diligence before entering any agreement.</p>
+
+          <h2 className="text-xl font-semibold">8. Limitation of Liability</h2>
+          <p>To the fullest extent permitted by law, Bunkmate and its creators shall not be liable for any direct, indirect, incidental, consequential, or special damages arising from or related to the use of the Service.</p>
+
+          <h2 className="text-xl font-semibold">9. Changes to Terms</h2>
+          <p>We may update these Terms from time to time. Any changes will be posted on this page, and continued use of the Service constitutes acceptance of the revised Terms.</p>
+
+          <h2 className="text-xl font-semibold">10. Contact Information</h2>
           <p>
             For questions or concerns regarding these Terms, please contact us at:
           </p>
