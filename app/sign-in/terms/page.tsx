@@ -21,7 +21,7 @@ const Term = ({
 export default function TermsOfService() {
   return (
     <div>
-      <div className="min-h-screen text-[#FF7439] my-[60px] flex flex-col items-start min-h-screen w-[50%] sm: w-[90%] mx-auto justify-center mt-6">
+      <div className="min-h-screen text-[#FF7439] my-[60px] flex flex-col items-start min-h-screen w-[80%] sm:w-[50%] mx-auto justify-center mt-6">
         <div className="flex flex-col mt-[60px] w-full items-center">
           {/* <Link href="/">
             <IoMdArrowRoundBack className="text-4xl text-[#FF7439] mr-2" />
