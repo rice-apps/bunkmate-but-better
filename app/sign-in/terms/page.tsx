@@ -27,7 +27,7 @@ export default function TermsOfService() {
             <IoMdArrowRoundBack className="text-4xl text-[#FF7439] mr-2" />
           </Link> */}
           <h1 className="text-4xl pb-[10px] font-bold">Bunkmate Terms and Conditions</h1>
-          <p className="text-gray-600 text-md">Legal Information & Notices. Last Updated: March 4, 2025</p>
+          <p className="text-gray-600 text-md">Legal Information & Notices. Last Updated: March 28th, 2025</p>
         </div>
 
         <hr className="h-px w-full my-[40px] bg-gray-200 border-1 dark:bg-gray-700"></hr>
