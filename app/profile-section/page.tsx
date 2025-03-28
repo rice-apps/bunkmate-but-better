@@ -30,6 +30,7 @@ type Listing = {
   renterType: "Rice Student" | string;
   isFavorite: boolean;
   image_paths: string[];
+  isArchived: boolean;
 };
 
 export default function Index() {
@@ -42,7 +43,8 @@ export default function Index() {
     affiliation: 'student' | 'alum';
   } | null>();
   const [favoritelistings, setFavoriteListings] = useState<Listing[]>([]);
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [activeListings, setActiveListings] = useState<Listing[]>([]);
+  const [archivedListings, setArchivedListings] = useState<Listing[]>([]);
   const [reload, setReload] = useState<boolean>(false);
 
   const handleLogout = async () => {
@@ -121,7 +123,8 @@ export default function Index() {
                   ),
                   renterType: favorite.listings.affiliation != 'student' ? "Rice Alumni" : "Rice Student",
                   isFavorite: true,
-                  image_paths: favorite.listings.image_paths
+                  image_paths: favorite.listings.image_paths,
+                  isArchived: favorite.listings.isArchived
                 };
               })
             );
@@ -136,27 +139,37 @@ export default function Index() {
               console.error("Error fetching listings");
               return;
             }
-            setListings(
-              data.data.map((listing: any): Listing => {
-                return {
-                  id: listing.id,
-                  title: listing.title,
-                  distance: listing.distance,
-                  dates: `${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`,
-                  price: listing.price,
-                  location: listing.address,
-                  imageUrl: listing.image_paths[0]
-                    ? getImagePublicUrl(
-                      "listing_images",
-                      listing.image_paths[0]
-                    )
-                    : "",
-                  renterType: listing.affiliation != 'student' ? "Rice Alumni" : "Rice Student",
-                  isFavorite: true,
-                  image_paths: listing.image_paths
-                };
-              })
-            );
+
+            const activeListings: Listing[] = [];
+            const archivedListings: Listing[] = [];
+
+            data.data.forEach((listing: any) => {
+              const formattedListing: Listing = {
+                id: listing.id,
+                title: listing.title,
+                distance: listing.distance,
+                dates: `${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`,
+                price: listing.price,
+                location: listing.address,
+                imageUrl: getImagePublicUrl(
+                  "listing_images",
+                  listing.image_paths[0]
+                ),
+                renterType: listing.affiliation !== "student" ? "Rice Alumni" : "Rice Student",
+                isFavorite: true,
+                image_paths: listing.image_paths,
+                isArchived: listing.isArchived
+              };
+
+              if (!listing.archived) {
+                activeListings.push(formattedListing);
+              } else {
+                archivedListings.push(formattedListing);
+              }
+            })
+
+            setActiveListings(activeListings);
+            setArchivedListings(archivedListings);
           });
       } else {
         console.error("No user");
@@ -319,6 +332,7 @@ export default function Index() {
                         isFavorited={listing.isFavorite}
                         ownListing={false}
                         imagePaths={listing.image_paths}
+                        isArchived={listing.isArchived}
                       />
                     </div>
                   ))) : (
@@ -333,10 +347,10 @@ export default function Index() {
                 transition={{ duration: 0.5, delay: 0.8 }}
               >
                 <h1 className="text-left text-2xl font-medium mb-5">
-                  Your Listings
+                  Your Active Listings
                 </h1>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                  {listings.length > 0 ? listings.map((listing) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-6 gap-8">
+                  {activeListings.length > 0 ? activeListings.map((listing) => (
                     <div key={listing.id}>
                       <ListingCard
                         postId={listing.id}
@@ -349,11 +363,46 @@ export default function Index() {
                         isFavorited={listing.isFavorite}
                         ownListing={true}
                         imagePaths={listing.image_paths}
+                        isArchived={listing.isArchived}
                         onDelete={() => setReload(!reload)}
+                        onArchive={() => setReload(!reload)}
                       />
                     </div>
                   )) : (
-                    <div className="text-gray-400 italic mt-6">- No Listings Yet!</div>
+                    <div className="text-gray-400 italic mt-6">- No Active Listings Yet!</div>
+                  )}
+                </div>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+              >
+                <h1 className="text-left text-2xl font-medium mb-5">
+                  Your Archived Listings
+                </h1>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                  {archivedListings.length > 0 ? archivedListings.map((listing) => (
+                    <div key={listing.id}>
+                      <ListingCard
+                        postId={listing.id}
+                        name={listing.title}
+                        imagePath={listing.imageUrl}
+                        distance={listing.distance}
+                        duration={listing.dates}
+                        price={`$${listing.price} / month`}
+                        isRiceStudent={listing.renterType === "Rice Student"}
+                        isFavorited={listing.isFavorite}
+                        ownListing={true}
+                        imagePaths={listing.image_paths}
+                        isArchived={listing.isArchived}
+                        onDelete={() => setReload(!reload)}
+                        onArchive={() => setReload(!reload)}
+                      />
+                    </div>
+                  )) : (
+                    <div className="text-gray-400 italic mt-6">- No Archived Listings Yet!</div>
                   )}
                 </div>
               </motion.div>
