@@ -655,15 +655,30 @@ const Navbar = ({
               </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="">
-              <DropdownMenuItem key={"profile"} className="flex justify-center">
-                <Link href="/profile-section">
-                  <p className="hover:text-[#FF7439] text-center">Profile</p>
+            <DropdownMenuContent className="p-2">
+              <div className="font-bold text-sm py-1 px-4">Bunkmate</div>
+              <DropdownMenuItem key={"about-us"} className="text-sm px-4">
+                <Link href="/about-page">
+                  <p className="hover:text-[#FF7439]">About us</p>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem key={"logout"} className="flex justify-center">
+              <DropdownMenuItem key={"faq"} className="text-sm px-4">
+                <Link href="/faq-page">
+                  <p className="hover:text-[#FF7439]">FAQ</p>
+                </Link>
+              </DropdownMenuItem>
+
+              <div className="w-3/4 border-t border-gray-300 my-1 mx-4 mt-2 mb-2"></div>
+
+              <div className="font-bold text-sm py-1 px-4">Account</div>
+              <DropdownMenuItem key={"profile"} className="text-sm px-4">
+                <Link href="/profile-section">
+                  <p className="hover:text-[#FF7439]">Profile</p>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem key={"logout"} className="text-sm px-4">
                 <button onClick={handleLogout}>
-                  <p className="hover:text-[#FF7439] text-center">Logout</p>
+                  <p className="text-[#FF0000] hover:text-[#FF7439]">Logout</p>
                 </button>
               </DropdownMenuItem>
             </DropdownMenuContent>

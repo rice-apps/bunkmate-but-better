@@ -189,7 +189,7 @@ export default function Index() {
         className="pb-8 w-[80%] sm: w-[90%] mx-auto"
       >
         <div className="flex flex-col items-center">
-          <Navbar />
+          <Navbar includeFilter={false}/>
 
           {profile && (
             <motion.main
