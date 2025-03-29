@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import Cropper from "react-easy-crop";
 import { FiUpload } from "react-icons/fi";
-import { FormDataType } from "./page";
 
 /**
  * THIS IS NOT USED ANYWHERE.
