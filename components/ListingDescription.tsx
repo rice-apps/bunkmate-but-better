@@ -85,7 +85,31 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
     }
     try {
       const API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
-      const response = await fetch(`https://geocode.maps.co/search?q=${address}&api_key=${API_KEY}`);
+      const response = await fetch(`https://geocode.maps.co/search?q=${encodeURI(address)}&api_key=${API_KEY}`);
+      if (!response.ok) {
+        throw new Error("Failed to geocode address");
+      }
+      const data = await response.json();
+      if (data && data.length > 0) {
+        return {
+          lat: data[0].lat,
+          lon: data[0].lon,
+        };
+      } else {
+        throw new Error("No results found");
+      }
+    } catch (error) {
+      console.error("Error geocoding address:", error);
+      throw error;
+    }
+  };
+
+  const geocodeNominatimAddress = async (address: string) => {
+    if (!address) {
+      throw new Error("Valid address is required");
+    }
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURI(address)}&format=json`);
       if (!response.ok) {
         throw new Error("Failed to geocode address");
       }
@@ -107,7 +131,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
   useEffect(() => {
     const fetchGeocodeData = async () => {
       try {
-        const geoData = await geocodeAddress(data.location);
+        const geoData = await geocodeNominatimAddress(data.location);
         // Convert from lon to lng for Google Maps
         setGeocodeData({
           lat: parseFloat(geoData.lat),
@@ -245,7 +269,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
           className="text-sm text-gray-600 mb-4">
-          Use this map to help you locate the distance between this listing and Rice. Adjust the location of the Green Pin to adjust the distance calculation!
+          Use this map to help you locate the distance between this listing and Rice. Click to adjust the location of the Green Pin to adjust the distance calculation!
         </motion.p>
         <motion.p
           initial={{ opacity: 0 }}

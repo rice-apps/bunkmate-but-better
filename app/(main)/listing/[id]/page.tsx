@@ -48,8 +48,8 @@ const ListingPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
-  const [subleaserHeight, setSubleaserHeight] = useState(0);
-  const subleaserRef = useRef<HTMLDivElement>(null);
+  // const [subleaserHeight, setSubleaserHeight] = useState(0);
+  // const subleaserRef = useRef<HTMLDivElement>(null);
 
   // Grabbing the isFavorited value & converting from the URL of Listing.
   const searchParams = useSearchParams();
@@ -115,7 +115,7 @@ const ListingPage = () => {
         }
         else if (isSupabasError) {
           console.warn("Supabase error:", err.message, err.details, err.hint);
-        } 
+        }
         else {
           console.warn("Unknown error:", err);
         }
@@ -128,20 +128,20 @@ const ListingPage = () => {
   }, [listingId]);
 
   // Update subleaser height on resize
-  useEffect(() => {
-    const updateHeight = () => {
-      if (subleaserRef.current) {
-        setSubleaserHeight(subleaserRef.current.offsetHeight);
-      }
-    };
+  // useEffect(() => {
+  //   const updateHeight = () => {
+  //     if (subleaserRef.current) {
+  //       setSubleaserHeight(subleaserRef.current.offsetHeight);
+  //     }
+  //   };
 
-    updateHeight();
-    window.addEventListener("resize", updateHeight);
+  //   updateHeight();
+  //   window.addEventListener("resize", updateHeight);
 
-    return () => {
-      window.removeEventListener("resize", updateHeight);
-    };
-  }, [subleaserRef]);
+  //   return () => {
+  //     window.removeEventListener("resize", updateHeight);
+  //   };
+  // }, [subleaserRef]);
 
   if (isLoading) {
     return <LoadingCircle />;
@@ -176,7 +176,7 @@ const ListingPage = () => {
 
   return (
     // Removed mobile margin here. Can add again with more precise measures!
-    <div className="w-full"> 
+    <div className="w-full">
       <Suspense>
         <Listing
           data={{
@@ -224,11 +224,11 @@ const ListingPage = () => {
           </div>
           <div className="lg:w-1/2 xl:w-1/3">
             <div
-            ref={subleaserRef}
-            className="sticky"
-            style={{ top: `calc(50vh - ${subleaserHeight / 2}px)` }}
-          >
-            <MeetSubleaser
+              // ref={subleaserRef}
+              className="sticky top-10"
+            //style={{ top: `calc(50vh - ${subleaserHeight / 2}px)` }}
+            >
+              <MeetSubleaser
                 data={{
                   phone_number: listing.phone_number,
                   user: listing.user
@@ -250,7 +250,7 @@ const ListingPage = () => {
                 }}
               />
             </div>
-        </div>
+          </div>
         </div>
       </Suspense>
     </div>
