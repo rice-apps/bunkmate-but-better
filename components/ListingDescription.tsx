@@ -269,7 +269,8 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
           className="text-sm text-gray-600 mb-4">
-          Use this map to help you locate the distance between this listing and Rice. Click to adjust the location of the Green Pin to adjust the distance calculation!
+          • Use this map to help you locate the distance between this listing and Rice. <br/>
+          • Click to adjust the location of the Green Pin to adjust the distance calculation!
         </motion.p>
         <motion.p
           initial={{ opacity: 0 }}
@@ -278,7 +279,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
           className="text-sm text-gray-600 mb-4">
           <span className='font-semibold'>Red pin</span>: Listing
           <br />
-          <span className='font-semibold'>Green pin</span>: Rice University
+          <span className='font-semibold'>Green pin</span>: Drop location
         </motion.p>
         {geocodeData ? (
           <div className="overflow-hidden rounded-lg">

@@ -2,6 +2,7 @@ import { APIProvider, Map, AdvancedMarker, Pin, MapMouseEvent } from "@vis.gl/re
 import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { MdOutlineOpenInNew } from "react-icons/md";
+import { FaHouseChimney } from "react-icons/fa6";
 
 interface ListingMapProps {
   name: string;
@@ -52,7 +53,7 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
   //     throw error;
   //   }
   // };
-
+  
   const handleMapClick = async (event: MapMouseEvent) => {
     const position = event.detail.latLng;
     if (!position) return;
@@ -85,14 +86,16 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
         <Map
           style={{ width: '100%', height: '100%' }}
           defaultCenter={coords}
-          defaultZoom={12}
+          defaultZoom={14}
           gestureHandling={'greedy'}
           disableDefaultUI={true}
           mapId={name}
           onClick={handleMapClick}
         >
           <AdvancedMarker position={coords}>
-            <Pin />
+            <Pin 
+            glyph={'🏠'}
+            />
           </AdvancedMarker>
 
           <AdvancedMarker
@@ -102,6 +105,7 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
               background={'#0f9d58'}
               borderColor={'#006425'}
               glyphColor={'#60d98f'}
+              glyph={'🎯'}
             />
           </AdvancedMarker>
         </Map>
