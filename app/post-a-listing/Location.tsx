@@ -1,7 +1,7 @@
-import {Button} from "@/components/ui/button";
-import {Textarea} from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
 import { FormDataType } from "./PostForm";
 
@@ -70,7 +70,10 @@ const Location = ({
               },
             }}
             autocompletionRequest={{
-              types: ["street_address", "street_number"]
+              types: ["street_address", "street_number"],
+              componentRestrictions: {
+                country: ['us']
+              }
             }}
           />
         </div>

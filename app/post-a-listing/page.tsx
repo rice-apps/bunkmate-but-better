@@ -1,95 +1,12 @@
 "use client";
 
-import {PostListingFormContext} from "@/providers/PostListingFormProvider";
-import {createClient} from "@/utils/supabase/client";
-import {useRouter} from "@bprogress/next";
-import {useContext, useMemo, useState} from "react";
-import {v4} from "uuid";
-import {z} from "zod";
-import PostForm, { FormDataType } from "./PostForm";
-
-/**
- * Schema for the TitleDescription section.
- */
-const titleDescriptionSchema = z.object({
-  title: z.string().min(1, "Title is required").max(50, "Title is required"),
-  bed_num: z.number().min(0, "Bed number is required"),
-  bath_num: z.number().min(0, "Bath number is required"),
-  description: z.string().min(100, "Description must be at least 100 characters").max(500, "Description must be less than 500 characters")
-});
-
-/**
- * Schema for the Pricing section.
- */
-const pricingSchema = z.object({
-  price: z.number().min(1, "Monthly rent is required"),
-  priceNotes: z.string()
-});
-
-/**
- * Schema for the Location section.
- */
-const locationSchema = z.object({
-  address: z.object({
-    label: z.string().min(1, "Address is required"),
-    value: z.object({
-      description: z.string()
-    })
-  }),
-  locationNotes: z.string()
-});
-
-/**
- * Schema for the Duration section.
- */
-const durationSchema = z.object({
-  startDate: z.string().datetime(),
-  endDate: z.string().datetime(),
-  durationNotes: z.string()
-});
-
-/**
- * Schema for the Photos section.
- * 
- * This is funky. See Gabriel for questions.
- */
-const photosSchema = z.object({
-  photos: z.array(z.string()),
-  rawPhotos: z.array(z.instanceof(File).or(z.instanceof(Blob))),
-  photoLabels: z.record(z.string().regex(new RegExp(/[0-9]+/)), z.string()),
-  imagePaths: z.array(z.string()),
-  removedImagePaths: z.array(z.string())
-})
-.refine((input) => {
-  return input.photos.length + input.imagePaths.length >= 5
-}, {
-  message: "At least 5 photos are required"
-});
-
-/**
- * Schema for the Profile section.
- */
-const profileSchema = z.object({
-  affiliation: z.string().min(1, "Rice Affiliation is required"),
-  phone: z.string().min(10, "Phone number must be at least 10 characters")
-});
-
-/**
- * Schema for the whole listing form.
- */
-export const listingFormSchema = z.object({
-  ...titleDescriptionSchema.shape,
-  ...pricingSchema.shape,
-  ...locationSchema.shape,
-  ...durationSchema.shape,
-  ...photosSchema._def.schema.shape, // need _def.schema because of refine
-  ...profileSchema.shape
-});
-
-/**
- * A type for form data derived from the listingFormSchema zod schema.
- */
-// export type FormDataType = z.infer<typeof listingFormSchema>;
+import { PostListingFormContext } from "@/providers/PostListingFormProvider";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "@bprogress/next";
+import { useContext, useState } from "react";
+import { v4 } from "uuid";
+import { z } from "zod";
+import PostForm, { FormDataType, listingFormSchema } from "./PostForm";
 
 type ImageResponse =
   | {
@@ -114,8 +31,9 @@ const PostListing = () => {
   const [isPosting, setIsPosting] = useState(false);
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setIsPosting(true);
     e.preventDefault();
+
+    setIsPosting(true);
     const supabase = createClient();
     const userId = (await supabase.auth.getUser()).data.user?.id;
     const insertions: ImagePromiseType[] = [];

@@ -8,6 +8,7 @@ import { createClient, getImagePublicUrl } from '@/utils/supabase/client';
 import { v4 } from 'uuid';
 import PostForm from '../../PostForm';
 import { PostListingFormContext } from '@/providers/PostListingFormProvider';
+import { AnimatePresence, motion } from 'framer-motion';
 
 type ImageResponse = {
   data: {
@@ -34,6 +35,7 @@ const EditListing = () => {
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
   const [isPosting, setIsPosting] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -165,13 +167,18 @@ const EditListing = () => {
     if (editListingId != Number.parseInt(listingId))
       fetchListingAndUser();
     else {
-      setIsLoading(false)
+      setIsLoading(false);
+      setShowBanner(true);
     }
 
     return () => {
       isMounted = false;
     };
   }, [listingId]);
+
+  useEffect(() => {
+    setTimeout(() => setShowBanner(false), 4000);
+  }, [showBanner]);
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     setIsPosting(true);
@@ -310,15 +317,33 @@ const EditListing = () => {
     }
   };
 
-  return (<PostForm 
-    handleSubmit={handleSubmit} 
-    isLoading={isLoading}
-    isPosting={isPosting} 
-    formData={editFormData} 
-    setFormData={setEditFormData} 
-    resetFormData={resetEditFormData} 
-    editing={true} 
-  />)
+  return (
+    <>
+      <PostForm 
+        handleSubmit={handleSubmit} 
+        isLoading={isLoading}
+        isPosting={isPosting} 
+        formData={editFormData} 
+        setFormData={setEditFormData} 
+        resetFormData={resetEditFormData} 
+        editing={true} 
+      />
+      <AnimatePresence>
+        {showBanner && 
+
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute top-[7vh] bg-[#FF7439] hover:bg-[#FF7439]/90 rounded-lg py-2 px-4"
+          >
+            <p className="text-white">Fields restored from previous session!</p>
+          </motion.div>
+        }
+      </AnimatePresence>
+    </>
+  )
 };
 
 export default EditListing;

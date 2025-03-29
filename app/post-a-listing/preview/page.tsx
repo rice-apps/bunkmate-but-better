@@ -53,7 +53,6 @@ const PreviewPage = () => {
         });
       }
     };
-    console.error(editFormData);
 
     if (searchParams.get("editing") === "true") {
       setFormData({...editFormData, photos: editFormData.imagePaths.map(path => getImagePublicUrl("listing_images", path)).concat(editFormData.photos)});
