@@ -283,7 +283,7 @@ export default function Index() {
     }, {} as Record<string, Listing[]>);
   }, [listings, searchParams, visibleListings]);
 
-  const renderListOfListings = (mappedListings: Listing[]) => {
+  const renderListings = (mappedListings: Listing[]) => {
     return mappedListings.map((listing, index) => (
       <motion.div
         key={listing.id}
@@ -314,6 +314,30 @@ export default function Index() {
     ));
   };
 
+  const renderListingsByDateCategories = () => {
+    return ["exact", "week", "month", "other"].map(category => {
+      const categoryListings = categorizedListings?.[category] || [];
+      if (!categoryListings.length) return null;
+
+      return (
+        <div key={category} className="mb-12">
+          <h2 className="text-2xl font-semibold mb-6 px-4">
+            {category === "exact"
+              ? "Exact Date Matches"
+              : category === "week"
+              ? "Available Within a Week"
+              : category === "month"
+              ? "Available Within a Month"
+              : "Other Available Listings"}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {renderListings(categoryListings)}
+          </div>
+        </div>
+      );
+    })
+  }
+
   return (
     <Suspense>
       <motion.main
@@ -331,42 +355,13 @@ export default function Index() {
         ) : (
           <>
             {listings && listings.length > 0 ? (
-              ["exact", "week", "month", "other"].map(category => {
-                const categoryListings = categorizedListings?.[category] || [];
-                if(!categoryListings.length) return null;
-
-                return (
-                  <div key={category} className="mb-12">
-                    <h2 className="text-2xl font-semibold mb-6 px-4">
-                      {category === "exact"
-                        ? "Exact Date Matches"
-                        : category === "week"
-                        ? "Available Within a Week"
-                        : category === "month"
-                        ? "Available Within a Month"
-                        : "Other Available Listings"}
-                    </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                      {categoryListings.length > 0 ? (
-                        renderListOfListings(categoryListings)
-                      ) : (
-                        <div className="col-span-full flex justify-center py-8">
-                          <p className="text-gray-500 italic">
-                            No listings available{" "}
-                            {category === "exact"
-                              ? "with exact date match"
-                              : category === "week"
-                              ? "within a week of your dates"
-                              : category === "month"
-                              ? "within a month of your dates"
-                              : "in this time frame"}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })
+              searchParams.get("startDate") || searchParams.get("endDate") ? (
+                renderListingsByDateCategories()
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                  {renderListings(listings.slice(0, visibleListings))}
+                </div>
+              )
             ) : (
               <motion.div
                 className="flex flex-col items-center justify-center py-12"
