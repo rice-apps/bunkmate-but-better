@@ -3,6 +3,7 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
+import { FormDataType } from "./PostForm";
 
 // Pricing Component
 const Pricing = ({
@@ -10,20 +11,20 @@ const Pricing = ({
   setFormData,
   onNext,
   onBack,
+  complete,
+  editing
 }: {
-  formData: any;
+  formData: FormDataType;
   setFormData: any;
   onNext: () => void;
   onBack: () => void;
+  complete: boolean;
+  editing: boolean;
 }) => {
-  const isComplete = Boolean(formData.price);
+  const isComplete = complete;
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Ensure the rent is a positive number
-    if (Number(value) >= 0 || value === "") {
-      setFormData({...formData, price: value});
-    }
+    setFormData({...formData, price: e.target.valueAsNumber});
   };
 
   const handlePriceNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -37,7 +38,7 @@ const Pricing = ({
           <h1 className="text-2xl font-semibold mb-3">Pricing</h1>
         </div>
 
-        <PreviewButton formData={formData} />
+        <PreviewButton formData={formData} editing={editing} />
       </div>
       <h2 className="text-sm font-bold">Add details about all things money here. </h2>
 
@@ -49,9 +50,10 @@ const Pricing = ({
           <Input
             type="number"
             placeholder="Ex. 1300"
-            value={formData.price}
+            value={formData.price.toString()}
             onChange={handlePriceChange}
             className={`w-full rounded-xl border border-gray-200 pl-7`}
+            min={0}
           />
           {/* {!formData.price && (
             <span className="text-sm text-gray-400 mt-1 block">
