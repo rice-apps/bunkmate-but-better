@@ -226,9 +226,9 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
         <hr></hr>
 
-        {/* Rooms and Beds */}
+        {/* Beds and Baths */}
         <div className="space-y-6 mt-6 mb-8">
-          <h2 className="text-xl text-neutral-800">Rooms and Beds</h2>
+          <h2 className="text-xl text-neutral-800">Beds and Baths</h2>
           <div className="flex flex-col gap-6">
             {/* Beds */}
             <div className="flex items-center gap-2 justify-between">
