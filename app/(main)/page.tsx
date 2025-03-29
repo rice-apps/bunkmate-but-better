@@ -253,17 +253,17 @@ export default function Index() {
   );
 
   const categorizeListingByDate = (listing: Listing, startDate: Date | null, endDate: Date | null) => {
-    if (!startDate || !endDate) return "other";
+    if (!startDate && !endDate) return "other";
 
     const listingStart = new Date(listing.start_date).getTime();
     const listingEnd = new Date(listing.end_date).getTime();
-    const startDiff = Math.abs(listingStart - startDate.getTime());
-    const endDiff = Math.abs(listingEnd - endDate.getTime());
+    const startDiff = startDate ? Math.abs(listingStart - startDate.getTime()) : 0;
+    const endDiff = endDate ? Math.abs(listingEnd - endDate.getTime()) : 0;
 
     const weekInMs = 7 * 24 * 60 * 60 * 1000;
     const monthInMs = 30 * 24 * 60 * 60 * 1000;
 
-    if (startDiff === 0 && endDiff === 0) return "exact";
+    if(startDiff === 0 && endDiff === 0) return "exact";
     if (startDiff <= weekInMs && endDiff <= weekInMs) return "week";
     if (startDiff <= monthInMs && endDiff <= monthInMs) return "month";
     return "other";
@@ -321,14 +321,14 @@ export default function Index() {
 
       return (
         <div key={category} className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6 px-4">
+          <h2 className="text-2xl font-semibold mb-6">
             {category === "exact"
-              ? "Exact Date Matches"
+              ? "Exact date matches"
               : category === "week"
-              ? "Available Within a Week"
+              ? "Available within a week of your date(s)"
               : category === "month"
-              ? "Available Within a Month"
-              : "Other Available Listings"}
+              ? "Available within a month of your date(s)"
+              : "Available within 1+ months of your date(s)"}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {renderListings(categoryListings)}
