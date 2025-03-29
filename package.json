@@ -5,6 +5,7 @@
     "build": "next build",
     "start": "next start"
   },
+  "engines": { "node": "18" },
   "dependencies": {
     "@bprogress/next": "^3.2.10",
     "@next/bundle-analyzer": "15.2.4",
