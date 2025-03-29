@@ -5,15 +5,14 @@ import { PropsWithChildren } from "react";
 
 const Providers = ({ children }: PropsWithChildren) => {
   return (
-    <>
       <ProgressProvider
         height="10px"
         color="#FF7439"
         options={{ showSpinner: true }}
         shallowRouting
-      />
-      {children}
-    </>
+      >
+        {children}
+      </ProgressProvider>
   );
 };
 

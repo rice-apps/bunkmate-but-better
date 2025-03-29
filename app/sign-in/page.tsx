@@ -150,11 +150,11 @@ export default function SignIn() {
 
             <p className="text-center text-sm text-gray-500">
               By continuing, you agree to bunkmate's{' '}
-              <Link href="/terms" className="text-[#FF7439] hover:underline">
-                Terms of Service
+              <Link href="/sign-in/terms" className="text-[#FF7439] hover:underline">
+                Terms & Conditions
               </Link>{' '}
               and{' '}
-              <Link href="/privacy" className="text-[#FF7439] hover:underline">
+              <Link href="/sign-in/privacy" className="text-[#FF7439] hover:underline">
                 Privacy Policy
               </Link>
               .

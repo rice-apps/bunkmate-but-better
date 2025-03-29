@@ -20,8 +20,9 @@ interface Listing {
   location: string;
   imageUrl: string;
   renterType: "Rice Student" | string;
-  isFavorite: boolean;
   image_paths: string[];
+  isFavorite: boolean;
+  isArchived: boolean;
 };
 
 interface Favorite {
@@ -77,7 +78,8 @@ export default function Favorites() {
             end_date,
             price,
             image_paths,
-            address
+            address,
+            archived
             )
           `).eq('user_id', user?.id);
 
@@ -94,8 +96,9 @@ export default function Favorites() {
               favorite.listings.image_paths[0]
             ),
             renterType: favorite.listings.affiliation,
+            image_paths: favorite.listings.image_paths,
             isFavorite: true,
-            image_paths: favorite.listings.image_paths
+            isArchived: favorite.listings.archived
           };
         }) || []);
 
@@ -217,6 +220,7 @@ export default function Favorites() {
                     ownListing={false}
                     isFavorited={true}
                     imagePaths={listing.image_paths}
+                    isArchived={listing.isArchived}
                   />
                 </motion.div>
               ))
