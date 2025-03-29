@@ -37,8 +37,6 @@ const EditListing = () => {
 
   useEffect(() => {
     let isMounted = true;
-    console.error(listingId);
-    console.error(editListingId);
 
     const fetchListingAndUser = async () => {
       try {

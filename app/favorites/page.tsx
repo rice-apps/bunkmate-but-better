@@ -9,7 +9,7 @@ import { BsArrowUpCircleFill } from "react-icons/bs";
 import LoadingCard from '@/components/LoadingCard';
 import { Button } from '@/components/ui/button';
 import { motion } from "framer-motion";
-
+import Footer from '@/components/Footer';
 
 interface Listing {
   id: string;
@@ -20,8 +20,9 @@ interface Listing {
   location: string;
   imageUrl: string;
   renterType: "Rice Student" | string;
-  isFavorite: boolean;
   image_paths: string[];
+  isFavorite: boolean;
+  isArchived: boolean;
 };
 
 interface Favorite {
@@ -77,7 +78,8 @@ export default function Favorites() {
             end_date,
             price,
             image_paths,
-            address
+            address,
+            archived
             )
           `).eq('user_id', user?.id);
 
@@ -94,8 +96,9 @@ export default function Favorites() {
               favorite.listings.image_paths[0]
             ),
             renterType: favorite.listings.affiliation,
+            image_paths: favorite.listings.image_paths,
             isFavorite: true,
-            image_paths: favorite.listings.image_paths
+            isArchived: favorite.listings.archived
           };
         }) || []);
 
@@ -176,7 +179,7 @@ export default function Favorites() {
 
   
   return (
-    <div className="mb-20 w-[80%] sm: w-[90%] mx-auto">
+    <div className="flex flex-col min-h-screen w-[80%] sm: w-[90%] mx-auto">
       <Navbar />
       <div className="mx-auto py-0 w-full mt-4">
         <motion.div 
@@ -217,6 +220,7 @@ export default function Favorites() {
                     ownListing={false}
                     isFavorited={true}
                     imagePaths={listing.image_paths}
+                    isArchived={listing.isArchived}
                   />
                 </motion.div>
               ))
@@ -234,6 +238,7 @@ export default function Favorites() {
       >
         <BsArrowUpCircleFill className="w-16 h-16 text-white group-hover:text-[#FF7439]" />
       </motion.div>
+      <Footer/>
     </div>
   );
 }

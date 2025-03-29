@@ -2,8 +2,9 @@
 
 import React, { Suspense, useEffect } from "react";
 import Image from "next/image";
+import { FaHeart, FaSignOutAlt, FaTimes} from "react-icons/fa";
+import { BsSliders } from "react-icons/bs";
 import { FaMagnifyingGlass } from "react-icons/fa6";
-import { FaHeart, FaSignOutAlt, FaTimes } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { MdHome } from "react-icons/md";
@@ -27,6 +28,7 @@ import { useRouter } from "@bprogress/next";
 import { createClient } from "@/utils/supabase/client";
 import { set } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
+import FilterModal from "./FilterModal";
 
 interface ModularDropDownProps {
   allOptions: string[];
@@ -109,6 +111,13 @@ const Navbar = ({
   const searchParams = useSearchParams(); // Use useSearchParams
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [bedNum, setBedNum] = useState(0);
+  const [bathNum, setBathNum] = useState(0);
+  const [selectedLeaseDuration, setSelectedLeaseDuration] = useState<string | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
 
   const pathname = usePathname();
 
@@ -169,27 +178,125 @@ const Navbar = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
-  // Add this function to handle search
+  // Update the handleSearch function
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+  };
+
+  // Update the applyFilters function to use the current searchQuery state
+  const applyFilters = () => {
     const queryParams = new URLSearchParams(window.location.search);
-    if (query) queryParams.set("search", query);
-    if (!query) queryParams.delete("search");
+    
+    // Add search query to filters if it exists
+    if (searchQuery.trim()) {
+      queryParams.set('search', searchQuery);
+    } else {
+      queryParams.delete('search');
+    }
+    
+    if (minPrice > 0) queryParams.set("minPrice", minPrice.toString());
+    if (maxPrice > 0) queryParams.set("maxPrice", maxPrice.toString());
+    if (bedNum > 0) queryParams.set("bedNum", bedNum.toString());
+    if (bathNum > 0) queryParams.set("bathNum", bathNum.toString());
+
+    if (minPrice === 0) queryParams.delete("minPrice");
+    if (maxPrice === 0) queryParams.delete("maxPrice");
+    if (bedNum === 0) queryParams.delete("bedNum");
+    if (bathNum === 0) queryParams.delete("bathNum");
+
+    if (selectedLeaseDuration) {
+      queryParams.set('leaseDuration', selectedLeaseDuration);
+      const duration = leaseDurationOptions.find(d => d.value === selectedLeaseDuration);
+      if (duration) {
+        if (duration.startDate) {
+          const newStartDate = new Date(duration.startDate);
+          setStartDate(newStartDate);
+          queryParams.set('startDate', newStartDate.toISOString());
+        }
+        if (duration.endDate) {
+          const newEndDate = new Date(duration.endDate);
+          setEndDate(newEndDate);
+          queryParams.set('endDate', newEndDate.toISOString());
+        }
+      }
+    } else {
+      queryParams.delete('leaseDuration');
+      queryParams.delete('startDate');
+      queryParams.delete('endDate');
+      setStartDate(undefined);
+      setEndDate(undefined);
+    }
+
+    if (selectedLocation) {
+      queryParams.set('location', selectedLocation);
+    }
+
     const queryString = queryParams.toString();
     router.push(`/?${queryString}`);
   };
 
+  // Update the handleSearchKeyDown function
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
+      applyFilters(); // Call applyFilters directly instead of handleSearch
       setShowSearch(false);
     }
   };
 
   const handleClearSearch = () => {
     setSearchQuery("");
-    handleSearch("");
+    applyFilters(); // Call applyFilters directly instead of handleSearch
     setShowSearch(false);
   };
+
+  const getCurrentYear = () => {
+    const now = new Date();
+    // If we're past July, use next year for academic year calculations
+    return now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+  };
+
+  const leaseDurationOptions = [
+    { 
+      label: "Academic", 
+      value: "academic",
+      startDate: new Date(getCurrentYear(), 7, 1), // August 1st
+      endDate: new Date(getCurrentYear() + 1, 4, 31), // May 31st
+    },
+    { 
+      label: "Fall", 
+      value: "fall",
+      startDate: new Date(getCurrentYear(), 7, 1), // August 1st
+      endDate: new Date(getCurrentYear(), 11, 31), // December 31st
+    },
+    { 
+      label: "Spring", 
+      value: "spring",
+      startDate: new Date(getCurrentYear() + 1, 0, 1), // January 1st
+      endDate: new Date(getCurrentYear() + 1, 4, 30), // April 30th
+    },
+    { 
+      label: "Summer", 
+      value: "summer",
+      startDate: new Date(getCurrentYear() + 1, 4, 1), // May 1st
+      endDate: new Date(getCurrentYear() + 1, 6, 31), // July 31st
+    },
+    { 
+      label: "12-Month", 
+      value: "yearly",
+      startDate: new Date(), // Today
+      endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)), // One year from today
+    },
+  ];
+
+  // Add this useEffect to sync with URL parameters
+  useEffect(() => {
+    if (searchParams) {
+      const search = searchParams.get('search');
+      if (search) {
+        setSearchQuery(search);
+      }
+    }
+  }, [searchParams]);
 
   return (
     <div className="w-full">
@@ -331,18 +438,17 @@ const Navbar = ({
               width={35}
               height={35}
             />
-            <p className="ml-4 text-[30px] text-[#FF7439] font-semibold">
+            <p className="hidden sm:block ml-4 text-[30px] text-[#FF7439] font-semibold">
               bunkmate
             </p>
           </Link>
         </button>
 
         {/* Mobile Icons (grouped search & menu icons) */}
-        {/* Again, note that these icons will only appear on mobile! */}
         <div className="flex ml-auto items-center justify-end gap-4 lg:hidden">
-          {/* MOBILE-ONLY search icon. */}
-          <button
-            onClick={() => setShowMobileFilter(!showMobileFilter)}
+          {/* MOBILE-ONLY search icon */}
+          <button 
+            onClick={() => setShowFilterModal(true)}
             className="p-1"
           >
             <FaMagnifyingGlass className="h-6 w-6 text-[#FF7439]" />
@@ -350,14 +456,13 @@ const Navbar = ({
 
           <div className="flex-grow"></div>
 
-          {/* MOBILE-ONLY hamburger icon. */}
+          {/* MOBILE-ONLY hamburger icon */}
           <button onClick={() => setIsOpen(true)}>
             <RxHamburgerMenu className="w-[35px] h-[35px] text-[#FF7439]" />
           </button>
         </div>
         {includeFilter && (
           <div className="hidden max-w-[780px] lg:flex h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3 relative">
-            {/* Show search input when search is active */}
             <AnimatePresence>
               {showSearch ? (
                 <motion.div
@@ -387,14 +492,13 @@ const Navbar = ({
               ) : null}
             </AnimatePresence>
 
-            {/* Existing filter options */}
+            {/* Updated filter options with new order and interactions */}
             <div className={`${showSearch ? 'opacity-0' : 'opacity-100'} flex flex-row items-center w-full`}>
-              {/* Distance from Rice. */}
+              {/* Distance from Rice */}
               <div className="ml-[10px] flex justify-center items-center flex-col border-r w-[212px]">
                 <div className="text-left">
                   <p className="text-[14px] font-semibold text-[#777777]">
-                    {" "}
-                    Distance from Rice{" "}
+                    Distance from Rice
                   </p>
                   <ModularDropDown
                     allOptions={[
@@ -409,92 +513,127 @@ const Navbar = ({
                   />
                 </div>
               </div>
-              {/* Start Date. */}
-              <div className="flex justify-center items-center flex-col w-[212px] border-r">
-                <div className="text-left ">
-                  <p className="text-[14px] font-bold text-[#777777] self-start">
-                    Start Date
+
+              {/* Price Range with Dropdown */}
+              <div className="flex justify-center items-center flex-col border-r w-[212px]">
+                <div className="text-left">
+                  <p className="text-[14px] font-semibold text-[#777777]">
+                    Price Range
                   </p>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button className="text-left self-start">
-                        <p
-                          className={`text-base ${
-                            startDate &&
-                            startDate.toDateString() !== "Select Start Date"
-                              ? "text-[#FF7439] font-semibold"
-                              : "text-[#777777] font-light"
-                          }`}
-                        >
-                          {startDate ? startDate.toDateString() : "Select date"}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="text-left">
+                        <p className={`text-[16px] ${minPrice || maxPrice ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}>
+                          {minPrice && maxPrice
+                            ? `$${minPrice} - $${maxPrice}`
+                            : minPrice
+                            ? `$${minPrice}+`
+                            : maxPrice
+                            ? `Up to $${maxPrice}`
+                            : "Any price"}
                         </p>
                       </button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="p-2 bg-white rounded-lg shadow-lg"
-                      style={{ zIndex: 1000 }}
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={startDate}
-                        onSelect={setStartDate}
-                        disabled={(date) =>
-                          date < new Date() ||
-                          (endDate !== undefined && date > endDate)
-                        }
-                      />
-                    </PopoverContent>
-                  </Popover>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="p-4 w-[250px]">
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm text-gray-500">Min Price ($)</label>
+                          <input
+                            type="number"
+                            value={minPrice || ''}
+                            onChange={(e) => setMinPrice(Number(e.target.value))}
+                            className="w-full bg-white p-2 border rounded-md"
+                            placeholder="Min price"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm text-gray-500">Max Price ($)</label>
+                          <input
+                            type="number"
+                            value={maxPrice || ''}
+                            onChange={(e) => setMaxPrice(Number(e.target.value))}
+                            className="w-full bg-white p-2 border rounded-md"
+                            placeholder="Max price"
+                          />
+                        </div>
+                        <button
+                          onClick={() => applyFilters()}
+                          className="w-full py-2 bg-[#FF7439] text-white rounded-md hover:bg-[#BB5529]"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
 
-              {/* End Date */}
+              {/* Date Range with Calendar Popover */}
               <div className="flex justify-center items-center flex-col w-[212px]">
                 <div className="text-left">
                   <p className="text-[14px] font-semibold text-[#777777]">
-                    End Date
+                    Date Range
                   </p>
                   <Popover>
                     <PopoverTrigger asChild>
                       <button className="text-left">
-                        <p
-                          className={`text-[16px] ${endDate && endDate.toDateString() !== "Select date" ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}
-                        >
-                          {endDate ? endDate.toDateString() : "Select date"}
+                        <p className={`text-[16px] ${(startDate || endDate) ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}>
+                          {startDate && endDate
+                            ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
+                            : startDate
+                            ? `From ${startDate.toLocaleDateString()}`
+                            : endDate
+                            ? `Until ${endDate.toLocaleDateString()}`
+                            : "Any dates"}
                         </p>
                       </button>
                     </PopoverTrigger>
-                    <PopoverContent
-                      className="p-2 bg-white rounded-lg shadow-lg"
-                      style={{ zIndex: 1000 }}
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={endDate}
-                        onSelect={setEndDate}
-                        disabled={(date) =>
-                          date < new Date() ||
-                          (startDate !== undefined && date < startDate)
-                        }
-                      />
+                    <PopoverContent className="p-4 bg-white rounded-lg shadow-lg w-auto z-[100]">
+                      <div className="flex gap-4">
+                        <div>
+                          <p className="text-sm font-semibold text-gray-700 mb-2">Start Date</p>
+                          <Calendar
+                            mode="single"
+                            selected={startDate}
+                            onSelect={setStartDate}
+                            disabled={(date) =>
+                              date < new Date() ||
+                              (endDate !== undefined && date > endDate)
+                            }
+                          />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-700 mb-2">End Date</p>
+                          <Calendar
+                            mode="single"
+                            selected={endDate}
+                            onSelect={setEndDate}
+                            disabled={(date) =>
+                              date < new Date() ||
+                              (startDate !== undefined && date < startDate)
+                            }
+                          />
+                        </div>
+                      </div>
                     </PopoverContent>
                   </Popover>
                 </div>
               </div>
             </div>
-            {/* Search button */}
+
+            {/* Filter button */}
             <button 
               className="pr-8"
-              onClick={() => setShowSearch(true)}
+              onClick={() => setShowFilterModal(true)}
             >
-              <FaMagnifyingGlass className="hover:cursor-pointer h-[29px] w-[25px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105" />
+              <BsSliders className="hover:cursor-pointer h-[29px] w-[25px] transition-transform duration-100 text-[#FF7439] hover:text-[#BB5529] hover:scale-105" />
             </button>
           </div>
         )}
 
         {/* ===== Right Section of Nav Bar */}
         {/* Post a Listing */}
-        <div className="flex justify-center items-center hidden hide-icons:flex hide-icons:flex-row gap-[25px] place-items-center items-center">
+        <div className="lg:flex justify-center items-center hidden hide-icons:flex hide-icons:flex-row gap-[25px] place-items-center">
           {includePostBtn && (
             <Link href="/post-a-listing">
               <button className="py-2 px-7 bg-[#FF7439] hover:bg-[#BB5529] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-105 whitespace-nowrap">
@@ -600,6 +739,31 @@ const Navbar = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <FilterModal
+        isOpen={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        minPrice={minPrice}
+        maxPrice={maxPrice}
+        bedNum={bedNum}
+        bathNum={bathNum}
+        setMinPrice={setMinPrice}
+        setMaxPrice={setMaxPrice}
+        setBedNum={setBedNum}
+        setBathNum={setBathNum}
+        selectedLeaseDuration={selectedLeaseDuration}
+        setSelectedLeaseDuration={setSelectedLeaseDuration}
+        selectedLocation={selectedLocation}
+        setSelectedLocation={setSelectedLocation}
+        applyFilters={applyFilters}
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        leaseDurationOptions={leaseDurationOptions}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
     </div>
   );
 };

@@ -236,7 +236,6 @@ const PostListing = () => {
       throw new Error("Valid address is required");
     }
     try {
-      //const RICE_ADDRESS = "6100 Main St, Houston, TX 77005";
       const riceCoords = {lat: 29.716791450000002, lon: -95.40478113393792};
       const listingCoords = await geocodeAddress(address);
       if (!riceCoords || !listingCoords) {

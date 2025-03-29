@@ -1,12 +1,14 @@
-import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
-import {getImagePublicUrl, getShimmerData} from "@/utils/supabase/client";
-import imageCompression from "browser-image-compression";
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { getImagePublicUrl, getShimmerData } from "@/utils/supabase/client";
 import Image from "next/image";
 import {Dispatch, SetStateAction, useState} from "react";
 import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
 import {FormDataType} from "./PostForm";
 import PreviewButton from "./PreviewButton";
+import { useProgress } from "@bprogress/next";
 
 const Photos = ({
   formData,
@@ -31,24 +33,105 @@ const Photos = ({
     return getImagePublicUrl("listing_images", path);
   };
 
+  const { start, stop, set } = useProgress();
+
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+
+    // Start progress tracking
+    start();
+    set(5); // Initial progress
+    setIsUploading(true);
+
+    // Track the current file being processed
+    let currentFileIndex = 0;
+    const totalFiles = e.target.files.length;
+    const progressPerFile = 90 / totalFiles; // Reserve 90% of progress for all files
+
     const options = {
-      maxSizeMB: 0.5,
+      maxSizeMB: 1,
       maxWidthOrHeight: 1920,
       useWebWorker: true,
+      preserveExif: false,
+      maxResolution: 72,
+      onprogress: (progressEvent: ProgressEvent) => {
+        // Calculate file-specific progress (0-100%)
+        const fileProgress = Math.round(
+          (progressEvent.loaded / progressEvent.total) * 100
+        );
+
+        // Calculate overall progress:
+        // 5% starting + (current file index * progress per file) + (current file progress * progress per file / 100)
+        const overallProgress =
+          5 +
+          currentFileIndex * progressPerFile +
+          (fileProgress * progressPerFile) / 100;
+
+        set(Math.min(95, overallProgress)); // Cap at 95% to leave room for final processing
+        console.log(
+          `File ${
+            currentFileIndex + 1
+          }/${totalFiles}: ${fileProgress}%, Overall: ${Math.round(
+            overallProgress
+          )}%`
+        );
+      },
     };
 
-    if (e.target.files) {
-      const newPhotos = Array.from(e.target.files);
+    const [heicToModule, imageCompressionModule] = await Promise.all([
+      import('heic-to'),
+      import('browser-image-compression')
+    ]);
+    
+    const heicTo = heicToModule.heicTo;
+    const imageCompression = imageCompressionModule.default;
+
+    const newPhotos = Array.from(e.target.files);
+    if (newPhotos) {
+      // use a runtime import to avoid issues with SSR
+      for (let i = 0; i < newPhotos.length; i++) {
+        const file = newPhotos[i];
+        if (file.type === "image/heic" || file.type === "image/heif") {
+          const blob = await heicTo({
+            blob: file,
+            type: "image/jpeg",
+            quality: 0.8,
+          });
+          newPhotos[i] = new File(
+            [blob as Blob],
+            file.name.replace(/\.[^/.]+$/, ".jpg"),
+            {
+              type: "image/jpeg",
+            }
+          );
+        }
+      }
+
       setIsUploading(true);
-      const compressedPhotos = await Promise.all(newPhotos.map((photo: File) => imageCompression(photo, options)));
-      const parsedPhotos = compressedPhotos.map((photo: File) => URL.createObjectURL(photo));
+
+            const compressedPhotos = [];
+      for (let i = 0; i < newPhotos.length; i++) {
+        currentFileIndex = i;
+                const compressed = await imageCompression(newPhotos[i], options);
+        compressedPhotos.push(compressed);
+      }
+
+      set(95); // Almost done
+
+      const parsedPhotos = compressedPhotos.map((photo: File) =>
+URL.createObjectURL(photo)
+    );
       setFormData({
         ...formData,
         photos: [...formData.photos, ...parsedPhotos],
         rawPhotos: [...formData.rawPhotos, ...compressedPhotos],
       });
+
+      set(100); // Complete
+      setTimeout(() => {
+        stop();
       setIsUploading(false);
+      }, 500); // Small delay so the user can see 100%
     }
   };
 
@@ -87,7 +170,7 @@ const Photos = ({
         </div>
         <PreviewButton formData={formData} editing={editing} />
       </div>
-      <h2 className="text-sm font-[500] text-gray-800">Add photos and optional descriptions to your lease! </h2>
+      <h2 className="text-sm font-bold text-gray-800">Add photos and optional descriptions to your lease! </h2>
       <p className="mb-6 text-gray-500 text-sm">
         You are required to upload at least 5 relevant photos to post your listing. Captions are optional but highly
         encouraged!

@@ -7,6 +7,7 @@ import MeetSubleaser from "@/components/MeetSubleaser";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import Footer from "@/components/Footer";
 
 interface UserData {
   id: string;

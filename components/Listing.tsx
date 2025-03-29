@@ -9,7 +9,6 @@ import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "@bprogress/next";
 
-
 interface ImageData {
   src: string;
   span: string;
@@ -265,7 +264,7 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
           onClick={() => openDialog(0)}
           className="absolute bottom-4 right-4 py-2 px-4 bg-black bg-opacity-50 text-white rounded-lg hover:bg-black hover:bg-opacity-70 hover:text-white transition-colors"
         >
-          View All
+          View All  ({images.length})
         </motion.button>
       </motion.div>
 
@@ -336,7 +335,10 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
             className="text-white absolute bottom-14"
           >
             <p className="text-center font-semibold">{getCaption(currentImageIndex)}</p>
+            <p className="text-center">{currentImageIndex + 1}/{images.length}</p>
+
           </motion.div>
+
         </motion.div>
       )}
     </motion.div>
