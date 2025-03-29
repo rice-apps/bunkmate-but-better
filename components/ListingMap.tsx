@@ -85,7 +85,7 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
         <Map
           style={{ width: '100%', height: '100%' }}
           defaultCenter={coords}
-          defaultZoom={16}
+          defaultZoom={12}
           gestureHandling={'greedy'}
           disableDefaultUI={true}
           mapId={name}
