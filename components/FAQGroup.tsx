@@ -2,18 +2,32 @@
 
 import { useState } from "react";
 import FAQItem from "./FAQItem";
+import Link from "next/link";
 
 interface FAQData {
   question: string;
-  answer?: string;
+  answer?: string | JSX.Element;
   videoSrc?: string;
 }
 
 const faqs: FAQData[] = [
   {
     question: "How do I use Bunkmate?",
-    answer:
-      "If you're looking for subletters or co-leasers, post your listing and let people reach out! If you're looking for a place to stay, browse listings and reach out to posters.",
+    answer: (
+      <>
+        If you are looking for subletters, subleasers, or co-leasers, you can
+        {
+          <Link
+            href="/post-a-listing"
+            className="inline-flex items-center underline font-medium"
+            style={{ color: "#FF7439" }}
+          >
+            post a listing
+          </Link>
+        }{" "}
+        for people to reach out to you!
+      </>
+    ),
   },
   {
     question: "How can I filter through what I want?",
@@ -38,9 +52,7 @@ export default function FAQGroup() {
           key={index}
           {...faq}
           isOpen={openIndex === index}
-          onToggle={() =>
-            setOpenIndex(openIndex === index ? null : index)
-          }
+          onToggle={() => setOpenIndex(openIndex === index ? null : index)}
         />
       ))}
     </div>

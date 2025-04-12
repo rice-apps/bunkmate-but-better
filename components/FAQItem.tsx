@@ -5,7 +5,7 @@ import { FaPlus, FaMinus } from "react-icons/fa";
 
 interface FAQItemProps {
   question: string;
-  answer?: string;
+  answer?: string | JSX.Element;
   videoSrc?: string;
   isOpen: boolean;
   onToggle: () => void;
