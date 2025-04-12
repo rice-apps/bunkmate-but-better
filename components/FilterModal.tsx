@@ -81,9 +81,18 @@ const FilterModal: React.FC<FilterModalProps> = ({
     }
   };
 
-  const handleLeaseDurationChange = (option: { value: string, startDate: Date | null, endDate: Date | null }) => {
+  const handleLeaseDurationChange = (option: { value: string, startDate: Date, endDate: Date }) => {
     const newDuration = selectedLeaseDuration === option.value ? null : option.value;
     setSelectedLeaseDuration(newDuration);
+    
+    // Update start and end dates when lease duration changes
+    if (newDuration) {
+      setStartDate(option.startDate);
+      setEndDate(option.endDate);
+    } else {
+      setStartDate(undefined);
+      setEndDate(undefined);
+    }
   };
 
   const getCurrentYear = () => {
@@ -143,6 +152,65 @@ const FilterModal: React.FC<FilterModalProps> = ({
     if (setSearchQuery) {
       setSearchQuery("");
     }
+  };
+
+  const handleApplyFilters = () => {
+    // If a location is selected, use it as the search query
+    // This takes precedence over any manual search query
+    let finalSearchQuery = localSearchQuery;
+    if (selectedLocation) {
+      finalSearchQuery = selectedLocation;
+    }
+    
+    if (setSearchQuery) {
+      setSearchQuery(finalSearchQuery);
+    }
+    
+    const queryParams = new URLSearchParams(window.location.search);
+    
+    if (finalSearchQuery.trim()) {
+      queryParams.set('search', finalSearchQuery);
+    } else {
+      queryParams.delete('search');
+    }
+    
+    if (minPrice > 0) queryParams.set("minPrice", minPrice.toString());
+    if (maxPrice > 0) queryParams.set("maxPrice", maxPrice.toString());
+    if (bedNum > 0) queryParams.set("bedNum", bedNum.toString());
+    if (bathNum > 0) queryParams.set("bathNum", bathNum.toString());
+    
+    // Set lease duration parameter
+    if (selectedLeaseDuration) {
+      queryParams.set("leaseDuration", selectedLeaseDuration);
+    } else {
+      queryParams.delete("leaseDuration");
+    }
+    
+    // Always set start and end dates based on current values
+    if (startDate) {
+      queryParams.set("startDate", startDate.toISOString());
+    } else {
+      queryParams.delete("startDate");
+    }
+    
+    if (endDate) {
+      queryParams.set("endDate", endDate.toISOString());
+    } else {
+      queryParams.delete("endDate");
+    }
+    
+    // We don't need to set selectedLocation separately since we're using it as the search query
+    // But we'll keep it for reference in case you want to filter by both search and location separately later
+    if (selectedLocation) {
+      queryParams.set("selectedLocation", selectedLocation);
+    } else {
+      queryParams.delete("selectedLocation");
+    }
+    
+    const queryString = queryParams.toString();
+    router.push(`/?${queryString}`);
+    
+    onClose();
   };
 
   return (
@@ -336,11 +404,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </button>
           {/* Apply Button */}
           <button
-            onClick={() => {
-              handleSearchSubmit();
-              applyFilters();
-              onClose();
-            }}
+            onClick={handleApplyFilters}
             className="w-full mt-8 py-3 bg-[#FF7439] text-white rounded-md hover:bg-[#BB5529] transition-colors"
           >
             Apply Filters

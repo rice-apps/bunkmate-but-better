@@ -238,14 +238,14 @@ const Navbar = ({
   // Update the handleSearchKeyDown function
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      applyFilters(); // Call applyFilters directly instead of handleSearch
+      applyFilters(); 
       setShowSearch(false);
     }
   };
 
   const handleClearSearch = () => {
     setSearchQuery("");
-    applyFilters(); // Call applyFilters directly instead of handleSearch
+    applyFilters(); 
     setShowSearch(false);
   };
 
@@ -315,28 +315,6 @@ const Navbar = ({
             <div className="pt-8">
               {/* Mobile filter options */}
               <div className="space-y-6 ml-[20px] mr-[20px] mb-[20px] flex flex-col justify-center items-left text-left">
-                {/* Search Input */}
-                <div className="w-full">
-                  <div className="relative flex items-center">
-                    <FaMagnifyingGlass className="absolute left-3 text-gray-400 w-5 h-5" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => handleSearch(e.target.value)}
-                      onKeyDown={handleSearchKeyDown}
-                      placeholder="Search by name or location..."
-                      className="w-full pl-10 pr-4 py-2 border-2 bg-white border-gray-200 rounded-full focus:outline-none focus:border-[#FF7439]"
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={handleClearSearch}
-                        className="absolute right-3 text-gray-400 hover:text-gray-600"
-                      >
-                        <FaTimes className="w-5 h-5" />
-                      </button>
-                    )}
-                  </div>
-                </div>
                 {/* Distance from Rice */}
                 <div>
                   <p className="text-[18px] font-semibold text-[#777777] mb-2">
@@ -447,11 +425,19 @@ const Navbar = ({
         {/* Mobile Icons (grouped search & menu icons) */}
         <div className="flex ml-auto items-center justify-end gap-4 lg:hidden">
           {/* MOBILE-ONLY search icon */}
+          <button
+            onClick={() => setShowMobileFilter(!showMobileFilter)}
+            className="p-1"
+          >
+            <FaMagnifyingGlass className="h-6 w-6 text-[#FF7439]" />
+          </button>
+
+          {/* Add new MOBILE-ONLY filter icon */}
           <button 
             onClick={() => setShowFilterModal(true)}
             className="p-1"
           >
-            <FaMagnifyingGlass className="h-6 w-6 text-[#FF7439]" />
+            <BsSliders className="h-6 w-6 text-[#FF7439]" />
           </button>
 
           <div className="flex-grow"></div>
