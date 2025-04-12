@@ -5,6 +5,8 @@ import { FaTimes, FaMinus, FaPlus } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
 interface FilterModalProps {
   isOpen: boolean;
@@ -62,6 +64,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
 }) => {
   const router = useRouter();
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
+  const [distance, setDistance] = useState("Search Properties");
+  const distanceTitle = "Search Properties";
   
   // Update local state when prop changes
   useEffect(() => {
@@ -199,6 +203,13 @@ const FilterModal: React.FC<FilterModalProps> = ({
       queryParams.delete("endDate");
     }
     
+    // Add distance parameter if it's set and not the default title
+    if (distance && distance !== distanceTitle) {
+      queryParams.set("distance", distance);
+    } else {
+      queryParams.delete("distance");
+    }
+    
     // We don't need to set selectedLocation separately since we're using it as the search query
     // But we'll keep it for reference in case you want to filter by both search and location separately later
     if (selectedLocation) {
@@ -263,10 +274,44 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </div>
         </div>
 
-        <hr className = "lg:hidden"></hr>
+        <hr className="lg:hidden"></hr>
 
-        {/* Price Range */}
-        <div className="block lg:hidden space-y-6 mt-6 mb-8">
+        {/* Distance from Rice - Only show on mobile */}
+        <div className="space-y-6 mt-6 mb-8 lg:hidden">
+          <h2 className="text-xl text-neutral-800 mb-3">Distance from Rice</h2>
+          <div>
+            <p className="text-[18px] font-semibold text-[#777777] mb-2">
+              Distance from Rice
+            </p>
+            <div className="text-left w-full">
+              <p
+                className={`text-[16px] ${distance !== distanceTitle ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}
+              >
+                {distance}
+              </p>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {["< 1 mile", "< 3 miles", "< 5 miles", "> 5 miles"].map((option) => (
+                  <button
+                    key={option}
+                    className={`p-3 text-sm rounded-lg border transition-colors ${
+                      distance === option
+                        ? "bg-[#FFE3D7] text-[#FF7439] font-semibold border-[#FF7439]"
+                        : "bg-white text-neutral-700 hover:bg-gray-200"
+                    }`}
+                    onClick={() => setDistance(distance === option ? distanceTitle : option)}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr className="lg:hidden"></hr>
+
+        {/* Price Range - Only show on mobile */}
+        <div className="space-y-6 mt-6 mb-8 lg:hidden">
           <h2 className="text-xl text-neutral-800 mb-3">Price Range</h2>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
@@ -292,7 +337,74 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </div>
         </div>
 
-        <hr></hr>
+        <hr className="lg:hidden"></hr>
+
+        {/* Date Range - Only show on mobile */}
+        <div className="space-y-6 mt-6 mb-8 lg:hidden">
+          <h2 className="text-xl text-neutral-800 mb-3">Date Range</h2>
+          
+          {/* Start Date */}
+          <div>
+            <p className="text-[18px] font-semibold text-[#777777] mb-2">
+              Start Date
+            </p>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-left w-full">
+                  <p
+                    className={`text-[16px] ${startDate ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}
+                  >
+                    {startDate ? startDate.toDateString() : "Select date"}
+                  </p>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="p-2 bg-white rounded-lg shadow-lg">
+                <Calendar
+                  mode="single"
+                  selected={startDate}
+                  onSelect={setStartDate}
+                  disabled={(date) =>
+                    date < new Date() ||
+                    (endDate !== undefined && date > endDate)
+                  }
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <hr></hr>
+
+          {/* End Date */}
+          <div>
+            <p className="text-[18px] font-semibold text-[#777777] mb-2">
+              End Date
+            </p>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-left w-full">
+                  <p
+                    className={`text-[16px] ${endDate ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}
+                  >
+                    {endDate ? endDate.toDateString() : "Select date"}
+                  </p>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="p-2 bg-white rounded-lg shadow-lg">
+                <Calendar
+                  mode="single"
+                  selected={endDate}
+                  onSelect={setEndDate}
+                  disabled={(date) =>
+                    date < new Date() ||
+                    (startDate !== undefined && date < startDate)
+                  }
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+
+        <hr className="lg:hidden"></hr>
 
         {/* Beds and Baths */}
         <div className="space-y-6 mt-6 mb-8">
@@ -394,7 +506,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
         </div>
 
         {/* Bottom two buttons! */}
-        <div className = "flex flex-row gap-5">
+        <div className="flex flex-row gap-5">
           {/* Clear All Button */}
           <button
             onClick={clearAllFilters}
