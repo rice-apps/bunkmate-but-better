@@ -315,28 +315,6 @@ const Navbar = ({
             <div className="pt-8">
               {/* Mobile filter options */}
               <div className="space-y-6 ml-[20px] mr-[20px] mb-[20px] flex flex-col justify-center items-left text-left">
-                {/* Search Input */}
-                <div className="w-full">
-                  <div className="relative flex items-center">
-                    <FaMagnifyingGlass className="absolute left-3 text-gray-400 w-5 h-5" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => handleSearch(e.target.value)}
-                      onKeyDown={handleSearchKeyDown}
-                      placeholder="Search by name or location..."
-                      className="w-full pl-10 pr-4 py-2 border-2 bg-white border-gray-200 rounded-full focus:outline-none focus:border-[#FF7439]"
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={handleClearSearch}
-                        className="absolute right-3 text-gray-400 hover:text-gray-600"
-                      >
-                        <FaTimes className="w-5 h-5" />
-                      </button>
-                    )}
-                  </div>
-                </div>
                 {/* Distance from Rice */}
                 <div>
                   <p className="text-[18px] font-semibold text-[#777777] mb-2">
