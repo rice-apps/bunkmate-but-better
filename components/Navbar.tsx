@@ -238,14 +238,14 @@ const Navbar = ({
   // Update the handleSearchKeyDown function
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      applyFilters(); // Call applyFilters directly instead of handleSearch
+      applyFilters(); 
       setShowSearch(false);
     }
   };
 
   const handleClearSearch = () => {
     setSearchQuery("");
-    applyFilters(); // Call applyFilters directly instead of handleSearch
+    applyFilters(); 
     setShowSearch(false);
   };
 
@@ -447,11 +447,19 @@ const Navbar = ({
         {/* Mobile Icons (grouped search & menu icons) */}
         <div className="flex ml-auto items-center justify-end gap-4 lg:hidden">
           {/* MOBILE-ONLY search icon */}
+          <button
+            onClick={() => setShowMobileFilter(!showMobileFilter)}
+            className="p-1"
+          >
+            <FaMagnifyingGlass className="h-6 w-6 text-[#FF7439]" />
+          </button>
+
+          {/* Add new MOBILE-ONLY filter icon */}
           <button 
             onClick={() => setShowFilterModal(true)}
             className="p-1"
           >
-            <FaMagnifyingGlass className="h-6 w-6 text-[#FF7439]" />
+            <BsSliders className="h-6 w-6 text-[#FF7439]" />
           </button>
 
           <div className="flex-grow"></div>

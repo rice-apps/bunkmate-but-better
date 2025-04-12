@@ -145,6 +145,35 @@ const FilterModal: React.FC<FilterModalProps> = ({
     }
   };
 
+  const handleApplyFilters = () => {
+
+    if (setSearchQuery) {
+      setSearchQuery(localSearchQuery);
+    }
+    
+    const queryParams = new URLSearchParams(window.location.search);
+    
+    if (localSearchQuery.trim()) {
+      queryParams.set('search', localSearchQuery);
+    } else {
+      queryParams.delete('search');
+    }
+    
+    if (minPrice > 0) queryParams.set("minPrice", minPrice.toString());
+    if (maxPrice > 0) queryParams.set("maxPrice", maxPrice.toString());
+    if (bedNum > 0) queryParams.set("bedNum", bedNum.toString());
+    if (bathNum > 0) queryParams.set("bathNum", bathNum.toString());
+    if (selectedLeaseDuration) queryParams.set("selectedLeaseDuration", selectedLeaseDuration);
+    if (selectedLocation) queryParams.set("selectedLocation", selectedLocation);
+    if (startDate) queryParams.set("startDate", startDate.toISOString());
+    if (endDate) queryParams.set("endDate", endDate.toISOString());
+    
+    const queryString = queryParams.toString();
+    router.push(`/?${queryString}`);
+    
+    onClose();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -336,11 +365,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </button>
           {/* Apply Button */}
           <button
-            onClick={() => {
-              handleSearchSubmit();
-              applyFilters();
-              onClose();
-            }}
+            onClick={handleApplyFilters}
             className="w-full mt-8 py-3 bg-[#FF7439] text-white rounded-md hover:bg-[#BB5529] transition-colors"
           >
             Apply Filters
