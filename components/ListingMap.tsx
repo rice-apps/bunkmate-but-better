@@ -1,59 +1,39 @@
 import { APIProvider, Map, AdvancedMarker, Pin, MapMouseEvent } from "@vis.gl/react-google-maps";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdOutlineOpenInNew } from "react-icons/md";
-import { FaHouseChimney } from "react-icons/fa6";
+import { FaHouseUser, FaMapMarker, FaRegUserCircle } from "react-icons/fa";
+import { FaHouse } from "react-icons/fa6";
 
 interface ListingMapProps {
   name: string;
   coords: { lat: number, lng: number };
 }
 
+const calculateStraightLineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+  const toRadians = (degree: number) => degree * (Math.PI / 180);
+  const lat1Rad = toRadians(lat1);
+  const lon1Rad = toRadians(lon1);
+  const lat2Rad = toRadians(lat2);
+  const lon2Rad = toRadians(lon2);
+
+  const dLat = lat2Rad - lat1Rad;
+  const dLon = lon2Rad - lon1Rad;
+
+  const a =
+    Math.pow(Math.sin(dLat / 2), 2) +
+    Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.pow(Math.sin(dLon / 2), 2);
+  const rad = 6371; // earths radius in km
+  const c = 2 * Math.asin(Math.sqrt(a));
+  const miles = rad * c * 0.621371;
+  return parseFloat(miles.toFixed(1));
+};
+
 const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
   const initialCoords = { lat: 29.717081272326745, lng: -95.40363313442711 };
   const [destination, setDestination] = useState<{ lat: number, lng: number }>(initialCoords);
-  // const [walkRoute, setWalkRoute] = useState<{ distance: number, duration: number } | null>(null);
+  const [distance, setDistance] = useState<number | null>(calculateStraightLineDistance(coords.lat, coords.lng, initialCoords.lat, initialCoords.lng));
 
-  // calculate the route distance and time
-  // const calculateRouteDistanceAndTime = async (lat1: number, lon1: number, lat2: number, lon2: number,
-  //   mode: 'driving' | 'cycling' | 'foot') => {
-  //   try {
-  //     // select the appropriate routing service based on mode
-  //     const routingService = {
-  //       driving: 'routed-car/route/v1/driving',
-  //       cycling: 'routed-bike/route/v1/cycling',
-  //       foot: 'routed-foot/route/v1/foot'
-  //     };
-
-  //     const serviceUrl = `https://routing.openstreetmap.de/${routingService[mode]}/${lon1},${lat1};${lon2},${lat2}?overview=false`;
-
-  //     const response = await fetch(serviceUrl);
-  //     if (!response.ok) {
-  //       throw new Error(`Failed to calculate ${mode} route`);
-  //     }
-
-  //     const data = await response.json();
-  //     if (!data.routes || data.routes.length === 0) {
-  //       throw new Error(`No ${mode} route found`);
-  //     }
-
-  //     const distanceMeters = data.routes[0].distance;
-  //     const durationSeconds = data.routes[0].duration;
-
-  //     // convert to miles and minutes
-  //     const distanceMiles = parseFloat((distanceMeters * 0.000621371).toFixed(1));
-  //     const durationMinutes = Math.ceil(durationSeconds / 60);
-
-  //     return {
-  //       distance: distanceMiles,
-  //       duration: durationMinutes
-  //     };
-  //   } catch (error) {
-  //     console.error(`Error calculating ${mode} route:`, error);
-  //     throw error;
-  //   }
-  // };
-  
   const handleMapClick = async (event: MapMouseEvent) => {
     const position = event.detail.latLng;
     if (!position) return;
@@ -62,20 +42,13 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
     const lng = position.lng;
     const dest = { lat, lng };
     setDestination(dest);
-
-    // try {
-    //   const walking = await calculateRouteDistanceAndTime(coords.lat, coords.lng, lat, lng, 'foot');
-    //   setWalkRoute(walking);
-    // }
-    // catch (error) {
-    //   console.error('Error calculating walking route:', error);
-    // }
+    const distance = calculateStraightLineDistance(coords.lat, coords.lng, lat, lng);
+    setDistance(distance);
   }
 
   return (
     <APIProvider
-      apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""}
-      libraries={["places"]}
+      apiKey={process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY || ""}
     >
       <motion.div
         className="w-full h-[450px] relative"
@@ -93,50 +66,89 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
           onClick={handleMapClick}
         >
           <AdvancedMarker position={coords}>
-            <Pin 
-            glyph={'🏠'}
-            />
+            <Pin
+              scale={1.18}
+              background={'#ff7439'}
+              borderColor={'#ff7439'}
+            >
+              <div>
+                <FaHouseUser className="text-lg text-white" />
+              </div>
+            </Pin>
           </AdvancedMarker>
 
           <AdvancedMarker
             position={destination}
           >
-            <Pin
-              background={'#0f9d58'}
-              borderColor={'#006425'}
-              glyphColor={'#60d98f'}
-              glyph={'🎯'}
-            />
+            <motion.div
+              initial={{ y: -10, scale: 0.9 }}
+              animate={{ y: 0, scale: 1.2 }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+                duration: 0.6
+              }}
+            >
+
+              <Pin
+                scale={1.18}
+                background={'#ffffff'}
+                borderColor={'#000000'}
+
+              >
+                <div className="p-[2px] bg-white rounded-full">
+                  <FaRegUserCircle className="text-lg" />
+                </div>
+              </Pin>
+            </motion.div>
           </AdvancedMarker>
         </Map>
-        
+
+        {/* Key */}
+        <div className='flex flex-col items-start absolute top-4 left-4 bg-gray-800 bg-opacity-60 px-3 py-2 rounded-lg shadow-lg '>
+          {/* <p className='text-sm text-gray-600'>Click on the map to set a destination</p> */}
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="mb-4 text-white text-xs space-y-2">
+            <div className='flex flex-row items-center space-x-2'>
+              <div className="relative">
+                <FaMapMarker className="text-3xl text-[#ff7439]"/>
+                <FaHouseUser className="absolute top-[5px] right-[9px] text-md text-white"/>
+              </div>
+              {/* <img src={"/ListingPin.svg"} width={40} height={40} /> */}
+              <p className=''>Listing</p>
+            </div>
+
+            <div className='flex flex-row items-center space-x-2'>
+            <div className="relative">
+                <FaMapMarker className="text-3xl text-white"/>
+                <FaRegUserCircle className="absolute top-[5px] right-[9px] text-md text-black"/>
+              </div>
+              {/* <img src={"/DestinationPin.svg"} width={30} height={30} /> */}
+              <p className=''>Drop Location</p>
+            </div>
+          </motion.div>
+
+          {distance && (<p className='text-sm text-white font-bold'>Distance: ({distance} mi)</p>)}
+        </div>
+
+        {/* Open in Google Maps */}
         <div className='absolute top-4 right-4'>
-          <button className='flex flew-row items-center bg-gray-100 bg-opacity-60 py-1 px-2 rounded-lg hover:bg-opacity-80 transition duration-200'
+          <button className='flex flew-row items-center bg-gray-800 bg-opacity-60 py-2 px-3 rounded-lg hover:bg-opacity-80 transition duration-200'
             onClick={() => {
               if (destination) {
                 window.open(`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(name)}&destination=${destination.lat},${destination.lng}&travelmode=walking`, "_blank");
               }
             }}>
-            <p className='mr-2'>Open in Google Maps</p>
-            <MdOutlineOpenInNew className='text-sm' />
+            <p className='mr-2 text-sm hidden md:block text-white text-bold'>Open in Google Maps</p>
+            <MdOutlineOpenInNew className='text-xl text-white' />
           </button>
         </div>
-        {/* {walkRoute && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="bg-white p-4 rounded-lg mt-4"
-          >
-            <h3 className="text-lg font-semibold mb-2">Walking Route</h3>
-            <p className="text-sm text-gray-600">
-              Distance: {walkRoute.distance} miles
-            </p>
-            <p className="text-sm text-gray-600">
-              Duration: {walkRoute.duration} minutes
-            </p>
-          </motion.div>
-        )} */}
+
       </motion.div>
     </APIProvider >
   );

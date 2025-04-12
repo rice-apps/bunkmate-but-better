@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import ListingMap from './ListingMap';
+import { FaHouseUser, FaRegUser, FaRegUserCircle } from "react-icons/fa";
+import { Pin } from '@vis.gl/react-google-maps';
+import { FaLocationPin } from 'react-icons/fa6';
 
 type DescriptionItemProps = {
   icon: React.ReactNode;
@@ -21,22 +24,23 @@ const DescriptionItem = ({ icon, title, description, delay = 0 }: DescriptionIte
         {icon}
       </div>
       <div>
-        <h3 className="font-medium text-gray-900">{title}</h3>
-        <p className="text-gray-600 text-sm">{description}</p>
+        <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
+        <p className="text-gray-600 text-sm font-light">{description}</p>
       </div>
     </motion.div>
   )
 }
 
-const SectionNavigator = ({ section, onClick }: { section: string, onClick: () => void }) => {
+const SectionNavigator = ({ section, onClick, isActive }: { section: string, onClick: () => void, isActive: boolean }) => {
   return (
     <button
       key={section}
       onClick={onClick}
       className={`
         flex space-x-4 w-full 
-        text-sm font-medium 
-        border-b-2 pb-1 
+        text-sm font-normal 
+        ${isActive ? 'folt-bold border-gray-500' : ''}
+        border-b pb-1 
         border-gray-300 hover:border-gray-500 
         text-gray-500 hover:text-gray-900 
         transition-all duration-200
@@ -63,6 +67,7 @@ interface ListingDescriptionProps {
 
 const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
   const [geocodeData, setGeocodeData] = useState<{ lat: number; lng: number } | null>(null);
+  const [activeSection, setActiveSection] = useState<'description' | 'details' | 'map'>('description');
 
   const descriptionRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
@@ -78,6 +83,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
   const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
 
   const geocodeAddress = async (address: string) => {
     if (!address) {
@@ -145,6 +151,39 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
     fetchGeocodeData();
   }, [data.location])
 
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: '-50px 0px',
+      threshold: 0.1
+    };
+
+    const callback: IntersectionObserverCallback = (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          if (entry.target === descriptionRef.current) {
+            setActiveSection('description');
+          } else if (entry.target === detailsRef.current) {
+            setActiveSection('details');
+          } else if (entry.target === mapRef.current) {
+            setActiveSection('map');
+          }
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(callback, options);
+    
+    if (descriptionRef.current) observer.observe(descriptionRef.current);
+    if (detailsRef.current) observer.observe(detailsRef.current);
+    if (mapRef.current) observer.observe(mapRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -157,19 +196,22 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className='flex flex-row items-center justify-between mb-4'
+        className='flex flex-row items-center justify-between mb-8 sticky top-0 pt-4 bg-white'
       >
         <SectionNavigator
           onClick={() => scrollToSection(descriptionRef)}
           section={'Description'}
+          isActive={activeSection === 'description'}
         />
         <SectionNavigator
           onClick={() => scrollToSection(detailsRef)}
           section={'Details'}
+          isActive={activeSection === 'details'}
         />
         <SectionNavigator
           onClick={() => scrollToSection(mapRef)}
           section={'Map'}
+          isActive={activeSection === 'map'}
         />
       </motion.div>
 
@@ -188,7 +230,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className='text-md sm:text-md font-medium'
+          className='text-md sm:text-md font-semibold'
         >
           {data.location}
         </motion.h2>
@@ -196,7 +238,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-gray-700 text-sm leading-relaxed mt-4 mb-6 break-words whitespace-pre-wrap"
+          className="text-gray-700 text-sm leading-relaxed mt-6 mb-8 break-words whitespace-pre-wrap"
         >
           {data.description}
         </motion.p>
@@ -208,21 +250,21 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
-        className="border-t pt-6 mb-6"
+        className="border-t pt-8 mb-6"
       >
         <motion.h2
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-xl font-semibold"
+          className="text-xl font-semibold mb-6"
         >
           Details
         </motion.h2>
-        <div className="space-y-6">
+        <div className="space-y-5">
           <DescriptionItem
             icon={<img src="/bed.svg" alt="Duration Icon" className="w-[40px] h-[40px]" />}
             title="# of Beds and Baths"
-            description={`${data.bed_num} beds, ${data.bath_num} baths`}
+            description={`${data.bed_num} bed${data.bed_num != 1 ? "s" : ""}, ${data.bath_num} bath${data.bath_num != 1 ? "s" : ""}`}
             delay={0.5}
           />
 
@@ -243,7 +285,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
           <DescriptionItem
             icon={<img src="/mdi_location.svg" alt="Duration Icon" className="w-[40px] h-[40px]" />}
             title="Distance from Rice"
-            description={`${data.distance} miles away`}
+            description={`${data.distance} mile${data.distance !== 1 ? "s" : ""} away`}
             delay={0.7}
           />
         </div>
@@ -269,18 +311,10 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
           className="text-sm text-gray-600 mb-4">
-          • Use this map to help you locate the distance between this listing and Rice. <br/>
-          • Click to adjust the location of the Green Pin to adjust the distance calculation!
+          Use this map to help you locate the distance between this listing and Rice. <br />
+          Click to adjust the location of the White Pin to adjust the distance calculation!
         </motion.p>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="text-sm text-gray-600 mb-4">
-          <span className='font-semibold'>Red pin</span>: Listing
-          <br />
-          <span className='font-semibold'>Green pin</span>: Drop location
-        </motion.p>
+
         {geocodeData ? (
           <div className="overflow-hidden rounded-lg">
             <ListingMap name={data.location} coords={geocodeData} />
