@@ -4,6 +4,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TeamCard from "@/components/TeamCard";
 import Image from "next/image";
+import { motion } from "framer-motion";
+
 
 const teamMembers = [
   {
@@ -79,59 +81,55 @@ const teamMembers = [
     linkedinURL: "https://www.linkedin.com/in/taytenb/"
   },
 ]
-
 export default function About() {
   return (
-
     <div className="flex flex-col items-center w-[90%] sm:w-[90%] mx-auto">
       <Navbar includeFilter={false} />
 
       <div className="flex flex-col items-center text-center relative mt-8 mb-12">
-        {/* Top row: Icon + Title + Arrow */}
         <div className="flex items-center gap-3">
-          {/* Left icon */}
-          <Image
-            src="/about-1.png"
-            alt="silly face"
-            width={24}
-            height={24}
-          />
-
-          {/* Heading */}
+          <Image src="/about-1.png" alt="silly face" width={24} height={24} />
           <h1 className="text-5xl font-extrabold text-black relative">
             Meet the <span className="relative inline-block">
               Bunk!
-              {/* Orange underline */}
               <span className="absolute left-0 bottom-0 w-full h-[6px] bg-[#FF7439] -z-10 rounded-sm translate-y-1" />
             </span>
           </h1>
-
-          {/* Optional right arrow icon */}
-          <Image
-            src="/about-1.png"
-            alt="silly face"
-            width={24}
-            height={24}
-          />
+          <Image src="/about-1.png" alt="silly face" width={24} height={24} />
         </div>
 
-        {/* Subheading */}
         <p className="text-[16px] text-gray-600 mt-2">
           Our incredible team of designers, devs, and leaders who care a lot about making housing easier for you.
         </p>
       </div>
 
-      {/* <div className="flex flex-col p-6 items-center">
-    //    <h1 className="text-5xl font-bold">Meet the Bunk!</h1>
-    //       <p className="mt-4">We are Bunkmate yippee</p>
-    //     </div> */}
-      <div>
-        <div className="mb-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-10 justify-items-center">
-          {teamMembers.map((member) => (
-            <TeamCard key={member.name} {...member} />
-          ))}
-        </div>
-      </div>
+      <motion.div
+        className="mb-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 justify-items-center"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: 0.20, 
+            },
+          },
+        }}
+      >
+        {teamMembers.map((member, index) => (
+          <motion.div
+            key={member.name}
+            variants={{
+              hidden: { opacity: 0, y: 30 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            transition={{ duration: 0.6 }}
+          >
+            <TeamCard {...member} />
+          </motion.div>
+        ))}
+      </motion.div>
+
       <Footer />
     </div>
   );
