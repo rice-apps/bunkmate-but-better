@@ -1,6 +1,7 @@
 "use client"
 
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import TeamCard from "@/components/TeamCard";
 import Image from "next/image";
 
@@ -81,7 +82,7 @@ const teamMembers = [
 
 export default function About() {
   return (
-    
+
     <div className="flex flex-col items-center w-[90%] sm:w-[90%] mx-auto">
       <Navbar includeFilter={false} />
 
@@ -125,12 +126,13 @@ export default function About() {
     //       <p className="mt-4">We are Bunkmate yippee</p>
     //     </div> */}
       <div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 justify-items-center">
+        <div className="mb-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-10 justify-items-center">
           {teamMembers.map((member) => (
             <TeamCard key={member.name} {...member} />
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

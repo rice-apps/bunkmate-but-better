@@ -1,6 +1,7 @@
 "use client"
 
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import FAQItem from "@/components/FAQItem";
 import Image from "next/image";
 import FAQGroup from "@/components/FAQGroup";
@@ -33,13 +34,14 @@ export default function Faq() {
         </div>
 
         {/* Subheading */}
-        <p className="text-sm text-gray-600 mt-2">
+        <p className="text-[16px] text-gray-600 mt-2">
           You have questions? We have answers!!
         </p>
       </div>
 
 
       <FAQGroup />
+      <Footer />
     </div>
   );
 }
