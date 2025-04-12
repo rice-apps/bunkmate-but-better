@@ -64,8 +64,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
 }) => {
   const router = useRouter();
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
-  const [distance, setDistance] = useState("Search Properties");
-  const distanceTitle = "Search Properties";
+  const [distance, setDistance] = useState("");
+  const distanceTitle = "";
   
   // Update local state when prop changes
   useEffect(() => {
@@ -247,7 +247,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
         </button>
 
         <div className="flex justify-center items-center mt-2">
-          <h2 className="text-2xl font-semibold text-center text-[#FF7439]">Advanced Filters</h2>
+          <h2 className="hidden lg:block text-2xl font-semibold text-center text-[#FF7439]">Advanced Filters</h2>
+          <h2 className="block lg:hidden text-2xl font-semibold text-center text-[#FF7439]">Filters</h2>
         </div>
 
         {/* Add Search Bar */}
@@ -280,9 +281,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
         <div className="space-y-6 mt-6 mb-8 lg:hidden">
           <h2 className="text-xl text-neutral-800 mb-3">Distance from Rice</h2>
           <div>
-            <p className="text-[18px] font-semibold text-[#777777] mb-2">
-              Distance from Rice
-            </p>
             <div className="text-left w-full">
               <p
                 className={`text-[16px] ${distance !== distanceTitle ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}
@@ -371,8 +369,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
               </PopoverContent>
             </Popover>
           </div>
-
-          <hr></hr>
 
           {/* End Date */}
           <div>
