@@ -14,15 +14,15 @@ const TeamCard = ({ name, role, imagePath, linkedinURL }: TeamCardProps) => {
     return (
     <div
       className="bg-white"
-      style={{ width: "250px", height: "357px" }}
+      style={{ width: "210px", height: "330px" }}
     >
       <div style={{ height: "7px" }} />
 
       <div
         className="relative mx-auto overflow-hidden"
         style={{
-          width: "245px",
-          height: "293px",
+          width: "200px",
+          height: "240px",
           borderRadius: "15px",
         }}
       >
@@ -36,11 +36,11 @@ const TeamCard = ({ name, role, imagePath, linkedinURL }: TeamCardProps) => {
       
       <div
         className="flex justify-between items-start pt-3"
-        style={{ height: "57px" }}
+        style={{ height: "60px" }}
       >
-        <div className="text-left">
-          <p className="text-xl text-black leading-tight">{name}</p>
-          <p className="text-base text-gray-500">{role}</p>
+        <div className="text-left flex-col ">
+          <p className="text-[16px] text-black leading-tight">{name}</p>
+          <p className="text-[14px] text-gray-500">{role}</p>
         </div>
 
         {linkedinURL && (
