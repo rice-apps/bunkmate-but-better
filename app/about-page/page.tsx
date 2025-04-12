@@ -87,7 +87,26 @@ export default function About() {
       <Navbar includeFilter={false} />
 
       <div className="flex flex-col items-center text-center relative mt-8 mb-12">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-center sm:text-left">
+        <Image
+          src="/about-1.png"
+          alt="silly face"
+          width={24}
+          height={24}
+          className="mb-2 sm:mb-0"
+        />
+
+        <h1 className="text-3xl sm:text-5xl font-extrabold text-black relative flex-shrink-0">
+          Meet the{" "}
+          <span className="relative inline-block">
+            Bunk!
+            <span className="absolute left-0 bottom-0 w-full h-[6px] bg-[#FF7439] -z-10 rounded-sm translate-y-1" />
+          </span>
+        </h1>
+      </div>
+
+        {/* old styling with multiple silly faces */}
+        {/* <div className="flex items-center gap-3">
           <Image src="/about-1.png" alt="silly face" width={24} height={24} />
           <h1 className="text-5xl font-extrabold text-black relative">
             Meet the <span className="relative inline-block">
@@ -96,7 +115,7 @@ export default function About() {
             </span>
           </h1>
           <Image src="/about-1.png" alt="silly face" width={24} height={24} />
-        </div>
+        </div> */}
 
         <p className="text-[16px] text-gray-600 mt-2">
           Our incredible team of designers, devs, and leaders who care a lot about making housing easier for you.

@@ -11,6 +11,7 @@ import LoadingCard from "@/components/LoadingCard";
 import { motion } from "framer-motion";
 import { FcFeedback } from "react-icons/fc";
 import { MdChatBubble } from "react-icons/md";
+import { User } from "@supabase/supabase-js";
 
 interface Listing {
   address: string;
@@ -46,6 +47,9 @@ export default function Index() {
   const [hasMore, setHasMore] = useState(true);
   const [lastLoadedIndex, setLastLoadedIndex] = useState(0); // Track last loaded index
 
+  const [currUser, setCurrUser] = useState<User>();
+  const [reload, setReload] = useState<boolean>(false);
+
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -72,6 +76,9 @@ export default function Index() {
       try {
         setIsLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user)
+            setCurrUser(user);
 
         let query = supabase.from('listings').select().eq('archived', false);
 
@@ -214,7 +221,7 @@ export default function Index() {
       }
     }
     fetchPosts();
-  }, [searchParams]);
+  }, [searchParams, reload]);
 
   const loadMore = async () => {
     setIsLoadingMore(true);
@@ -286,10 +293,12 @@ export default function Index() {
                       duration={`${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`}
                       price={`$${listing.price} / month`}
                       isRiceStudent={true}
-                      ownListing={false}
+                      ownListing={currUser ? listing.user_id == currUser.id : false}
                       isFavorited={listing.id in favorites}
                       imagePaths={listing.image_paths}
                       isArchived={false}
+                      onDelete={() => setReload(!reload)}
+                      onArchive={() => setReload(!reload)}
                     />
                   </motion.div>
                 )) : (

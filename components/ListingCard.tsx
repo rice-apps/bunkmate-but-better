@@ -216,7 +216,7 @@ const ListingCard: React.FC<CardProps> = ({
           <Button
             className="absolute top-4 right-4 w-10 h-10 p-0 border-none hover:bg-transparent hover:text-white"
             variant="ghost"
-            onClick={handleAddOrRemoveFavorite}
+            onClick={!ownListing ? handleAddOrRemoveFavorite : (e) => {e.stopPropagation()}}
           >
             <IconContext.Provider value={{}}>
               {favorite && !ownListing ? (

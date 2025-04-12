@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { JSX, useEffect, useRef } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface FAQItemProps {
   question: string;
@@ -45,9 +46,16 @@ const FAQItem = ({
         </span>
       </button>
 
+    <AnimatePresence>
       {isOpen && (
-        <div className="mt-3 ml-7 text-sm text-[#5E6366] space-y-4">
-          {answer && <p>{answer}</p>}
+        <motion.div
+        initial={{ height: 0, opacity: 0 }}
+        animate={{ height: "auto", opacity: 1 }}
+        exit={{ height: 0, opacity: 0 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="overflow-hidden mt-3 ml-4 sm:ml-7 text-sm text-[#5E6366] space-y-4"
+      >
+          {answer && <p className="leading-[30px]">{answer}</p>}
           {videoSrc && (
             <video
               ref={videoRef}
@@ -56,11 +64,12 @@ const FAQItem = ({
               autoPlay
               muted
               playsInline
-              className="w-full max-w-lg rounded-xl border border-[#FF7439] bg-[#FFF4F0] p-4"
+              className="w-full rounded-xl border border-[#FF7439] bg-[#FFF4F0] p-4"
             />
           )}
-        </div>
+          </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 };

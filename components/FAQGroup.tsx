@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { JSX, useState } from "react";
 import FAQItem from "./FAQItem";
 import Link from "next/link";
+import { MdArrowOutward } from "react-icons/md";
 
 interface FAQData {
   question: string;
@@ -15,15 +16,17 @@ const faqs: FAQData[] = [
     question: "How do I use Bunkmate?",
     answer: (
       <>
-        If you are looking for subletters, subleasers, or co-leasers, you can
+        If you are looking for subletters, subleasers, or co-leasers, you can {" "}
         {
           <Link
-            href="/post-a-listing"
-            className="inline-flex items-center underline font-medium"
-            style={{ color: "#FF7439" }}
-          >
-            post a listing
-          </Link>
+          href="/post-a-listing"
+          className="inline-flex items-center underline font-bold"
+          style={{ color: "#FF7439" }}
+        >
+          post your listing
+          <MdArrowOutward className="h-[1rem] w-[1rem]" />
+        </Link>
+        
         }{" "}
         for people to reach out to you!
       </>
@@ -43,7 +46,7 @@ const faqs: FAQData[] = [
 ];
 
 export default function FAQGroup() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndices, setOpenIndices] = useState<number[]>([]);
 
   return (
     <div className="max-w-3xl mx-auto px-6 w-full">
@@ -51,10 +54,16 @@ export default function FAQGroup() {
         <FAQItem
           key={index}
           {...faq}
-          isOpen={openIndex === index}
-          onToggle={() => setOpenIndex(openIndex === index ? null : index)}
+          isOpen={openIndices.includes(index)}
+          onToggle={() => {
+            setOpenIndices((prev) =>
+              prev.includes(index)
+                ? prev.filter((i) => i !== index) // collapse
+                : [...prev, index] // expand
+            );
+          }}
         />
       ))}
     </div>
-  );
+  );  
 }
