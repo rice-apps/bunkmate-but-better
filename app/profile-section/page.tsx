@@ -17,6 +17,12 @@ import { RiPencilFill } from 'react-icons/ri';
 import { MdLogout } from "react-icons/md";
 import { formatPhoneNumber } from "@/components/ui/input";
 import Footer from "@/components/Footer";
+import { Upload, PencilIcon } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { v4 as uuidv4 } from 'uuid';
+import { Input } from "@/components/ui/input";
 
 
 type Listing = {
@@ -46,6 +52,20 @@ export default function Index() {
   const [activeListings, setActiveListings] = useState<Listing[]>([]);
   const [archivedListings, setArchivedListings] = useState<Listing[]>([]);
   const [reload, setReload] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [currentProfileImagePath, setCurrentProfileImagePath] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    riceAffiliation: null as 'student' | 'alum' | null,
+  });
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -74,7 +94,19 @@ export default function Index() {
             let profileImageUrl = user.data.user?.user_metadata.avatar_url;
             if (data.data[0].profile_image_path) {
               profileImageUrl = getImagePublicUrl('profiles', data.data[0].profile_image_path);
+              setCurrentProfileImagePath(data.data[0].profile_image_path);
             }
+
+            // Split name into first and last name
+            const [firstName = '', lastName = ''] = data.data[0].name ? data.data[0].name.split(' ') : ['', ''];
+            
+            setFormData({
+              firstName,
+              lastName,
+              email: data.data[0].email,
+              phone: data.data[0].phone || '',
+              riceAffiliation: data.data[0].affiliation
+            });
 
             setProfile({
               username: data.data[0].name,
@@ -83,93 +115,94 @@ export default function Index() {
               image: profileImageUrl,
               affiliation: data.data[0].affiliation
             });
-          });
-        supabase
-          .from("users_favorites")
-          .select(
-            `
-            user_id,
-            listings (
-              id,
-              title,
-              price,
-              start_date,
-              end_date,
-              price,
-              image_paths,
-              address,
-              distance
+
+            supabase
+              .from("users_favorites")
+              .select(
+                `
+                user_id,
+                listings (
+                  id,
+                  title,
+                  price,
+                  start_date,
+                  end_date,
+                  price,
+                  image_paths,
+                  address,
+                  distance
+                  )
+                `
               )
-            `
-          )
-          .eq("user_id", user.data.user.id)
-          .then((data) => {
-            if (data.error) {
-              console.error("Error fetching favorites");
-              return;
-            }
-            setFavoriteListings(
-              data.data.map((favorite: any): Listing => {
-                return {
-                  id: favorite.listings.id,
-                  title: favorite.listings.title,
-                  distance: favorite.listings.distance,
-                  dates: `${new Date(favorite.listings.start_date).toLocaleDateString()} - ${new Date(favorite.listings.end_date).toLocaleDateString()}`,
-                  price: favorite.listings.price,
-                  location: favorite.listings.address,
-                  imageUrl: getImagePublicUrl(
-                    "listing_images",
-                    favorite.listings.image_paths[0]
-                  ),
-                  renterType: favorite.listings.affiliation != 'student' ? "Rice Alumni" : "Rice Student",
-                  isFavorite: true,
-                  image_paths: favorite.listings.image_paths,
-                  isArchived: favorite.listings.isArchived
-                };
-              })
-            );
-          });
+              .eq("user_id", user.data.user.id)
+              .then((data) => {
+                if (data.error) {
+                  console.error("Error fetching favorites");
+                  return;
+                }
+                setFavoriteListings(
+                  data.data.map((favorite: any): Listing => {
+                    return {
+                      id: favorite.listings.id,
+                      title: favorite.listings.title,
+                      distance: favorite.listings.distance,
+                      dates: `${new Date(favorite.listings.start_date).toLocaleDateString()} - ${new Date(favorite.listings.end_date).toLocaleDateString()}`,
+                      price: favorite.listings.price,
+                      location: favorite.listings.address,
+                      imageUrl: getImagePublicUrl(
+                        "listing_images",
+                        favorite.listings.image_paths[0]
+                      ),
+                      renterType: favorite.listings.affiliation != 'student' ? "Rice Alumni" : "Rice Student",
+                      isFavorite: true,
+                      image_paths: favorite.listings.image_paths,
+                      isArchived: favorite.listings.isArchived
+                    };
+                  })
+                );
+              });
 
-        supabase
-          .from("listings")
-          .select()
-          .eq("user_id", user.data.user.id)
-          .then((data) => {
-            if (data.error) {
-              console.error("Error fetching listings");
-              return;
-            }
+            supabase
+              .from("listings")
+              .select()
+              .eq("user_id", user.data.user.id)
+              .then((data) => {
+                if (data.error) {
+                  console.error("Error fetching listings");
+                  return;
+                }
 
-            const activeListings: Listing[] = [];
-            const archivedListings: Listing[] = [];
+                const activeListings: Listing[] = [];
+                const archivedListings: Listing[] = [];
 
-            data.data.forEach((listing: any) => {
-              const formattedListing: Listing = {
-                id: listing.id,
-                title: listing.title,
-                distance: listing.distance,
-                dates: `${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`,
-                price: listing.price,
-                location: listing.address,
-                imageUrl: getImagePublicUrl(
-                  "listing_images",
-                  listing.image_paths[0]
-                ),
-                renterType: listing.affiliation !== "student" ? "Rice Alumni" : "Rice Student",
-                isFavorite: true,
-                image_paths: listing.image_paths,
-                isArchived: listing.isArchived
-              };
+                data.data.forEach((listing: any) => {
+                  const formattedListing: Listing = {
+                    id: listing.id,
+                    title: listing.title,
+                    distance: listing.distance,
+                    dates: `${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`,
+                    price: listing.price,
+                    location: listing.address,
+                    imageUrl: getImagePublicUrl(
+                      "listing_images",
+                      listing.image_paths[0]
+                    ),
+                    renterType: listing.affiliation !== "student" ? "Rice Alumni" : "Rice Student",
+                    isFavorite: true,
+                    image_paths: listing.image_paths,
+                    isArchived: listing.isArchived
+                  };
 
-              if (!listing.archived) {
-                activeListings.push(formattedListing);
-              } else {
-                archivedListings.push(formattedListing);
-              }
-            })
+                  if (!listing.archived) {
+                    activeListings.push(formattedListing);
+                  } else {
+                    archivedListings.push(formattedListing);
+                  }
+                })
 
-            setActiveListings(activeListings);
-            setArchivedListings(archivedListings);
+                setActiveListings(activeListings);
+                setArchivedListings(archivedListings);
+              });
           });
       } else {
         console.error("No user");
@@ -179,6 +212,146 @@ export default function Index() {
   }, [reload]);
 
   const router = useRouter();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+  
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      const user = await supabase.auth.getUser();
+      
+      if (!user.data.user) {
+        console.error('No authenticated user found');
+        return;
+      }
+
+      // Combine first and last name
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+
+      const { error } = await supabase
+        .from('users')
+        .update({ 
+          name: fullName,
+          phone: formData.phone,
+          affiliation: formData.riceAffiliation,
+        })
+        .eq('id', user.data.user.id);
+
+      if (error) {
+        console.error('Error updating profile:', error);
+        return;
+      }
+
+      // Update local profile state to reflect changes
+      setProfile(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          username: fullName,
+          phone: formData.phone,
+          affiliation: formData.riceAffiliation as 'student' | 'alum'
+        };
+      });
+      
+      setReload(!reload);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      if (!e.target.files || e.target.files.length === 0) return;
+      
+      setIsUploading(true);
+  
+      const file = e.target.files[0];
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) {
+        console.error('No authenticated user found');
+        return;
+      }
+  
+      // Delete previous profile image if it exists
+      if (currentProfileImagePath) {
+        const { error: deleteError } = await supabase.storage
+          .from('profiles')
+          .remove([currentProfileImagePath]);
+        
+        if (deleteError) {
+          console.error('Error deleting previous image:', deleteError);
+        }
+      }
+
+      // Upload new image to Supabase Storage
+      const fileName = `${user.data.user.id}/${uuidv4()}.${file.name.split('.').pop()}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('profiles')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+  
+      if (uploadError) {
+        console.error('Error uploading image:', uploadError);
+        return;
+      }
+  
+      // Update user profile with new image path
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ profile_image_path: fileName })
+        .eq('id', user.data.user.id);
+
+      if (updateError) {
+        console.error('Error updating profile:', updateError);
+        return;
+      }
+
+      // Get the updated user data to get the new profile image
+      const { data: updatedUser, error: fetchError } = await supabase
+        .from('users')
+        .select('profile_image_path')
+        .eq('id', user.data.user.id)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching updated user:', fetchError);
+        return;
+      }
+
+      // Update UI with new image URL and store new path
+      if (updatedUser.profile_image_path) {
+        setCurrentProfileImagePath(updatedUser.profile_image_path);
+        const imageUrl = getImagePublicUrl('profiles', updatedUser.profile_image_path);
+        
+        // Update profile state with new image
+        setProfile(prev => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            image: imageUrl
+          };
+        });
+      }
+
+      setIsModalOpen(false);
+      setReload(!reload);
+
+    } catch (error) {
+      console.error('Error processing image:', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   return (
     <Suspense>
@@ -206,7 +379,7 @@ export default function Index() {
               >
                 <h1 className="text-left text-3xl font-semibold">Profile</h1>
                 <h1 className="text-left text-sm mb-2">
-                  Welcome to your profile page! Here, you can access your
+                  Welcome to your profile page! Here, you can access and edit your
                   profile information, your favorites, and your listings.
                 </h1>
               </motion.div>
@@ -215,98 +388,172 @@ export default function Index() {
                   <h1 className="text-left text-[24px] text-#000000 font-medium">Your Profile Information</h1>
 
                   <div className='flex flex-row gap-[20px] flex-wrap'>
-                    <Link href='/edit-profile'>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="group mr-50mr-50 w-[200px] h-[43px] bg-[#F0F0F0] gap-[5.69px] hover:bg-[#777777] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150"
-                      >
-                        <RiPencilFill className="text-[#777777] group-hover:fill-[#F0F0F0]" />
-                        <p className="text-[16px] text-[#777777] group-hover:text-[#F0F0F0] font-600">EDIT PROFILE</p>
-                      </motion.button>
-                    </Link>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleSave}
+                      disabled={isSaving}
+                      className="w-[120px] h-[36px] bg-[#FF7439] gap-[5.69px] hover:bg-[#FF7439]/80 rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <p className="text-[14px] text-[#FFFFFF] font-600">{isSaving ? 'SAVING...' : 'SAVE CHANGES'}</p>
+                    </motion.button>
 
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={handleLogout}
-                      className="w-[160px] h-[43px] bg-[#CC3333] gap-[5.69px] hover:bg-[#990000] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150"
+                      className="w-[120px] h-[36px] bg-[#CC3333] gap-[5.69px] hover:bg-[#990000] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150"
                     >
-                      <MdLogout className="text-[#FFFFFF]" />
-                      <p className="text-[16px] text-[#FFFFFF] font-600">LOG OUT</p>
+                      <MdLogout className="text-[#FFFFFF] text-[14px]" />
+                      <p className="text-[14px] text-[#FFFFFF] font-600">LOG OUT</p>
                     </motion.button>
                   </div>
 
                 </div>
-                {/* <h1 className="text-left text-2xl font-medium mb-6">
-                  Your Profile Information
-                </h1> */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
-                  className=" flex flex-col sm:flex-row sm:gap-[24vh] py-5"
+                  className="flex flex-col sm:flex-row gap-12 py-5"
                 >
-                  {/* Profile Image and Rice Affiliate text */}
-                  <div className="flex flex-col items-left sm:items-start gap-4 sm:gap-8">
-                    <div className="flex flex-col gap-4">
-                      <h1 className="text-lg sm:text-xl font-medium text-left sm:text-left">
-                        Profile Picture
-                      </h1>
+                  {/* Left Column - Profile Picture and Rice Affiliation */}
+                  <div className="flex flex-col sm:w-1/3 justify-end">
+                    {/* Profile Picture Section */}
+                    <div className="mb-8">
+                      <h2 className="text-xl font-medium mb-2">Profile Picture</h2>
+                      <p className="text-gray-500 text-sm mb-4">
+                        Upload your profile picture.<br/>
+                        Please make sure your face is recognizable!
+                      </p>
                       <motion.div
                         initial={{ scale: 0.8 }}
                         animate={{ scale: 1 }}
                         transition={{ duration: 0.5, delay: 0.5 }}
-                        className="relative w-[18vh] h-[18vh] overflow-hidden rounded-full"
+                        className="relative w-32 h-32 overflow-hidden rounded-full cursor-pointer bg-gray-600 flex items-center justify-center"
+                        onClick={() => setIsModalOpen(true)}
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
                       >
-                        <Image
-                          src={profile?.image || "/profile_pic.jpeg"}
-                          placeholder={`data:image/svg+xml;base64,${getShimmerData()}`}
-                          fill={true}
-                          alt="profile pic"
-                          className="object-cover"
-                        />
+                        {profile?.image ? (
+                          <Image
+                            src={profile.image}
+                            placeholder={`data:image/svg+xml;base64,${getShimmerData()}`}
+                            fill={true}
+                            alt="profile pic"
+                            className="object-cover"
+                          />
+                        ) : (
+                          <span className="text-6xl text-white">
+                            {formData.firstName.charAt(0).toUpperCase()}
+                          </span>
+                        )}
+                        <div className={`absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+                          <PencilIcon className="w-8 h-8 text-white" />
+                        </div>
                       </motion.div>
                     </div>
-                    <div className="flex flex-col">
-                      <h1 className="text-lg font-medium">Rice Affiliation</h1>
-                      <div className="flex flex-row gap-[5px] items-center mt-2 sm:mt-0">
-                        <Image
-                          src={"/owl.png"}
-                          width={20}
-                          height={5}
-                          alt="owl"
-                          className="w-5 h-5 scale-75"
-                        />
-                        <p className="text-[#FF7439] text-sm">Rice {profile.affiliation == 'student' ? "Student" : "Alumni"}</p>
-                      </div>
+
+                    {/* Rice Affiliation Section */}
+                    <div className="mb-8">
+                      <h2 className="text-xl font-medium mb-2">Rice Affiliation</h2>
+                      <p className="text-gray-500 text-sm mb-4">Below, select the option that applies to you:</p>
+                      <RadioGroup 
+                        className="space-y-3"
+                        value={formData.riceAffiliation || undefined}
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, riceAffiliation: value as 'student' | 'alum' }))}
+                      >
+                        <Label
+                          htmlFor="student"
+                          className={`flex items-center space-x-3 border rounded-2xl px-6 py-3 cursor-pointer transition-colors
+                            ${formData.riceAffiliation === 'student' 
+                              ? 'bg-[#FF7439]/25 text-black border-[#FF7439] hover:bg-[#FF7439]/50 [&_button]:text-[#FF7439] [&_button]:border-[#FF7439] [&_button[data-state=checked]]:bg-[#FF7439] [&_button[data-state=checked]]:text-[#FF7439]' 
+                              : 'hover:bg-gray-50'}`}
+                          onClick={() => setFormData(prev => ({ ...prev, riceAffiliation: 'student' }))}
+                        >
+                          <RadioGroupItem value="student" id="student" className="border-2" />
+                          <span>I am a Rice Student</span>
+                        </Label>
+                        <Label
+                          htmlFor="alum"
+                          className={`flex items-center space-x-3 border rounded-2xl px-6 py-3 cursor-pointer transition-colors
+                            ${formData.riceAffiliation === 'alum' 
+                              ? 'bg-[#FF7439]/25 text-black border-[#FF7439] hover:bg-[#FF7439]/50 [&_button]:text-[#FF7439] [&_button]:border-[#FF7439] [&_button[data-state=checked]]:bg-[#FF7439] [&_button[data-state=checked]]:text-[#FF7439]' 
+                              : 'hover:bg-gray-50'}`}
+                          onClick={() => setFormData(prev => ({ ...prev, riceAffiliation: 'alum' }))}
+                        >
+                          <RadioGroupItem value="alum" id="alum" className="border-2" />
+                          <span>I am a Rice Alum</span>
+                        </Label>
+                      </RadioGroup>
                     </div>
                   </div>
 
-                  {/* Additional Information */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.6 }}
-                    className="flex flex-col"
-                  >
-                    <div className="flex flex-col gap-4">
-                      <div className="gap-4">
-                        <h1 className="text-lg font-medium">Name</h1>
-                        <p className="text-lg text-gray-400">{profile?.username}</p>
-                      </div>
-
-                      <div className="gap-4">
-                        <h1 className="text-lg font-medium">Email Address</h1>
-                        <p className="text-lg text-gray-400">{profile?.email}</p>
-                      </div>
-
-                      <div className="gap-4">
-                        <h1 className="text-lg font-medium">Phone Number</h1>
-                        <p className="text-lg text-gray-400">{profile?.phone ? formatPhoneNumber(profile?.phone) : 'Please enter your phone number in "Edit Profile"'}</p>
+                  {/* Right Column - Name, Email, and Phone */}
+                  <div className="flex flex-col sm:w-2/3">
+                    {/* Name Section */}
+                    <div className="mb-8">
+                      <h2 className="text-xl font-medium mb-2">Name</h2>
+                      <p className="text-gray-500 text-sm mb-4">
+                        {formData.riceAffiliation === 'student' 
+                          ? 'Make sure this matches the name on your Rice Student ID.'
+                          : 'Make sure this matches the name on your government ID.'}
+                      </p>
+                      <div className="flex gap-4">
+                        <div className="flex-1">
+                          <Input 
+                            name="firstName"
+                            value={formData.firstName}
+                            onChange={handleInputChange}
+                            placeholder="First"
+                            className="rounded-2xl border-neutral-300 px-6 py-3 h-12" 
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <Input 
+                            name="lastName"
+                            value={formData.lastName}
+                            onChange={handleInputChange}
+                            placeholder="Last" 
+                            className="rounded-2xl border-neutral-300 px-6 py-3 h-12" 
+                          />
+                        </div>
                       </div>
                     </div>
-                  </motion.div>
+
+                    {/* Email Section */}
+                    <div className="mb-8">
+                      <h2 className="text-xl font-medium mb-2">Email address</h2>
+                      <p className="text-gray-500 text-sm mb-4">
+                        This is the email address you signed up with.<br/>
+                        If you would like to use a new email address, please create a new account!
+                      </p>
+                      <Input 
+                        value={profile?.email || ''}
+                        disabled
+                        className="rounded-2xl border-neutral-300 px-6 py-3 h-12 bg-gray-50" 
+                      />
+                    </div>
+
+                    {/* Phone Section */}
+                    <div className="mb-8">
+                      <h2 className="text-xl font-medium mb-2">Phone number</h2>
+                      <p className="text-gray-500 text-sm mb-4">Use the number you'd like to be contacted with.</p>
+                      <Input 
+                        type="tel"
+                        name="phone"
+                        value={formatPhoneNumber(formData.phone)}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '');
+                          if (value.length <= 10) {
+                            setFormData(prev => ({ ...prev, phone: value }));
+                          }
+                        }}
+                        placeholder="+1 (XXX) XXX-XXX"
+                        maxLength={14}
+                        className="rounded-2xl border-neutral-300 px-6 py-3 h-12" 
+                      />
+                    </div>
+                  </div>
                 </motion.div>
               </div>
 
@@ -412,6 +659,58 @@ export default function Index() {
           {!profile && <LoadingCircle />}
         </div>
       </motion.main>
+      
+      {/* Image Upload Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Profile Picture</DialogTitle>
+          </DialogHeader>
+          <div className="p-6">
+            <p className="text-sm text-gray-500 text-center mb-8">
+              Upload your profile picture. Please make sure your face is recognizable!
+            </p>
+            
+            <div className="w-32 h-32 mx-auto mb-6">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                id="profile-upload"
+                onChange={handleFileUpload}
+                disabled={isUploading}
+              />
+              <label
+                htmlFor="profile-upload"
+                className={`w-full h-full rounded-full border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors bg-gray-50 ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {isUploading ? (
+                  <div className="flex flex-col items-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-400"></div>
+                    <span className="mt-2 text-sm text-gray-500">Uploading...</span>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="w-8 h-8 text-gray-400" />
+                    <span className="mt-2 text-sm text-gray-500">Upload File</span>
+                  </>
+                )}
+              </label>
+            </div>
+
+            <div className="flex justify-center space-x-4">
+              <Button
+                variant="outline"
+                onClick={() => setIsModalOpen(false)}
+                disabled={isUploading}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
       <Footer />
     </Suspense>
   );
