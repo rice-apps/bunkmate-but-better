@@ -203,6 +203,13 @@ const FilterModal: React.FC<FilterModalProps> = ({
       queryParams.delete("endDate");
     }
     
+    // Add distance parameter if it's set and not the default title
+    if (distance && distance !== distanceTitle) {
+      queryParams.set("distance", distance);
+    } else {
+      queryParams.delete("distance");
+    }
+    
     // We don't need to set selectedLocation separately since we're using it as the search query
     // But we'll keep it for reference in case you want to filter by both search and location separately later
     if (selectedLocation) {
