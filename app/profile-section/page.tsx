@@ -17,6 +17,7 @@ import { RiPencilFill } from 'react-icons/ri';
 import { MdLogout } from "react-icons/md";
 import { formatPhoneNumber } from "@/components/ui/input";
 import Footer from "@/components/Footer";
+import MobileProfileSection from "@/components/MobileProfile";
 
 
 type Listing = {
@@ -204,13 +205,21 @@ export default function Index() {
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className="mt-4 flex flex-col text-left sm:items-start gap-4"
               >
-                <h1 className="text-left text-3xl font-semibold">Profile</h1>
-                <h1 className="text-left text-sm mb-2">
+                <h1 className="hidden lg:block text-left text-3xl font-semibold">Profile</h1>
+                <h1 className="hidden lg:block text-left text-sm mb-2">
                   Welcome to your profile page! Here, you can access your
                   profile information, your favorites, and your listings.
                 </h1>
               </motion.div>
-              <div>
+
+              <div className="lg:hidden">
+                <MobileProfileSection 
+                  profile={profile} 
+                  handleLogout={handleLogout} 
+                />
+              </div>
+
+              <div className=" hidden lg:block">
                 <div className='mt-4 flex flex-row justify-between mt-[3vh] flex-wrap-reverse gap-y-4'>
                   <h1 className="text-left text-[24px] text-#000000 font-medium">Your Profile Information</h1>
 
