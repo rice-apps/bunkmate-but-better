@@ -424,20 +424,12 @@ const Navbar = ({
 
         {/* Mobile Icons (grouped search & menu icons) */}
         <div className="flex ml-auto items-center justify-end gap-4 lg:hidden">
-          {/* MOBILE-ONLY search icon */}
+          {/* MOBILE-ONLY search icon - now opens the filter modal */}
           <button
-            onClick={() => setShowMobileFilter(!showMobileFilter)}
-            className="p-1"
-          >
-            <FaMagnifyingGlass className="h-6 w-6 text-[#FF7439]" />
-          </button>
-
-          {/* Add new MOBILE-ONLY filter icon */}
-          <button 
             onClick={() => setShowFilterModal(true)}
             className="p-1"
           >
-            <BsSliders className="h-6 w-6 text-[#FF7439]" />
+            <FaMagnifyingGlass className="h-6 w-6 text-[#FF7439]" />
           </button>
 
           <div className="flex-grow"></div>
