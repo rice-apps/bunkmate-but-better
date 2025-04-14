@@ -57,7 +57,7 @@ export default function Index() {
   const [currentProfileImagePath, setCurrentProfileImagePath] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     firstName: '',
@@ -99,7 +99,7 @@ export default function Index() {
 
             // Split name into first and last name
             const [firstName = '', lastName = ''] = data.data[0].name ? data.data[0].name.split(' ') : ['', ''];
-            
+
             setFormData({
               firstName,
               lastName,
@@ -116,10 +116,11 @@ export default function Index() {
               affiliation: data.data[0].affiliation
             });
 
-            supabase
-              .from("users_favorites")
-              .select(
-                `
+            if (user.data.user) {
+              supabase
+                .from("users_favorites")
+                .select(
+                  `
                 user_id,
                 listings (
                   id,
@@ -133,76 +134,77 @@ export default function Index() {
                   distance
                   )
                 `
-              )
-              .eq("user_id", user.data.user.id)
-              .then((data) => {
-                if (data.error) {
-                  console.error("Error fetching favorites");
-                  return;
-                }
-                setFavoriteListings(
-                  data.data.map((favorite: any): Listing => {
-                    return {
-                      id: favorite.listings.id,
-                      title: favorite.listings.title,
-                      distance: favorite.listings.distance,
-                      dates: `${new Date(favorite.listings.start_date).toLocaleDateString()} - ${new Date(favorite.listings.end_date).toLocaleDateString()}`,
-                      price: favorite.listings.price,
-                      location: favorite.listings.address,
+                )
+                .eq("user_id", user.data.user.id)
+                .then((data) => {
+                  if (data.error) {
+                    console.error("Error fetching favorites");
+                    return;
+                  }
+                  setFavoriteListings(
+                    data.data.map((favorite: any): Listing => {
+                      return {
+                        id: favorite.listings.id,
+                        title: favorite.listings.title,
+                        distance: favorite.listings.distance,
+                        dates: `${new Date(favorite.listings.start_date).toLocaleDateString()} - ${new Date(favorite.listings.end_date).toLocaleDateString()}`,
+                        price: favorite.listings.price,
+                        location: favorite.listings.address,
+                        imageUrl: getImagePublicUrl(
+                          "listing_images",
+                          favorite.listings.image_paths[0]
+                        ),
+                        renterType: favorite.listings.affiliation != 'student' ? "Rice Alumni" : "Rice Student",
+                        isFavorite: true,
+                        image_paths: favorite.listings.image_paths,
+                        isArchived: favorite.listings.isArchived
+                      };
+                    })
+                  );
+                });
+
+              supabase
+                .from("listings")
+                .select()
+                .eq("user_id", user.data.user.id)
+                .then((data) => {
+                  if (data.error) {
+                    console.error("Error fetching listings");
+                    return;
+                  }
+
+                  const activeListings: Listing[] = [];
+                  const archivedListings: Listing[] = [];
+
+                  data.data.forEach((listing: any) => {
+                    const formattedListing: Listing = {
+                      id: listing.id,
+                      title: listing.title,
+                      distance: listing.distance,
+                      dates: `${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`,
+                      price: listing.price,
+                      location: listing.address,
                       imageUrl: getImagePublicUrl(
                         "listing_images",
-                        favorite.listings.image_paths[0]
+                        listing.image_paths[0]
                       ),
-                      renterType: favorite.listings.affiliation != 'student' ? "Rice Alumni" : "Rice Student",
+                      renterType: listing.affiliation !== "student" ? "Rice Alumni" : "Rice Student",
                       isFavorite: true,
-                      image_paths: favorite.listings.image_paths,
-                      isArchived: favorite.listings.isArchived
+                      image_paths: listing.image_paths,
+                      isArchived: listing.isArchived
                     };
+
+                    if (!listing.archived) {
+                      activeListings.push(formattedListing);
+                    } else {
+                      archivedListings.push(formattedListing);
+                    }
                   })
-                );
-              });
 
-            supabase
-              .from("listings")
-              .select()
-              .eq("user_id", user.data.user.id)
-              .then((data) => {
-                if (data.error) {
-                  console.error("Error fetching listings");
-                  return;
-                }
-
-                const activeListings: Listing[] = [];
-                const archivedListings: Listing[] = [];
-
-                data.data.forEach((listing: any) => {
-                  const formattedListing: Listing = {
-                    id: listing.id,
-                    title: listing.title,
-                    distance: listing.distance,
-                    dates: `${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`,
-                    price: listing.price,
-                    location: listing.address,
-                    imageUrl: getImagePublicUrl(
-                      "listing_images",
-                      listing.image_paths[0]
-                    ),
-                    renterType: listing.affiliation !== "student" ? "Rice Alumni" : "Rice Student",
-                    isFavorite: true,
-                    image_paths: listing.image_paths,
-                    isArchived: listing.isArchived
-                  };
-
-                  if (!listing.archived) {
-                    activeListings.push(formattedListing);
-                  } else {
-                    archivedListings.push(formattedListing);
-                  }
-                })
-
-                setActiveListings(activeListings);
-                setArchivedListings(archivedListings);
-              });
+                  setActiveListings(activeListings);
+                  setArchivedListings(archivedListings);
+                });
+            }
           });
       } else {
         console.error("No user");
@@ -220,12 +222,12 @@ export default function Index() {
       [name]: value
     }));
   };
-  
+
   const handleSave = async () => {
     try {
       setIsSaving(true);
       const user = await supabase.auth.getUser();
-      
+
       if (!user.data.user) {
         console.error('No authenticated user found');
         return;
@@ -236,7 +238,7 @@ export default function Index() {
 
       const { error } = await supabase
         .from('users')
-        .update({ 
+        .update({
           name: fullName,
           phone: formData.phone,
           affiliation: formData.riceAffiliation,
@@ -258,7 +260,7 @@ export default function Index() {
           affiliation: formData.riceAffiliation as 'student' | 'alum'
         };
       });
-      
+
       setReload(!reload);
     } catch (error) {
       console.error('Error saving profile:', error);
@@ -266,26 +268,26 @@ export default function Index() {
       setIsSaving(false);
     }
   };
-  
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       if (!e.target.files || e.target.files.length === 0) return;
-      
+
       setIsUploading(true);
-  
+
       const file = e.target.files[0];
       const user = await supabase.auth.getUser();
       if (!user.data.user) {
         console.error('No authenticated user found');
         return;
       }
-  
+
       // Delete previous profile image if it exists
       if (currentProfileImagePath) {
         const { error: deleteError } = await supabase.storage
           .from('profiles')
           .remove([currentProfileImagePath]);
-        
+
         if (deleteError) {
           console.error('Error deleting previous image:', deleteError);
         }
@@ -299,12 +301,12 @@ export default function Index() {
           cacheControl: '3600',
           upsert: true
         });
-  
+
       if (uploadError) {
         console.error('Error uploading image:', uploadError);
         return;
       }
-  
+
       // Update user profile with new image path
       const { error: updateError } = await supabase
         .from('users')
@@ -332,7 +334,7 @@ export default function Index() {
       if (updatedUser.profile_image_path) {
         setCurrentProfileImagePath(updatedUser.profile_image_path);
         const imageUrl = getImagePublicUrl('profiles', updatedUser.profile_image_path);
-        
+
         // Update profile state with new image
         setProfile(prev => {
           if (!prev) return prev;
@@ -422,7 +424,7 @@ export default function Index() {
                     <div className="mb-8">
                       <h2 className="text-xl font-medium mb-2">Profile Picture</h2>
                       <p className="text-gray-500 text-sm mb-4">
-                        Upload your profile picture.<br/>
+                        Upload your profile picture.<br />
                         Please make sure your face is recognizable!
                       </p>
                       <motion.div
@@ -457,7 +459,7 @@ export default function Index() {
                     <div className="mb-8">
                       <h2 className="text-xl font-medium mb-2">Rice Affiliation</h2>
                       <p className="text-gray-500 text-sm mb-4">Below, select the option that applies to you:</p>
-                      <RadioGroup 
+                      <RadioGroup
                         className="space-y-3"
                         value={formData.riceAffiliation || undefined}
                         onValueChange={(value) => setFormData(prev => ({ ...prev, riceAffiliation: value as 'student' | 'alum' }))}
@@ -465,8 +467,8 @@ export default function Index() {
                         <Label
                           htmlFor="student"
                           className={`flex items-center space-x-3 border rounded-2xl px-6 py-3 cursor-pointer transition-colors
-                            ${formData.riceAffiliation === 'student' 
-                              ? 'bg-[#FF7439]/25 text-black border-[#FF7439] hover:bg-[#FF7439]/50 [&_button]:text-[#FF7439] [&_button]:border-[#FF7439] [&_button[data-state=checked]]:bg-[#FF7439] [&_button[data-state=checked]]:text-[#FF7439]' 
+                            ${formData.riceAffiliation === 'student'
+                              ? 'bg-[#FF7439]/25 text-black border-[#FF7439] hover:bg-[#FF7439]/50 [&_button]:text-[#FF7439] [&_button]:border-[#FF7439] [&_button[data-state=checked]]:bg-[#FF7439] [&_button[data-state=checked]]:text-[#FF7439]'
                               : 'hover:bg-gray-50'}`}
                           onClick={() => setFormData(prev => ({ ...prev, riceAffiliation: 'student' }))}
                         >
@@ -476,8 +478,8 @@ export default function Index() {
                         <Label
                           htmlFor="alum"
                           className={`flex items-center space-x-3 border rounded-2xl px-6 py-3 cursor-pointer transition-colors
-                            ${formData.riceAffiliation === 'alum' 
-                              ? 'bg-[#FF7439]/25 text-black border-[#FF7439] hover:bg-[#FF7439]/50 [&_button]:text-[#FF7439] [&_button]:border-[#FF7439] [&_button[data-state=checked]]:bg-[#FF7439] [&_button[data-state=checked]]:text-[#FF7439]' 
+                            ${formData.riceAffiliation === 'alum'
+                              ? 'bg-[#FF7439]/25 text-black border-[#FF7439] hover:bg-[#FF7439]/50 [&_button]:text-[#FF7439] [&_button]:border-[#FF7439] [&_button[data-state=checked]]:bg-[#FF7439] [&_button[data-state=checked]]:text-[#FF7439]'
                               : 'hover:bg-gray-50'}`}
                           onClick={() => setFormData(prev => ({ ...prev, riceAffiliation: 'alum' }))}
                         >
@@ -494,27 +496,27 @@ export default function Index() {
                     <div className="mb-8">
                       <h2 className="text-xl font-medium mb-2">Name</h2>
                       <p className="text-gray-500 text-sm mb-4">
-                        {formData.riceAffiliation === 'student' 
+                        {formData.riceAffiliation === 'student'
                           ? 'Make sure this matches the name on your Rice Student ID.'
                           : 'Make sure this matches the name on your government ID.'}
                       </p>
                       <div className="flex gap-4">
                         <div className="flex-1">
-                          <Input 
+                          <Input
                             name="firstName"
                             value={formData.firstName}
                             onChange={handleInputChange}
                             placeholder="First"
-                            className="rounded-2xl border-neutral-300 px-6 py-3 h-12" 
+                            className="rounded-2xl border-neutral-300 px-6 py-3 h-12"
                           />
                         </div>
                         <div className="flex-1">
-                          <Input 
+                          <Input
                             name="lastName"
                             value={formData.lastName}
                             onChange={handleInputChange}
-                            placeholder="Last" 
-                            className="rounded-2xl border-neutral-300 px-6 py-3 h-12" 
+                            placeholder="Last"
+                            className="rounded-2xl border-neutral-300 px-6 py-3 h-12"
                           />
                         </div>
                       </div>
@@ -524,13 +526,13 @@ export default function Index() {
                     <div className="mb-8">
                       <h2 className="text-xl font-medium mb-2">Email address</h2>
                       <p className="text-gray-500 text-sm mb-4">
-                        This is the email address you signed up with.<br/>
+                        This is the email address you signed up with.<br />
                         If you would like to use a new email address, please create a new account!
                       </p>
-                      <Input 
+                      <Input
                         value={profile?.email || ''}
                         disabled
-                        className="rounded-2xl border-neutral-300 px-6 py-3 h-12 bg-gray-50" 
+                        className="rounded-2xl border-neutral-300 px-6 py-3 h-12 bg-gray-50"
                       />
                     </div>
 
@@ -538,7 +540,7 @@ export default function Index() {
                     <div className="mb-8">
                       <h2 className="text-xl font-medium mb-2">Phone number</h2>
                       <p className="text-gray-500 text-sm mb-4">Use the number you'd like to be contacted with.</p>
-                      <Input 
+                      <Input
                         type="tel"
                         name="phone"
                         value={formatPhoneNumber(formData.phone)}
@@ -550,7 +552,7 @@ export default function Index() {
                         }}
                         placeholder="+1 (XXX) XXX-XXX"
                         maxLength={14}
-                        className="rounded-2xl border-neutral-300 px-6 py-3 h-12" 
+                        className="rounded-2xl border-neutral-300 px-6 py-3 h-12"
                       />
                     </div>
                   </div>
@@ -620,7 +622,7 @@ export default function Index() {
                   )}
                 </div>
               </motion.div>
-              
+
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -659,7 +661,7 @@ export default function Index() {
           {!profile && <LoadingCircle />}
         </div>
       </motion.main>
-      
+
       {/* Image Upload Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-md">
@@ -670,7 +672,7 @@ export default function Index() {
             <p className="text-sm text-gray-500 text-center mb-8">
               Upload your profile picture. Please make sure your face is recognizable!
             </p>
-            
+
             <div className="w-32 h-32 mx-auto mb-6">
               <input
                 type="file"
@@ -710,7 +712,7 @@ export default function Index() {
           </div>
         </DialogContent>
       </Dialog>
-      
+
       <Footer />
     </Suspense>
   );
