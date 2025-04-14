@@ -268,7 +268,7 @@ export default function Index() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="mx-auto lg:py-8 sm:py-2 w-full"
+        className="min-h-screen flex-grow mx-auto items-center lg:py-8 sm:py-2 w-full"
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {isLoading ? renderLoadingState() : error ? renderError() :
@@ -308,7 +308,9 @@ export default function Index() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                   >
-                    <p className="text-gray-500 text-lg">No listings found</p>
+                    <p className="text-gray-500 text-center text-lg">
+                      So sorry... no listings found!
+                    </p>
                   </motion.div>
                 )}
                 {isLoadingMore && (
