@@ -29,7 +29,9 @@ export default function Faq() {
         </div>
 
         <FAQGroup />
-        <Footer />
+        <div className = "">
+          <Footer />
+        </div>
       </div>
     </div>
   );
