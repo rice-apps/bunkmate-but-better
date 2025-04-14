@@ -196,7 +196,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className='flex flex-row items-center justify-between mb-8 sticky top-0 pt-4 bg-white'
+        className='flex flex-row items-center justify-between mb-10 sticky top-0 pt-4 bg-white'
       >
         <SectionNavigator
           onClick={() => scrollToSection(descriptionRef)}
@@ -311,7 +311,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
           className="text-sm text-gray-600 mb-4">
-          Use this map to help you locate the distance between this listing and Rice. <br />
+          Use this map to help you locate the distance between this listing and Rice. <br /> <br />
           Click to adjust the location of the White Pin to adjust the distance calculation!
         </motion.p>
 

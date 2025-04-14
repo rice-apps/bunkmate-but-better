@@ -106,7 +106,7 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
         </Map>
 
         {/* Key */}
-        <div className='flex flex-col items-start absolute top-4 left-4 bg-gray-800 bg-opacity-60 px-3 py-2 rounded-lg shadow-lg '>
+        <div className='flex flex-col items-start absolute top-4 left-4 bg-gray-950 bg-opacity-60 px-3 py-2 rounded-lg shadow-xl '>
           {/* <p className='text-sm text-gray-600'>Click on the map to set a destination</p> */}
 
           <motion.div
@@ -138,7 +138,7 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
 
         {/* Open in Google Maps */}
         <div className='absolute top-4 right-4'>
-          <button className='flex flew-row items-center bg-gray-800 bg-opacity-60 py-2 px-3 rounded-lg hover:bg-opacity-80 transition duration-200'
+          <button className='flex flew-row items-center bg-gray-950 bg-opacity-60 py-2 px-3 shadow-xl rounded-lg hover:bg-opacity-80 transition duration-200'
             onClick={() => {
               if (destination) {
                 window.open(`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(name)}&destination=${destination.lat},${destination.lng}&travelmode=walking`, "_blank");
