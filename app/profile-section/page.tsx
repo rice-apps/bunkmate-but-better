@@ -336,7 +336,7 @@ export default function Index() {
                       />
                     </div>
                   ))) : (
-                    <div className="text-gray-400 italic mt-6">- No Favorites Yet!</div>
+                    <div className="text-gray-500 font-light">⤷ No Favorites Yet!</div>
                   )}
                 </div>
               </motion.div>
@@ -369,7 +369,7 @@ export default function Index() {
                       />
                     </div>
                   )) : (
-                    <div className="text-gray-400 italic mt-6">- No Active Listings Yet!</div>
+                    <div className="text-gray-500 font-light">⤷ No Active Listings Yet!</div>
                   )}
                 </div>
               </motion.div>
@@ -402,7 +402,7 @@ export default function Index() {
                       />
                     </div>
                   )) : (
-                    <div className="text-gray-400 italic mt-6">- No Archived Listings Yet!</div>
+                    <div className="text-gray-500 font-light">⤷ No Archived Listings Yet!</div>
                   )}
                 </div>
               </motion.div>

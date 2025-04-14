@@ -84,7 +84,7 @@ const faqs: FAQData[] = [
         If you click on the listing you’re interested in, there is a section on the listing page listed as “Meet the Subleaser.” Copy and paste their contact information to start a conversation with them!
         <br></br>
         <br></br>
-        <em>P.S... New features will be coming out soon to track analytics in listing interest!</em>
+        <em>P.S.: New features will be coming out soon to track analytics in listing interest!</em>
       </>
     ),
   },
