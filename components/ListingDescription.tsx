@@ -39,7 +39,6 @@ const SectionNavigator = ({ section, onClick, isActive }: { section: string, onC
       className={`
         flex space-x-4 w-full 
         text-sm font-normal 
-        ${isActive ? 'folt-bold border-gray-500' : ''}
         border-b pb-1 
         border-gray-300 hover:border-gray-500 
         text-gray-500 hover:text-gray-900 
@@ -196,7 +195,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className='flex flex-row items-center justify-between mb-10 sticky top-0 pt-4 bg-white'
+        className='flex flex-row items-center justify-between sticky top-0 pt-4 bg-white'
       >
         <SectionNavigator
           onClick={() => scrollToSection(descriptionRef)}
@@ -222,7 +221,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className='text-xl sm:text-xl font-bold mb-4'
+          className='text-xl sm:text-xl font-bold mb-4 pt-12'
         >
           Description
         </motion.h1>
@@ -250,7 +249,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
-        className="border-t pt-8 mb-6"
+        className="border-t pt-10 mb-6"
       >
         <motion.h2
           initial={{ opacity: 0 }}
@@ -297,7 +296,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
-        className="border-t pt-6 mb-6"
+        className="border-t pt-10 mb-6"
       >
         <motion.h2
           initial={{ opacity: 0 }}
