@@ -20,6 +20,8 @@ interface FilterModalProps {
   setBedNum: (num: number) => void;
   setBathNum: (num: number) => void;
   applyFilters: () => void;
+  distance: string;
+  setDistance: (distance: string) => void;
   selectedLeaseDuration: string | null;
   setSelectedLeaseDuration: (duration: string | null) => void;
   selectedLocation: string | null;
@@ -49,6 +51,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
   setMaxPrice,
   setBedNum,
   setBathNum,
+  distance,
+  setDistance,
   applyFilters,
   selectedLeaseDuration,
   setSelectedLeaseDuration,
@@ -64,8 +68,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
 }) => {
   const router = useRouter();
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
-  const [distance, setDistance] = useState("");
-  const distanceTitle = "";
+  // const [distance, setDistance] = useState("");
+  const distanceTitle = "Search properties";
   
   // Update local state when prop changes
   useEffect(() => {
@@ -119,6 +123,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
     setBathNum(0);
     setMinPrice(0);
     setMaxPrice(0);
+    setDistance(distanceTitle);
     setSelectedLeaseDuration(null);
     setSelectedLocation(null);
     setStartDate(undefined);

@@ -106,7 +106,7 @@ const Navbar = ({
   const [showMobileFilter, setShowMobileFilter] = useState(false);
   const supabase = createClient();
   const router = useRouter();
-  const distanceTitle = "Search Properties";
+  const distanceTitle = "Search properties";
   const [distance, setDistance] = useState(distanceTitle);
   const searchParams = useSearchParams(); // Use useSearchParams
   const [showSearch, setShowSearch] = useState(false);
@@ -159,7 +159,7 @@ const Navbar = ({
       pathname === "/" ||
       startDate != null ||
       endDate != null ||
-      distance != "Search Properties"
+      distance != "Search properties"
     ) {
       handleFilterChange();
     }
@@ -729,6 +729,8 @@ const Navbar = ({
         setMaxPrice={setMaxPrice}
         setBedNum={setBedNum}
         setBathNum={setBathNum}
+        distance={distance}
+        setDistance={setDistance}
         selectedLeaseDuration={selectedLeaseDuration}
         setSelectedLeaseDuration={setSelectedLeaseDuration}
         selectedLocation={selectedLocation}
