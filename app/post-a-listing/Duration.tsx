@@ -9,19 +9,24 @@ import {format} from "date-fns";
 import {CalendarIcon} from "lucide-react";
 import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
 import PreviewButton from "./PreviewButton";
+import { FormDataType } from "./PostForm";
 
 const Duration = ({
   formData,
   setFormData,
   onNext,
   onBack,
+  complete,
+  editing
 }: {
-  formData: any;
+  formData: FormDataType;
   setFormData: any;
   onNext: () => void;
   onBack: () => void;
+  complete: boolean;
+  editing: boolean;
 }) => {
-  const isComplete = Boolean(formData.startDate && formData.endDate);
+  const isComplete = complete;
 
   const handleStartDateSelect = (date: Date | undefined) => {
     setFormData({
@@ -43,7 +48,7 @@ const Duration = ({
         <div>
           <h1 className="text-2xl font-semibold mb-3">Duration</h1>
         </div>
-        <PreviewButton formData={formData} />
+        <PreviewButton formData={formData} editing={editing} />
       </div>
       <h2 className="text-sm font-bold">Set the start and end dates of your lease here. </h2>
 
@@ -71,7 +76,7 @@ const Duration = ({
                   selected={formData.startDate ? new Date(formData.startDate) : undefined}
                   onSelect={handleStartDateSelect}
                   initialFocus
-                  disabled={date => date < new Date()}
+                  disabled={date => date < new Date() || (formData.endDate != "" && date > new Date(formData.endDate))}
                 />
               </PopoverContent>
             </Popover>
@@ -101,7 +106,7 @@ const Duration = ({
                   selected={formData.endDate ? new Date(formData.endDate) : undefined}
                   onSelect={handleEndDateSelect}
                   initialFocus
-                  disabled={date => date < new Date() || (formData.startDate && date < new Date(formData.startDate))}
+                  disabled={date => date < new Date() || (formData.startDate != "" && date < new Date(formData.startDate))}
                 />
               </PopoverContent>
             </Popover>

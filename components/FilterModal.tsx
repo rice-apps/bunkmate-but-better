@@ -5,6 +5,8 @@ import { FaTimes, FaMinus, FaPlus } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
 interface FilterModalProps {
   isOpen: boolean;
@@ -18,6 +20,8 @@ interface FilterModalProps {
   setBedNum: (num: number) => void;
   setBathNum: (num: number) => void;
   applyFilters: () => void;
+  distance: string;
+  setDistance: (distance: string) => void;
   selectedLeaseDuration: string | null;
   setSelectedLeaseDuration: (duration: string | null) => void;
   selectedLocation: string | null;
@@ -47,6 +51,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
   setMaxPrice,
   setBedNum,
   setBathNum,
+  distance,
+  setDistance,
   applyFilters,
   selectedLeaseDuration,
   setSelectedLeaseDuration,
@@ -62,6 +68,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
 }) => {
   const router = useRouter();
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
+  // const [distance, setDistance] = useState("");
+  const distanceTitle = "Search properties";
   
   // Update local state when prop changes
   useEffect(() => {
@@ -81,9 +89,18 @@ const FilterModal: React.FC<FilterModalProps> = ({
     }
   };
 
-  const handleLeaseDurationChange = (option: { value: string, startDate: Date | null, endDate: Date | null }) => {
+  const handleLeaseDurationChange = (option: { value: string, startDate: Date, endDate: Date }) => {
     const newDuration = selectedLeaseDuration === option.value ? null : option.value;
     setSelectedLeaseDuration(newDuration);
+    
+    // Update start and end dates when lease duration changes
+    if (newDuration) {
+      setStartDate(option.startDate);
+      setEndDate(option.endDate);
+    } else {
+      setStartDate(undefined);
+      setEndDate(undefined);
+    }
   };
 
   const getCurrentYear = () => {
@@ -106,6 +123,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
     setBathNum(0);
     setMinPrice(0);
     setMaxPrice(0);
+    setDistance(distanceTitle);
     setSelectedLeaseDuration(null);
     setSelectedLocation(null);
     setStartDate(undefined);
@@ -145,6 +163,72 @@ const FilterModal: React.FC<FilterModalProps> = ({
     }
   };
 
+  const handleApplyFilters = () => {
+    // If a location is selected, use it as the search query
+    // This takes precedence over any manual search query
+    let finalSearchQuery = localSearchQuery;
+    if (selectedLocation) {
+      finalSearchQuery = selectedLocation;
+    }
+    
+    if (setSearchQuery) {
+      setSearchQuery(finalSearchQuery);
+    }
+    
+    const queryParams = new URLSearchParams(window.location.search);
+    
+    if (finalSearchQuery.trim()) {
+      queryParams.set('search', finalSearchQuery);
+    } else {
+      queryParams.delete('search');
+    }
+    
+    if (minPrice > 0) queryParams.set("minPrice", minPrice.toString());
+    if (maxPrice > 0) queryParams.set("maxPrice", maxPrice.toString());
+    if (bedNum > 0) queryParams.set("bedNum", bedNum.toString());
+    if (bathNum > 0) queryParams.set("bathNum", bathNum.toString());
+    
+    // Set lease duration parameter
+    if (selectedLeaseDuration) {
+      queryParams.set("leaseDuration", selectedLeaseDuration);
+    } else {
+      queryParams.delete("leaseDuration");
+    }
+    
+    // Always set start and end dates based on current values
+    if (startDate) {
+      queryParams.set("startDate", startDate.toISOString());
+    } else {
+      queryParams.delete("startDate");
+    }
+    
+    if (endDate) {
+      queryParams.set("endDate", endDate.toISOString());
+    } else {
+      queryParams.delete("endDate");
+    }
+    
+    // Add distance parameter if it's set and not the default title
+    if (distance && distance !== distanceTitle) {
+      queryParams.set("distance", distance);
+    } else {
+      queryParams.delete("distance");
+    }
+    
+    // We don't need to set selectedLocation separately since we're using it as the search query
+    // But we'll keep it for reference in case you want to filter by both search and location separately later
+    if (selectedLocation) {
+      queryParams.set("selectedLocation", selectedLocation);
+    } else {
+      queryParams.delete("selectedLocation");
+    }
+    
+    const queryString = queryParams.toString();
+    router.push(`/?${queryString}`);
+    
+    onClose();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -168,7 +252,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
         </button>
 
         <div className="flex justify-center items-center mt-2">
-          <h2 className="text-2xl font-semibold text-center text-[#FF7439]">Advanced Filters</h2>
+          <h2 className="hidden lg:block text-2xl font-semibold text-center text-[#FF7439]">Advanced Filters</h2>
+          <h2 className="block lg:hidden text-2xl font-semibold text-center text-[#FF7439]">Filters</h2>
         </div>
 
         {/* Add Search Bar */}
@@ -195,10 +280,41 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </div>
         </div>
 
-        <hr className = "lg:hidden"></hr>
+        <hr className="lg:hidden"></hr>
 
-        {/* Price Range */}
-        <div className="block lg:hidden space-y-6 mt-6 mb-8">
+        {/* Distance from Rice - Only show on mobile */}
+        <div className="space-y-6 mt-6 mb-8 lg:hidden">
+          <h2 className="text-xl text-neutral-800 mb-3">Distance from Rice</h2>
+          <div>
+            <div className="text-left w-full">
+              <p
+                className={`text-[16px] ${distance !== distanceTitle ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}
+              >
+                {distance}
+              </p>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {["< 1 mile", "< 3 miles", "< 5 miles", "> 5 miles"].map((option) => (
+                  <button
+                    key={option}
+                    className={`p-3 text-sm rounded-lg border transition-colors ${
+                      distance === option
+                        ? "bg-[#FFE3D7] text-[#FF7439] font-semibold border-[#FF7439]"
+                        : "bg-white text-neutral-700 hover:bg-gray-200"
+                    }`}
+                    onClick={() => setDistance(distance === option ? distanceTitle : option)}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr className="lg:hidden"></hr>
+
+        {/* Price Range - Only show on mobile */}
+        <div className="space-y-6 mt-6 mb-8 lg:hidden">
           <h2 className="text-xl text-neutral-800 mb-3">Price Range</h2>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
@@ -224,7 +340,72 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </div>
         </div>
 
-        <hr></hr>
+        <hr className="lg:hidden"></hr>
+
+        {/* Date Range - Only show on mobile */}
+        <div className="space-y-6 mt-6 mb-8 lg:hidden">
+          <h2 className="text-xl text-neutral-800 mb-3">Date Range</h2>
+          
+          {/* Start Date */}
+          <div>
+            <p className="text-[18px] font-semibold text-[#777777] mb-2">
+              Start Date
+            </p>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-left w-full">
+                  <p
+                    className={`text-[16px] ${startDate ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}
+                  >
+                    {startDate ? startDate.toDateString() : "Select date"}
+                  </p>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="p-2 bg-white rounded-lg shadow-lg">
+                <Calendar
+                  mode="single"
+                  selected={startDate}
+                  onSelect={setStartDate}
+                  disabled={(date) =>
+                    date < new Date() ||
+                    (endDate !== undefined && date > endDate)
+                  }
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* End Date */}
+          <div>
+            <p className="text-[18px] font-semibold text-[#777777] mb-2">
+              End Date
+            </p>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-left w-full">
+                  <p
+                    className={`text-[16px] ${endDate ? "text-[#FF7439] font-semibold" : "text-[#777777] font-light"}`}
+                  >
+                    {endDate ? endDate.toDateString() : "Select date"}
+                  </p>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="p-2 bg-white rounded-lg shadow-lg">
+                <Calendar
+                  mode="single"
+                  selected={endDate}
+                  onSelect={setEndDate}
+                  disabled={(date) =>
+                    date < new Date() ||
+                    (startDate !== undefined && date < startDate)
+                  }
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+
+        <hr className="lg:hidden"></hr>
 
         {/* Beds and Baths */}
         <div className="space-y-6 mt-6 mb-8">
@@ -326,7 +507,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
         </div>
 
         {/* Bottom two buttons! */}
-        <div className = "flex flex-row gap-5">
+        <div className="flex flex-row gap-5">
           {/* Clear All Button */}
           <button
             onClick={clearAllFilters}
@@ -336,11 +517,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </button>
           {/* Apply Button */}
           <button
-            onClick={() => {
-              handleSearchSubmit();
-              applyFilters();
-              onClose();
-            }}
+            onClick={handleApplyFilters}
             className="w-full mt-8 py-3 bg-[#FF7439] text-white rounded-md hover:bg-[#BB5529] transition-colors"
           >
             Apply Filters

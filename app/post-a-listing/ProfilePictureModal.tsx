@@ -11,6 +11,9 @@ import {
 import Cropper from "react-easy-crop";
 import { FiUpload } from "react-icons/fi";
 
+/**
+ * THIS IS NOT USED ANYWHERE.
+ */
 interface ProfilePictureModalProps {
   formData: any;
   setFormData: (data: any) => void;

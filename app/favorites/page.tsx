@@ -79,7 +79,8 @@ export default function Favorites() {
             price,
             image_paths,
             address,
-            archived
+            archived,
+            distance
             )
           `).eq('user_id', user?.id);
 

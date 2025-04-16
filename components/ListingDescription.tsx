@@ -282,7 +282,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
           />
 
           <DescriptionItem
-            icon={<img src="/mdi_location.svg" alt="Duration Icon" className="w-[40px] h-[40px]" />}
+            icon={<img src="/mdi_location.svg" alt="Distance Icon" className="w-[40px] h-[40px]" />}
             title="Distance from Rice"
             description={`${data.distance} mile${data.distance !== 1 ? "s" : ""} away`}
             delay={0.7}

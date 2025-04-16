@@ -3,15 +3,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FaChevronRight } from "react-icons/fa";
 import PreviewButton from "./PreviewButton";
+import { FormDataType } from "./PostForm";
 
-const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => {
+const BedBath = ({formData, setFormData}: {formData: FormDataType; setFormData: any}) => {
   const handleBedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFormData = {...formData, bed_num: e.target.value};
+    const newFormData = {...formData, bed_num: e.target.valueAsNumber};
     setFormData(newFormData);
   };
 
   const handleBathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFormData = {...formData, bath_num: e.target.value};
+    const newFormData = {...formData, bath_num: e.target.valueAsNumber};
     setFormData(newFormData);
   };
 
@@ -23,12 +24,8 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
         <div className="relative">
           <Input
             placeholder="Ex: 2"
-            value={formData.bed_num}
-            onChange={(e) => {
-              const value = e.target.value.replace('\.', '')
-              if (isNaN(Number(value)) || !Number.isInteger(Number(value))) return;
-              handleBedChange({ ...e, target: { ...e.target, value } });
-            }}
+            value={formData.bed_num.toString()}
+            onChange={handleBedChange}
             type="number"
             min={0}
             step={1}
@@ -44,13 +41,8 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
         <div className="relative">
           <Input
             placeholder="Ex: 5"
-            value={formData.bath_num}
-            onChange={(e) => {
-              // don't allow decimals or negative numbers
-              const value = e.target.value.replace('\.', '')
-              if (isNaN(Number(value)) || !Number.isInteger(Number(value))) return;
-              handleBathChange({ ...e, target: { ...e.target, value } });
-            }}
+            value={formData.bath_num.toString()}
+            onChange={handleBathChange}
             type="number"
             min={0}
             step={1}
@@ -63,16 +55,20 @@ const BedBath = ({formData, setFormData}: {formData: any; setFormData: any}) => 
   );
 };
 
-const TitleDescription = ({formData, setFormData, onNext}: {formData: any; setFormData: any; onNext: () => void}) => {
-  console.log("TitleDescription", formData);
-  const isComplete = formData.title.length >= 1 && 
-    formData.description.length >= 100 && 
-    !isNaN(formData.bath_num) && 
-    !isNaN(formData.bed_num) && 
-    Number.isInteger(Number(formData.bath_num)) && 
-    Number.isInteger(Number(formData.bed_num)) && 
-    Number(formData.bath_num) >= 0 && 
-    Number(formData.bed_num) >= 0;
+const TitleDescription = ({
+  formData, 
+  setFormData, 
+  onNext, 
+  complete,
+  editing
+}: {
+  formData: any; 
+  setFormData: any; 
+  onNext: () => void, 
+  complete: boolean;
+  editing: boolean;
+}) => {
+  const isComplete = complete;
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFormData = {...formData, title: e.target.value};
@@ -90,7 +86,7 @@ const TitleDescription = ({formData, setFormData, onNext}: {formData: any; setFo
         <div>
           <h1 className="text-2xl font-semibold mb-3">Title & Description</h1>
         </div>
-        <PreviewButton formData={formData} />
+        <PreviewButton formData={formData} editing={editing} />
       </div>
       <h2 className="text-sm font-bold mt-0 leading-tight">Add details about what your listing is like here.</h2>
 

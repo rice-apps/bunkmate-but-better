@@ -38,11 +38,11 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <PostListingFormProvider>
-                <main className="min-h-screen flex flex-col items-center">
-                  <ProgressBarProvider>
-                  {children}
-                  </ProgressBarProvider>
-                </main>
+              <main className="min-h-screen flex flex-col items-center">
+                <ProgressBarProvider>
+                {children}
+                </ProgressBarProvider>
+              </main>
             </PostListingFormProvider>
           </ThemeProvider>
         </body>
