@@ -79,7 +79,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
     });
   };
 
-  const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
+  const scrollToSection = (ref: React.RefObject<HTMLDivElement | null> ) => {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -198,17 +198,29 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
         className='flex flex-row items-center justify-between sticky top-0 pt-4 bg-white'
       >
         <SectionNavigator
-          onClick={() => scrollToSection(descriptionRef)}
+          onClick={() => {
+            if (typeof window !== 'undefined' && descriptionRef?.current) {
+              scrollToSection(descriptionRef);
+            }
+          }}
           section={'Description'}
           isActive={activeSection === 'description'}
         />
         <SectionNavigator
-          onClick={() => scrollToSection(detailsRef)}
+          onClick={() => {
+            if (typeof window !== 'undefined' && detailsRef?.current) {
+              scrollToSection(detailsRef);
+            }
+          }}
           section={'Details'}
           isActive={activeSection === 'details'}
         />
         <SectionNavigator
-          onClick={() => scrollToSection(mapRef)}
+          onClick={() => {
+            if (typeof window !== 'undefined' && mapRef?.current) {
+              scrollToSection(mapRef);
+            }
+          }}
           section={'Map'}
           isActive={activeSection === 'map'}
         />
@@ -311,7 +323,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="text-sm text-gray-600 mb-4">
           Use this map to help you locate the distance between this listing and Rice. <br /> <br />
-          Click to adjust the location of the White Pin to adjust the distance calculation!
+          Click to adjust the location of the <b>white pin</b> to adjust the distance calculation! Note that it's defaulted to Rice University. 
         </motion.p>
 
         {geocodeData ? (
