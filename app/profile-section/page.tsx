@@ -395,9 +395,9 @@ export default function Index() {
                       whileTap={{ scale: 0.95 }}
                       onClick={handleSave}
                       disabled={isSaving}
-                      className="w-[120px] h-[36px] bg-[#FF7439] gap-[5.69px] hover:bg-[#FF7439]/80 rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-[120px] h-[36px] bg-[#777777] gap-[8px] hover:bg-[#777777]/80 rounded-[10px] flex items-center justify-center transform transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <p className="text-[14px] text-[#FFFFFF] font-600">{isSaving ? 'SAVING...' : 'SAVE CHANGES'}</p>
+                      <p className="text-[14px] px-[10px] text-[#FFFFFF]">{isSaving ? 'Saving...' : 'Save Changes'}</p>
                     </motion.button>
 
                     <motion.button
@@ -407,7 +407,7 @@ export default function Index() {
                       className="w-[120px] h-[36px] bg-[#CC3333] gap-[5.69px] hover:bg-[#990000] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150"
                     >
                       <MdLogout className="text-[#FFFFFF] text-[14px]" />
-                      <p className="text-[14px] text-[#FFFFFF] font-600">LOG OUT</p>
+                      <p className="text-[14px] text-[#FFFFFF]">Logout</p>
                     </motion.button>
                   </div>
 
@@ -466,9 +466,9 @@ export default function Index() {
                       >
                         <Label
                           htmlFor="student"
-                          className={`flex items-center space-x-3 border rounded-2xl px-6 py-3 cursor-pointer transition-colors
+                          className={`flex items-center space-x-3 border rounded-2xl px-6 py-3 cursor-pointer text-gray-600 font-normal 
                             ${formData.riceAffiliation === 'student'
-                              ? 'bg-[#FF7439]/25 text-black border-[#FF7439] hover:bg-[#FF7439]/50 [&_button]:text-[#FF7439] [&_button]:border-[#FF7439] [&_button[data-state=checked]]:bg-[#FF7439] [&_button[data-state=checked]]:text-[#FF7439]'
+                              ? 'bg-[#FF7439]/25 text-gray-600 font-normal border-[#FF7439] hover:bg-[#FF7439]/50 [&_button]:text-[#718096] [&_button]:border-[#FF7439] [&_button[data-state=checked]]:bg-[#FF7439] [&_button[data-state=checked]]:text-[#FF7439]'
                               : 'hover:bg-gray-50'}`}
                           onClick={() => setFormData(prev => ({ ...prev, riceAffiliation: 'student' }))}
                         >
@@ -477,9 +477,9 @@ export default function Index() {
                         </Label>
                         <Label
                           htmlFor="alum"
-                          className={`flex items-center space-x-3 border rounded-2xl px-6 py-3 cursor-pointer transition-colors
+                          className={`flex items-center space-x-3 border rounded-2xl px-6 py-3 cursor-pointer text-gray-600 font-normal 
                             ${formData.riceAffiliation === 'alum'
-                              ? 'bg-[#FF7439]/25 text-black border-[#FF7439] hover:bg-[#FF7439]/50 [&_button]:text-[#FF7439] [&_button]:border-[#FF7439] [&_button[data-state=checked]]:bg-[#FF7439] [&_button[data-state=checked]]:text-[#FF7439]'
+                              ? 'bg-[#FF7439]/25 text-gray-600 font-normal border-[#FF7439] hover:bg-[#FF7439]/50 [&_button]:text-[#FF7439] [&_button]:border-[#FF7439] [&_button[data-state=checked]]:bg-[#FF7439] [&_button[data-state=checked]]:text-[#FF7439]'
                               : 'hover:bg-gray-50'}`}
                           onClick={() => setFormData(prev => ({ ...prev, riceAffiliation: 'alum' }))}
                         >
@@ -526,8 +526,8 @@ export default function Index() {
                     <div className="mb-8">
                       <h2 className="text-xl font-medium mb-2">Email address</h2>
                       <p className="text-gray-500 text-sm mb-4">
-                        This is the email address you signed up with.<br />
-                        If you would like to use a new email address, please create a new account!
+                        This is the email address associated to your Rice ID! <br />
+                        This email will be associated with your account and cannot be changed.
                       </p>
                       <Input
                         value={profile?.email || ''}
