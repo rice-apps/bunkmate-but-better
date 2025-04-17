@@ -48,12 +48,18 @@ const ListingPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
-
+  const [hasMounted, setHasMounted] = useState(false);
 
   // Grabbing the isFavorited value & converting from the URL of Listing.
   const searchParams = useSearchParams();
   const isFavorited = searchParams?.get("isFavorited");
   const isFavoritedValue = isFavorited === "true";
+
+  // Checking to see if the component has mounted on the client first!
+  // This is for the "Meet the Subleaser animation."
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
 
   useEffect(() => {
@@ -206,31 +212,31 @@ const ListingPage = () => {
             />
           </div>
           <div className="lg:w-1/2 xl:w-1/3">
-            <div
-              className="sticky top-[calc(50vh-200px)]"
-            >
-              <MeetSubleaser
-                data={{
-                  phone_number: listing.phone_number,
-                  user: listing.user
-                    ? {
-                      full_name: listing.user.name,
-                      email: listing.user.email,
-                      profile_image_path:
-                        listing.user.profile_image_path || undefined,
-                      avatar_url: listing.user.profile_image_path
-                        ? getImagePublicUrl(
-                          "profiles",
-                          listing.user.profile_image_path
-                        )
-                        : undefined,
-                      is_rice_student:
-                        listing.user.affiliation === "Rice Student",
-                    }
-                    : undefined,
-                }}
-              />
-            </div>
+            {hasMounted && (
+              <div className="sticky top-[calc(50vh-200px)]">
+                <MeetSubleaser
+                  data={{
+                    phone_number: listing.phone_number,
+                    user: listing.user
+                      ? {
+                        full_name: listing.user.name,
+                        email: listing.user.email,
+                        profile_image_path:
+                          listing.user.profile_image_path || undefined,
+                        avatar_url: listing.user.profile_image_path
+                          ? getImagePublicUrl(
+                            "profiles",
+                            listing.user.profile_image_path
+                          )
+                          : undefined,
+                        is_rice_student:
+                          listing.user.affiliation === "Rice Student",
+                      }
+                      : undefined,
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
       </Suspense>
