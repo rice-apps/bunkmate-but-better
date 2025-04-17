@@ -148,7 +148,7 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
     };
 
     fetchGeocodeData();
-  }, [data.location])
+  }, [])
 
   useEffect(() => {
     const options = {
