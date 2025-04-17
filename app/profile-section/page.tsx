@@ -364,7 +364,7 @@ export default function Index() {
         className="pb-8 w-[80%] sm: w-[90%] mx-auto"
       >
         <div className="flex flex-col items-center">
-          <Navbar />
+          <Navbar includeFilter={false}/>
 
           {profile && (
             <motion.main
@@ -585,7 +585,7 @@ export default function Index() {
                       />
                     </div>
                   ))) : (
-                    <div className="text-gray-400 italic mt-6">- No Favorites Yet!</div>
+                    <div className="text-gray-500 font-light">⤷ No Favorites Yet!</div>
                   )}
                 </div>
               </motion.div>
@@ -618,7 +618,7 @@ export default function Index() {
                       />
                     </div>
                   )) : (
-                    <div className="text-gray-400 italic mt-6">- No Active Listings Yet!</div>
+                    <div className="text-gray-500 font-light">⤷ No Active Listings Yet!</div>
                   )}
                 </div>
               </motion.div>
@@ -651,7 +651,7 @@ export default function Index() {
                       />
                     </div>
                   )) : (
-                    <div className="text-gray-400 italic mt-6">- No Archived Listings Yet!</div>
+                    <div className="text-gray-500 font-light">⤷ No Archived Listings Yet!</div>
                   )}
                 </div>
               </motion.div>
