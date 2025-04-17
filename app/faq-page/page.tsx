@@ -28,7 +28,7 @@ export default function Faq() {
           </p>
         </div>
 
-        <FAQGroup />
+        <FAQGroup / >
       </div>
       <Footer />
     </div>

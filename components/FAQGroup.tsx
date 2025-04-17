@@ -16,7 +16,7 @@ const faqs: FAQData[] = [
     question: "How do I use Bunkmate?",
     answer: (
       <>
-        If you are looking for subletters, subleasers, or co-leasers, you can {" "}
+        If you are looking for <b>subletters, subleasers, or co-leasers,</b> you can {" "}
         {
           <Link
           href="/post-a-listing"
@@ -33,7 +33,7 @@ const faqs: FAQData[] = [
         <br></br>
         <br></br>
 
-        If you are looking for a place to stay, browse the {" "}
+        If you are looking for a <b>place to stay,</b> browse the {" "}
         {
           <Link
           href="/"
@@ -57,13 +57,13 @@ const faqs: FAQData[] = [
         <br></br>
         <br></br>
         If you want more options, however, click on the <b>advanced filter icon </b> to access more options to filter through. Here, you can filter through rooms and beds, lease duration, and popular locations!
+        {/* <br></br>
         <br></br>
-        <br></br>
-        <em> Note that on mobile or smaller screens, the default and advanced filter options are in the same location. Video below is only for desktop!</em>
+        <em> Note that on mobile or smaller screens, the default and advanced filter options are in the same location. Video below is only for desktop!</em> */}
       </>
     ),
    
-    videoSrc: "/putvidhere.mp4",
+    // videoSrc: "/putvidhere.mp4",
   },
   {
     question: "Do I need to have signed a lease before posting?",
@@ -89,13 +89,22 @@ const faqs: FAQData[] = [
     ),
   },
   {
+    question: "Can people outside of Rice access Bunkmate?",
+    answer: (
+      <> 
+        Nope — Bunkmate was built exclusively for Rice students and alumni to safely share housing information for student housing or summer leasing!
+        For security reasons, only users with a valid rice.edu email can access the platform.
+      </>
+    ),
+  },
+  {
     question: "Who should I reach out to if there’s a problem with the site or if I want to give feedback?",
     answer: (
       <> 
         Thank you so much for catching the issue or giving feedback! We always appreciate it!   
         <br></br>  
         <br></br>
-        Please reach out to the following with a clear description over what the issue/feedback is (screenshots would be very helpful as well):
+        Please reach out to the following with a clear description over what the issue/feedback is (with screenshots if applicable):
         <ul className="list-disc pl-6 leading-8">
           <li><b>Lucy Han </b> — lh53@rice.edu | 408-394-1280 </li>
           <li><b>Gabriel Ong</b> — go15@rice.edu | 360-890-9433</li>
@@ -110,7 +119,7 @@ export default function FAQGroup() {
   const [openIndices, setOpenIndices] = useState<number[]>([]);
 
   return (
-    <div className="max-w-3xl mx-auto px-6 w-full">
+    <div className="max-w-3xl mx-auto px-6 mb-20 w-full">
       {faqs.map((faq, index) => (
         <FAQItem
           key={index}
