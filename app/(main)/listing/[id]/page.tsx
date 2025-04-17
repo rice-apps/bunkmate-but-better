@@ -6,7 +6,7 @@ import LoadingCircle from "@/components/LoadingCircle";
 import MeetSubleaser from "@/components/MeetSubleaser";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useParams, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Footer from "@/components/Footer";
 
 interface UserData {
@@ -39,7 +39,6 @@ interface ListingData {
   distance: number;
 }
 
-
 const ListingPage = () => {
   const params = useParams();
   const listingId = params.id as string;
@@ -49,12 +48,10 @@ const ListingPage = () => {
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
-
   // Grabbing the isFavorited value & converting from the URL of Listing.
   const searchParams = useSearchParams();
   const isFavorited = searchParams?.get("isFavorited");
   const isFavoritedValue = isFavorited === "true";
-
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -102,7 +99,6 @@ const ListingPage = () => {
           return acc;
         }, {});
         setCaptions(captions);
-
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to load listing";
@@ -114,7 +110,7 @@ const ListingPage = () => {
         }
         else if (isSupabasError) {
           console.warn("Supabase error:", err.message, err.details, err.hint);
-        }
+        } 
         else {
           console.warn("Unknown error:", err);
         }
@@ -144,7 +140,6 @@ const ListingPage = () => {
     );
   }
 
-
   const formatDateRange = (startDate: string, endDate: string) => {
     const formatDate = (dateString: string) => {
       return new Date(dateString).toLocaleDateString("en-US", {
@@ -159,7 +154,7 @@ const ListingPage = () => {
 
   return (
     // Removed mobile margin here. Can add again with more precise measures!
-    <div className="w-full">
+    <div className="w-full"> 
       <Suspense>
         <Listing
           data={{
@@ -180,11 +175,11 @@ const ListingPage = () => {
             captions: captions,
             user: listing.user
               ? {
-                fullName: listing.user.name,
-                avatarUrl: listing.user.profile_image_path,
-                email: listing.user.email,
-                isRiceStudent: listing.user.affiliation === "Rice Student",
-              }
+                  fullName: listing.user.name,
+                  avatarUrl: listing.user.profile_image_path,
+                  email: listing.user.email,
+                  isRiceStudent: listing.user.affiliation === "Rice Student",
+                }
               : null,
           }}
         />
@@ -206,31 +201,27 @@ const ListingPage = () => {
             />
           </div>
           <div className="lg:w-1/2 xl:w-1/3">
-            <div
-              className="sticky top-[calc(50vh-200px)]"
-            >
-              <MeetSubleaser
-                data={{
-                  phone_number: listing.phone_number,
-                  user: listing.user
-                    ? {
+            <MeetSubleaser
+              data={{
+                phone_number: listing.phone_number,
+                user: listing.user
+                  ? {
                       full_name: listing.user.name,
                       email: listing.user.email,
                       profile_image_path:
                         listing.user.profile_image_path || undefined,
                       avatar_url: listing.user.profile_image_path
                         ? getImagePublicUrl(
-                          "profiles",
-                          listing.user.profile_image_path
-                        )
+                            "profiles",
+                            listing.user.profile_image_path
+                          )
                         : undefined,
                       is_rice_student:
                         listing.user.affiliation === "Rice Student",
                     }
-                    : undefined,
-                }}
-              />
-            </div>
+                  : undefined,
+              }}
+            />
           </div>
         </div>
       </Suspense>

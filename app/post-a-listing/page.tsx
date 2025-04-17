@@ -130,7 +130,7 @@ const PostListing = () => {
     }
     try {
       const API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURI(address)}&format=json`);
+      const response = await fetch(`https://geocode.maps.co/search?q=${address}&api_key=${API_KEY}`);
       if (!response.ok) {
         throw new Error("Failed to geocode address");
       }
