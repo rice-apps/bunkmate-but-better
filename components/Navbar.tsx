@@ -143,7 +143,7 @@ const Navbar = ({
       setMinPrice(Number.parseInt(searchParams.get("minPrice")!))
     }
     if (searchParams && searchParams.get("maxPrice")) {
-      setMinPrice(Number.parseInt(searchParams.get("maxPrice")!))
+      setMaxPrice(Number.parseInt(searchParams.get("maxPrice")!))
     }
   }, []);
 
