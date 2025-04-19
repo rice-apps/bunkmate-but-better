@@ -35,9 +35,9 @@ const SectionNavigator = ({ section, onClick, isActive }: { section: string, onC
       onClick={onClick}
       className={`
         flex space-x-4 w-full 
-        text-sm font-normal 
+        text-sm 
         border-b pb-1 
-        ${isActive ? 'border-gray-900 text-gray-900 font-extrabold' : ''}
+        ${isActive ? 'border-gray-900 text-gray-900 font-extrabold' : 'font-normal'}
         border-gray-300 hover:border-gray-500 
         text-gray-500 hover:text-gray-900 hover:font-extrabold
         transition-all duration-200

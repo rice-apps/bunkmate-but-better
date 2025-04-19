@@ -304,7 +304,7 @@ const Navbar = ({
 
       {/* Mobile Filter Overlay */}
       {showMobileFilter && (
-        <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center">
+        <div className="hide-icons:hidden fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center">
           <div className="w-full max-w-md mx-4 bg-white rounded-3xl p-6 relative">
             <button
               onClick={() => setShowMobileFilter(false)}
@@ -405,7 +405,7 @@ const Navbar = ({
         style={{ height: "15vh" }}
       >
         {/* Logo */}
-        <button className="flex lg:hidden hide-logo:flex justify-center">
+        <button className="flex hide-logo:flex justify-center">
           <Link
             href="/"
             className="flex flex-row gap-[8.33] place-items-center"
@@ -415,15 +415,16 @@ const Navbar = ({
               alt="Bunkmate Logo"
               width={35}
               height={35}
+              className="min-w-[35px]"
             />
-            <p className="hidden sm:block ml-4 text-[30px] text-[#FF7439] font-semibold">
+            <p className="hidden hide-logo:block ml-4 text-[30px] text-[#FF7439] font-semibold">
               bunkmate
             </p>
           </Link>
         </button>
 
         {/* Mobile Icons (grouped search & menu icons) */}
-        <div className="flex ml-auto items-center justify-end gap-4 lg:hidden">
+        <div className="flex ml-auto items-center justify-end gap-4 hide-icons:hidden">
           {/* MOBILE-ONLY search icon - now opens the filter modal */}
           <button
             onClick={() => setShowFilterModal(true)}
@@ -440,7 +441,7 @@ const Navbar = ({
           </button>
         </div>
         {includeFilter && (
-          <div className="hidden max-w-[780px] lg:flex h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3 relative">
+          <div className="hidden max-w-[780px] hide-icons:flex h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3 relative">
             <AnimatePresence>
               {showSearch ? (
                 <motion.div
@@ -611,7 +612,7 @@ const Navbar = ({
 
         {/* ===== Right Section of Nav Bar */}
         {/* Post a Listing */}
-        <div className="lg:flex justify-center items-center hidden hide-icons:flex hide-icons:flex-row gap-[25px] place-items-center">
+        <div className="justify-center items-center hidden hide-icons:flex hide-icons:flex-row gap-[25px] place-items-center">
           {includePostBtn && (
             <Link href="/post-a-listing">
               <button className="py-2 px-7 bg-[#FF7439] hover:bg-[#BB5529] rounded-[10.2px] flex items-center justify-center transform transition-all duration-150 hover:scale-105 active:scale-105 whitespace-nowrap">

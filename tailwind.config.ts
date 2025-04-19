@@ -74,7 +74,7 @@ const config = {
       },
       screens: {
         "hide-logo": "1350px",
-        "hide-icons": "1100px",
+        "hide-icons": "1140px",
       }
     },
   },
