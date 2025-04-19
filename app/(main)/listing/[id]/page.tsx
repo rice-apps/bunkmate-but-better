@@ -6,7 +6,7 @@ import LoadingCircle from "@/components/LoadingCircle";
 import MeetSubleaser from "@/components/MeetSubleaser";
 import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useParams, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useEffect, useRef, useState, Suspense } from "react";
 import Footer from "@/components/Footer";
 
 interface UserData {
@@ -57,7 +57,7 @@ const ListingPage = () => {
 
   // Checking to see if the component has mounted on the client first!
   // This is for the "Meet the Subleaser animation."
-  useEffect(() => {
+  useLayoutEffect(() => {
     setHasMounted(true);
   }, []);
 

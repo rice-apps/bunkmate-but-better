@@ -1,9 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import ListingMap from './ListingMap';
-import { FaHouseUser, FaRegUser, FaRegUserCircle } from "react-icons/fa";
-import { Pin } from '@vis.gl/react-google-maps';
-import { FaLocationPin } from 'react-icons/fa6';
 
 type DescriptionItemProps = {
   icon: React.ReactNode;
@@ -40,8 +37,9 @@ const SectionNavigator = ({ section, onClick, isActive }: { section: string, onC
         flex space-x-4 w-full 
         text-sm font-normal 
         border-b pb-1 
+        ${isActive ? 'border-gray-900 text-gray-900 font-extrabold' : ''}
         border-gray-300 hover:border-gray-500 
-        text-gray-500 hover:text-gray-900 
+        text-gray-500 hover:text-gray-900 hover:font-extrabold
         transition-all duration-200
       `} >
       {section}
@@ -83,31 +81,32 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleScroll = () => {
+    if (descriptionRef.current && detailsRef.current && mapRef.current) {
+      const descMid = descriptionRef.current?.getBoundingClientRect().top - descriptionRef.current?.getBoundingClientRect().height / 2;
+      const detMid = detailsRef.current?.getBoundingClientRect().top - detailsRef.current?.getBoundingClientRect().height / 2;
+      const mapMid = mapRef.current?.getBoundingClientRect().top - mapRef.current?.getBoundingClientRect().height / 2;
 
-  const geocodeAddress = async (address: string) => {
-    if (!address) {
-      throw new Error("Valid address is required");
-    }
-    try {
-      const API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
-      const response = await fetch(`https://geocode.maps.co/search?q=${encodeURI(address)}&api_key=${API_KEY}`);
-      if (!response.ok) {
-        throw new Error("Failed to geocode address");
-      }
-      const data = await response.json();
-      if (data && data.length > 0) {
-        return {
-          lat: data[0].lat,
-          lon: data[0].lon,
-        };
+      const offset = -50;
+
+      if (mapMid - offset <= 0) {
+        setActiveSection('map');
+      } else if (detMid - offset <= 0) {
+        setActiveSection('details');
       } else {
-        throw new Error("No results found");
+        setActiveSection('description')
       }
-    } catch (error) {
-      console.error("Error geocoding address:", error);
-      throw error;
     }
-  };
+  }
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    }
+  }, [])
+
 
   const geocodeNominatimAddress = async (address: string) => {
     if (!address) {
@@ -149,39 +148,6 @@ const ListingDescription: React.FC<ListingDescriptionProps> = ({ data }) => {
 
     fetchGeocodeData();
   }, [data.location])
-
-  useEffect(() => {
-    const options = {
-      root: null,
-      rootMargin: '-50px 0px',
-      threshold: 0.1
-    };
-
-    const callback: IntersectionObserverCallback = (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          if (entry.target === descriptionRef.current) {
-            setActiveSection('description');
-          } else if (entry.target === detailsRef.current) {
-            setActiveSection('details');
-          } else if (entry.target === mapRef.current) {
-            setActiveSection('map');
-          }
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(callback, options);
-    
-    if (descriptionRef.current) observer.observe(descriptionRef.current);
-    if (detailsRef.current) observer.observe(detailsRef.current);
-    if (mapRef.current) observer.observe(mapRef.current);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
 
   return (
     <motion.div

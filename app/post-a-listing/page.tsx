@@ -129,7 +129,6 @@ const PostListing = () => {
       throw new Error("Valid address is required");
     }
     try {
-      const API_KEY = process.env.NEXT_PUBLIC_GEOCODE_API_KEY;
       const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURI(address)}&format=json`);
       if (!response.ok) {
         throw new Error("Failed to geocode address");
@@ -148,6 +147,24 @@ const PostListing = () => {
       throw error;
     }
   };
+  const calculateStraightLineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const toRadians = (degree: number) => degree * (Math.PI / 180);
+    const lat1Rad = toRadians(lat1);
+    const lon1Rad = toRadians(lon1);
+    const lat2Rad = toRadians(lat2);
+    const lon2Rad = toRadians(lon2);
+  
+    const dLat = lat2Rad - lat1Rad;
+    const dLon = lon2Rad - lon1Rad;
+  
+    const a =
+      Math.pow(Math.sin(dLat / 2), 2) +
+      Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.pow(Math.sin(dLon / 2), 2);
+    const rad = 6371; // earths radius in km
+    const c = 2 * Math.asin(Math.sqrt(a));
+    const miles = rad * c * 0.621371;
+    return parseFloat(miles.toFixed(1));
+  };
 
   const calculateDistance = async (address: string) => {
     if (!address) {
@@ -159,19 +176,8 @@ const PostListing = () => {
       if (!riceCoords || !listingCoords) {
         throw new Error("Could not geocode addresses");
       }
-      const osrmResponse = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${riceCoords.lon},${riceCoords.lat};${listingCoords.lon},${listingCoords.lat}?overview=false`,
-      );
-      if (!osrmResponse.ok) {
-        throw new Error("Failed to calculate distance");
-      }
-      const osrmData = await osrmResponse.json();
-      if (!osrmData.routes || osrmData.routes.length === 0) {
-        throw new Error("No distance results found");
-      }
-      const distanceMeters = osrmData.routes[0].distance;
-      const distanceMiles = (distanceMeters * 0.000621371).toFixed(1);
-      return distanceMiles;
+      const straightLineDistance = calculateStraightLineDistance(riceCoords.lat, riceCoords.lon, listingCoords.lat, listingCoords.lon);
+      return straightLineDistance;
     } catch (error) {
       console.error("Error calculating distance:", error);
       throw error;

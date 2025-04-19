@@ -67,9 +67,9 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
         >
           <AdvancedMarker position={coords}>
             <Pin
-              scale={1.18}
-              background={'#ff7439'}
-              borderColor={'#ff7439'}
+              scale={1.25}
+              background={'#000'}
+              borderColor={'#000000'}
             >
               <div>
                 <FaHouseUser className="text-lg text-white" />
@@ -92,7 +92,7 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
             >
 
               <Pin
-                scale={1.18}
+                scale={1.25}
                 background={'#ffffff'}
                 borderColor={'#000000'}
 
@@ -106,7 +106,7 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
         </Map>
 
         {/* Key */}
-        <div className='flex flex-col items-start absolute top-4 left-4 bg-gray-950 bg-opacity-60 px-3 py-2 rounded-lg shadow-xl '>
+        <div className='flex flex-col items-start absolute top-4 left-4 bg-gray-800 bg-opacity-60 px-3 py-2 rounded-lg shadow-xl '>
           {/* <p className='text-sm text-gray-600'>Click on the map to set a destination</p> */}
 
           <motion.div
@@ -116,10 +116,9 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
             className="mb-4 text-white text-xs space-y-2">
             <div className='flex flex-row items-center space-x-2'>
               <div className="relative">
-                <FaMapMarker className="text-3xl text-[#ff7439]"/>
+                <FaMapMarker className="text-3xl text-[#000]"/>
                 <FaHouseUser className="absolute top-[5px] right-[9px] text-md text-white"/>
               </div>
-              {/* <img src={"/ListingPin.svg"} width={40} height={40} /> */}
               <p className=''>Listing</p>
             </div>
 
@@ -128,7 +127,6 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
                 <FaMapMarker className="text-3xl text-white"/>
                 <FaRegUserCircle className="absolute top-[5px] right-[9px] text-md text-black"/>
               </div>
-              {/* <img src={"/DestinationPin.svg"} width={30} height={30} /> */}
               <p className=''>Drop Location</p>
             </div>
           </motion.div>
@@ -138,7 +136,7 @@ const ListingMap: React.FC<ListingMapProps> = ({ name, coords }) => {
 
         {/* Open in Google Maps */}
         <div className='absolute top-4 right-4'>
-          <button className='flex flew-row items-center bg-gray-950 bg-opacity-60 py-2 px-3 shadow-xl rounded-lg hover:bg-opacity-80 transition duration-200'
+          <button className='flex flew-row items-center bg-gray-800 bg-opacity-60 py-2 px-3 shadow-xl rounded-lg hover:bg-opacity-80 transition duration-200'
             onClick={() => {
               if (destination) {
                 window.open(`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(name)}&destination=${destination.lat},${destination.lng}&travelmode=walking`, "_blank");
