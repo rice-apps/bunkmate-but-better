@@ -1,167 +1,31 @@
 "use client";
 
-import { JSX, useState } from "react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import FAQItem from "@/components/FAQItem";
-import Link from "next/link";
-import { MdArrowOutward } from "react-icons/md";
+import Image from "next/image";
+import FAQGroup from "@/components/FAQGroup";
 
-interface FAQData {
-  question: string;
-  answer?: string | JSX.Element;
-  videoSrc?: string;
-}
-
-const faqs: FAQData[] = [
-  {
-    question: "How do I use Bunkmate?",
-    answer: (
-      <>
-        If you are looking for <b>subletters, subleasers, or co-leasers,</b> you
-        can{" "}
-        {
-          <Link
-            href="/post-a-listing"
-            className="inline-flex items-center underline font-bold"
-            style={{ color: "#FF7439" }}
-          >
-            post your listing
-            <MdArrowOutward className="h-[1rem] w-[1rem]" />
-          </Link>
-        }{" "}
-        for people to reach out to you!
-        <br></br>
-        <br></br>
-        If you are looking for a <b>place to stay,</b> browse the{" "}
-        {
-          <Link
-            href="/"
-            className="inline-flex items-center underline font-bold"
-            style={{ color: "#FF7439" }}
-          >
-            home page
-            <MdArrowOutward className="h-[1rem] w-[1rem]" />
-          </Link>
-        }{" "}
-        to see what people have posted so far and reach out to posters to
-        express your interest.
-      </>
-    ),
-  },
-  {
-    question: "How can I filter through what I want?",
-    answer: (
-      <>
-        On our default <b>search bar</b>, you can filter by price, date, and
-        distance from Rice.
-        <br></br>
-        <br></br>
-        If you want more options, however, click on the{" "}
-        <b>advanced filter icon </b> to access more options to filter through.
-        Here, you can filter through rooms and beds, lease duration, and popular
-        locations!
-        {/* <br></br>
-        <br></br>
-        <em> Note that on mobile or smaller screens, the default and advanced filter options are in the same location. Video below is only for desktop!</em> */}
-      </>
-    ),
-
-    videoSrc:
-      "https://github.com/rice-apps/bunkmate-but-better/raw/refs/heads/video/public/filters.mp4",
-  },
-  {
-    question: "Do I need to have signed a lease before posting?",
-    answer: (
-      <>
-        Nope! However, as best practice:
-        <ul className="list-disc pl-6">
-          <li>
-            If you are looking for <b>subletters or subleasers,</b> we suggest
-            that you already have a lease that you have at least verbally
-            committed to.{" "}
-          </li>
-          <li>
-            If you are looking for <b>co-leasers</b>, feel free to post listings
-            that you are interested in and mention in the post description that
-            you are looking for a co-leaser before committing!
-          </li>
-        </ul>
-      </>
-    ),
-  },
-  {
-    question: "What do I do if I’m interested in a listing?",
-    answer: (
-      <>
-        If you click on the listing you’re interested in, there is a section on
-        the listing page listed as “Meet the Subleaser.” Copy and paste their
-        contact information to start a conversation with them!
-        <br></br>
-        <br></br>
-        <em>
-          P.S.: New features will be coming out soon to track analytics in
-          listing interest!
-        </em>
-      </>
-    ),
-  },
-  {
-    question: "Can people outside of Rice access Bunkmate?",
-    answer: (
-      <>
-        Nope — Bunkmate was built exclusively for Rice students and alumni to
-        safely share housing information for student housing or summer leasing!
-        For security reasons, only users with a valid rice.edu email can access
-        the platform.
-      </>
-    ),
-  },
-  {
-    question:
-      "Who should I reach out to if there’s a problem with the site or if I want to give feedback?",
-    answer: (
-      <>
-        Thank you so much for catching the issue or giving feedback! We always
-        appreciate it!
-        <br></br>
-        <br></br>
-        Please reach out to the following with a clear description over what the
-        issue/feedback is (with screenshots if applicable):
-        <ul className="list-disc pl-6 leading-8">
-          <li>
-            <b>Lucy Han </b> — lh53@rice.edu | 408-394-1280{" "}
-          </li>
-          <li>
-            <b>Gabriel Ong</b> — go15@rice.edu | 360-890-9433
-          </li>
-          <li>
-            <b>Sathya Padmanabhan</b> — sp180@rice.edu | 480-925-5445
-          </li>
-        </ul>
-      </>
-    ),
-  },
-];
-
-export default function FAQGroup() {
-  const [openIndices, setOpenIndices] = useState<number[]>([]);
-
+export default function Faq() {
   return (
-    <div className="max-w-3xl mx-auto px-6 mb-20 w-full">
-      {faqs.map((faq, index) => (
-        <FAQItem
-          key={index}
-          {...faq}
-          isOpen={openIndices.includes(index)}
-          onToggle={() => {
-            setOpenIndices(
-              (prev) =>
-                prev.includes(index)
-                  ? prev.filter((i) => i !== index) // collapse
-                  : [...prev, index] // expand
-            );
-          }}
-        />
-      ))}
+    <div className="flex flex-col min-h-screen items-center w-[90%] sm:w-[90%] mx-auto">
+      <Navbar includeFilter={false} />
+      <div className="flex flex-col flex-grow items-center w-full max-w-3xl px-4 sm:px-6 mx-auto">
+        <div className="flex flex-col items-center text-center relative mt-8 mb-12">
+          <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
+            <Image src="/faq.png" alt="confused face" width={35} height={30} />
+            <h1 className="text-5xl font-extrabold text-black relative">
+              Frequently Asked Questions
+            </h1>
+          </div>
+          <p className="text-[16px]  text-gray-600 mt-2">
+            You have questions? We have answers!!
+          </p>
+        </div>
+
+        <FAQGroup />
+      </div>
+      <Footer />
     </div>
   );
 }
