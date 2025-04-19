@@ -106,7 +106,7 @@ const Navbar = ({
   const [showMobileFilter, setShowMobileFilter] = useState(false);
   const supabase = createClient();
   const router = useRouter();
-  const distanceTitle = "Search Properties";
+  const distanceTitle = "Search properties";
   const [distance, setDistance] = useState(distanceTitle);
   const searchParams = useSearchParams(); // Use useSearchParams
   const [showSearch, setShowSearch] = useState(false);
@@ -159,7 +159,7 @@ const Navbar = ({
       pathname === "/" ||
       startDate != null ||
       endDate != null ||
-      distance != "Search Properties"
+      distance != "Search properties"
     ) {
       handleFilterChange();
     }
@@ -238,14 +238,14 @@ const Navbar = ({
   // Update the handleSearchKeyDown function
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      applyFilters(); // Call applyFilters directly instead of handleSearch
+      applyFilters(); 
       setShowSearch(false);
     }
   };
 
   const handleClearSearch = () => {
     setSearchQuery("");
-    applyFilters(); // Call applyFilters directly instead of handleSearch
+    applyFilters(); 
     setShowSearch(false);
   };
 
@@ -315,28 +315,6 @@ const Navbar = ({
             <div className="pt-8">
               {/* Mobile filter options */}
               <div className="space-y-6 ml-[20px] mr-[20px] mb-[20px] flex flex-col justify-center items-left text-left">
-                {/* Search Input */}
-                <div className="w-full">
-                  <div className="relative flex items-center">
-                    <FaMagnifyingGlass className="absolute left-3 text-gray-400 w-5 h-5" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => handleSearch(e.target.value)}
-                      onKeyDown={handleSearchKeyDown}
-                      placeholder="Search by name or location..."
-                      className="w-full pl-10 pr-4 py-2 border-2 bg-white border-gray-200 rounded-full focus:outline-none focus:border-[#FF7439]"
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={handleClearSearch}
-                        className="absolute right-3 text-gray-400 hover:text-gray-600"
-                      >
-                        <FaTimes className="w-5 h-5" />
-                      </button>
-                    )}
-                  </div>
-                </div>
                 {/* Distance from Rice */}
                 <div>
                   <p className="text-[18px] font-semibold text-[#777777] mb-2">
@@ -446,8 +424,8 @@ const Navbar = ({
 
         {/* Mobile Icons (grouped search & menu icons) */}
         <div className="flex ml-auto items-center justify-end gap-4 lg:hidden">
-          {/* MOBILE-ONLY search icon */}
-          <button 
+          {/* MOBILE-ONLY search icon - now opens the filter modal */}
+          <button
             onClick={() => setShowFilterModal(true)}
             className="p-1"
           >
@@ -655,15 +633,30 @@ const Navbar = ({
               </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="">
-              <DropdownMenuItem key={"profile"} className="flex justify-center">
-                <Link href="/profile-section">
-                  <p className="hover:text-[#FF7439] text-center">Profile</p>
+            <DropdownMenuContent className="p-2">
+              <div className="font-bold text-sm py-1 px-4">Bunkmate</div>
+              <DropdownMenuItem key={"about-us"} className="text-sm px-4">
+                <Link href="/about-page">
+                  <p className="hover:text-[#FF7439]">About us</p>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem key={"logout"} className="flex justify-center">
+              <DropdownMenuItem key={"faq"} className="text-sm px-4">
+                <Link href="/faq-page">
+                  <p className="hover:text-[#FF7439]">FAQ</p>
+                </Link>
+              </DropdownMenuItem>
+
+              <div className="w-3/4 border-t border-gray-300 my-1 mx-4 mt-2 mb-2"></div>
+
+              <div className="font-bold text-sm py-1 px-4">Account</div>
+              <DropdownMenuItem key={"profile"} className="text-sm px-4">
+                <Link href="/profile-section">
+                  <p className="hover:text-[#FF7439]">Profile</p>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem key={"logout"} className="text-sm px-4">
                 <button onClick={handleLogout}>
-                  <p className="hover:text-[#FF7439] text-center">Logout</p>
+                  <p className="text-[#FF0000] hover:text-[#FF7439]">Logout</p>
                 </button>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -751,6 +744,8 @@ const Navbar = ({
         setMaxPrice={setMaxPrice}
         setBedNum={setBedNum}
         setBathNum={setBathNum}
+        distance={distance}
+        setDistance={setDistance}
         selectedLeaseDuration={selectedLeaseDuration}
         setSelectedLeaseDuration={setSelectedLeaseDuration}
         selectedLocation={selectedLocation}

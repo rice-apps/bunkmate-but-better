@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getImagePublicUrl, getShimmerData } from "@/utils/supabase/client";
 import Image from "next/image";
-import { Dispatch, SetStateAction, useState } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-import { FormDataType } from "./page";
+import {Dispatch, SetStateAction, useState} from "react";
+import {FaChevronLeft, FaChevronRight} from "react-icons/fa6";
+import {FormDataType} from "./PostForm";
 import PreviewButton from "./PreviewButton";
 import { useProgress } from "@bprogress/next";
 
@@ -15,15 +15,19 @@ const Photos = ({
   setFormData,
   onNext,
   onBack,
+  complete,
+  editing
 }: {
   formData: FormDataType;
   setFormData: Dispatch<SetStateAction<FormDataType>>;
   onNext: () => void;
   onBack: () => void;
+  complete: boolean;
+  editing: boolean;
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   // Check total number of photos (existing + new)
-  const isComplete = formData.photos.length + formData.imagePaths.length >= 5;
+  const isComplete = complete;
 
   const getImageUrl = (path: string) => {
     return getImagePublicUrl("listing_images", path);
@@ -164,7 +168,7 @@ URL.createObjectURL(photo)
         <div>
           <h1 className="text-2xl font-semibold mb-3">Photos</h1>
         </div>
-        <PreviewButton formData={formData} />
+        <PreviewButton formData={formData} editing={editing} />
       </div>
       <h2 className="text-sm font-bold text-gray-800">Add photos and optional descriptions to your lease! </h2>
       <p className="mb-6 text-gray-500 text-sm">

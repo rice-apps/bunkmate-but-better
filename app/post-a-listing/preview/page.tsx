@@ -10,11 +10,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { PostListingFormContext } from "@/providers/PostListingFormProvider";
-import { createClient } from "@/utils/supabase/client";
+import { defaultPostFormData, PostListingFormContext } from "@/providers/PostListingFormProvider";
+import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "@bprogress/next";
 import { useContext, useEffect, useState } from "react";
+import { FormDataType } from "../PostForm";
 
 interface UserData {
   id: string;
@@ -27,7 +29,9 @@ interface UserData {
 
 const PreviewPage = () => {
   const supabase = createClient();
-  const { formData } = useContext(PostListingFormContext);
+  const searchParams = useSearchParams();
+  const [formData, setFormData] = useState<FormDataType>(defaultPostFormData);
+  const { postFormData, editFormData } = useContext(PostListingFormContext);
   const [user, setUser] = useState<UserData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(true);
   const router = useRouter();
@@ -49,6 +53,13 @@ const PreviewPage = () => {
         });
       }
     };
+
+    if (searchParams.get("editing") === "true") {
+      setFormData({...editFormData, photos: editFormData.imagePaths.map(path => getImagePublicUrl("listing_images", path)).concat(editFormData.photos)});
+    }
+    else {
+      setFormData(postFormData);
+    }
 
     loadUser();
   }, []);

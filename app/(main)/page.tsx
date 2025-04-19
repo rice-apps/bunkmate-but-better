@@ -10,6 +10,8 @@ import {motion} from "framer-motion";
 import {useSearchParams} from "next/navigation";
 import {Suspense, useEffect, useMemo, useState} from "react";
 import {MdChatBubble} from "react-icons/md";
+import { FcFeedback } from "react-icons/fc";
+import { User } from "@supabase/supabase-js";
 
 interface Listing {
   address: string;
@@ -45,6 +47,9 @@ export default function Index() {
   const [hasMore, setHasMore] = useState(true);
   const [lastLoadedIndex, setLastLoadedIndex] = useState(0); // Track last loaded index
 
+  const [currUser, setCurrUser] = useState<User>();
+  const [reload, setReload] = useState<boolean>(false);
+
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -74,7 +79,10 @@ export default function Index() {
           data: {user},
         } = await supabase.auth.getUser();
 
-        let query = supabase.from("listings").select().eq("archived", false);
+        if (user)
+          setCurrUser(user);
+
+        let query = supabase.from('listings').select().eq('archived', false);
 
         const startDate =
           searchParams && searchParams.get("startDate") ? new Date(searchParams.get("startDate")!) : null;
@@ -216,7 +224,7 @@ export default function Index() {
       }
     }
     fetchPosts();
-  }, [searchParams]);
+  }, [searchParams, reload]);
 
   const loadMore = async () => {
     setIsLoadingMore(true);
@@ -305,7 +313,7 @@ export default function Index() {
           ).toLocaleDateString()}`}
           price={`$${listing.price} / month`}
           isRiceStudent={true}
-          ownListing={false}
+          ownListing={currUser ? listing.user_id == currUser.id : false}
           isFavorited={listing.id in favorites}
           imagePaths={listing.image_paths}
           isArchived={false}
@@ -371,6 +379,101 @@ export default function Index() {
               >
                 <p className="text-gray-500 text-lg">No listings found</p>
               </motion.div>
+// =======
+//         initial={{ opacity: 0 }}
+//         animate={{ opacity: 1 }}
+//         transition={{ duration: 0.5 }}
+//         className="flex-grow mx-auto items-center lg:py-8 sm:py-2 w-full"
+//       >
+//         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+//           {isLoading ? renderLoadingState() : error ? renderError() :
+//             (
+//               <>
+//                 {listings && (listings.length > 0) ? listings.slice(0, visibleListings).map((listing, index) => (
+//                   <motion.div
+//                     key={listing.id}
+//                     className="w-full"
+//                     initial={{ opacity: 0, y: 20 }}
+//                     animate={{ opacity: 1, y: 0 }}
+//                     transition={{
+//                       duration: 0.5,
+//                       delay: index < lastLoadedIndex ? 0 : (index - lastLoadedIndex) * 0.1 // Only delay new items
+//                     }}
+//                   >
+//                     <ListingCard
+//                       postId={listing.id.toString()}
+//                       name={listing.title}
+//                       imagePath={getImagePublicUrl("listing_images", (listing.image_paths[0]))}
+//                       distance={listing.distance}
+//                       duration={`${new Date(listing.start_date).toLocaleDateString()} - ${new Date(listing.end_date).toLocaleDateString()}`}
+//                       price={`$${listing.price} / month`}
+//                       isRiceStudent={true}
+//                       ownListing={currUser ? listing.user_id == currUser.id : false}
+//                       isFavorited={listing.id in favorites}
+//                       imagePaths={listing.image_paths}
+//                       isArchived={false}
+//                       onDelete={() => setReload(!reload)}
+//                       onArchive={() => setReload(!reload)}
+//                     />
+//                   </motion.div>
+//                 )) : (
+//                   <motion.div
+//                     initial={{ opacity: 0, y: 20 }}
+//                     animate={{ opacity: 1, y: 0 }}
+//                     transition={{ duration: 0.5 }}
+//                     className="flex flex-col items-center justify-center w-full min-h-[50vh] space-y-6 text-center px-4 col-span-full"
+//                   >
+//                     <motion.p
+//                       className="text-gray-500 text-xl font-medium"
+//                       animate={{ scale: [1, 1.02, 1] }}
+//                       transition={{ duration: 2, repeat: Infinity }}
+//                     >
+//                       None of our listings matched your filters!
+//                     </motion.p>
+//                     <motion.div
+//                       whileHover={{ scale: 1.05 }}
+//                       whileTap={{ scale: 0.95 }}
+//                     >
+//                       <Button
+//                         onClick={() => router.push('/post-a-listing')}
+//                         className="bg-[#FF7439] hover:bg-[#FF7439]/90 text-white px-8 py-3 rounded-full text-lg shadow-lg transition-all duration-300"
+//                       >
+//                         Post a Listing
+//                       </Button>
+//                     </motion.div>
+//                   </motion.div>
+//                 )}
+//                 {isLoadingMore && (
+//                   <>
+//                     {[...Array(4)].map((_, index) => (
+//                       <LoadingCard key={`loading-more-${index}`} />
+//                     ))}
+//                   </>
+//                 )}
+//                 {hasMore && listings && listings.length > 0 && (
+//                   <motion.div
+//                     className="col-span-full flex justify-center mt-8"
+//                     initial={{ opacity: 0 }}
+//                     animate={{ opacity: 1 }}
+//                     transition={{ duration: 0.5 }}
+//                   >
+//                     <Button
+//                       onClick={loadMore}
+//                       className="bg-[#FF7439] hover:bg-[#FF7439]/90 text-white"
+//                       disabled={isLoadingMore}
+//                     >
+//                       {isLoadingMore ? (
+//                         <div className="flex items-center gap-2">
+//                           <LoadingCircle /> Loading...
+//                         </div>
+//                       ) : (
+//                         'Load More'
+//                       )}
+//                     </Button>
+//                   </motion.div>
+//                 )}
+//               </>
+// >>>>>>> main
             )}
             {isLoadingMore && (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8">
