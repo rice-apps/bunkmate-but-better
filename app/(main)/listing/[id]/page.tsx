@@ -8,6 +8,7 @@ import { createClient, getImagePublicUrl } from "@/utils/supabase/client";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import Footer from "@/components/Footer";
+import { FiEye } from "react-icons/fi";
 
 interface UserData {
   id: string;
@@ -46,6 +47,7 @@ const ListingPage = () => {
   const [captions, setCaptions] = useState<{ [key: number]: string }>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewCount, setViewCount] = useState<number>(0);
   const supabase = createClient();
 
   // Grabbing the isFavorited value & converting from the URL of Listing.
@@ -99,6 +101,68 @@ const ListingPage = () => {
           return acc;
         }, {});
         setCaptions(captions);
+
+        // SIMPLE VIEW COUNT IMPLEMENTATION
+        try {
+          const numericId = parseInt(listingId);
+          console.log("Processing view count for listing ID:", numericId);
+          
+          // 1. First check if a record already exists
+          const { data: existingView, error: existingViewError } = await supabase
+            .from('listings_views')
+            .select('views')
+            .eq('listing_id', numericId)
+            .maybeSingle();
+          
+          console.log("Existing view data:", existingView, "Error:", existingViewError);
+            
+          if (existingView) {
+            console.log("Updating existing view count from:", existingView.views);
+            // 2. If exists, update the existing record
+            const { error: updateError } = await supabase
+              .from('listings_views')
+              .update({ views: existingView.views + 1 })  // Explicitly increment
+              .eq('listing_id', numericId);
+            
+            console.log("Update error:", updateError);
+          } else {
+            console.log("Creating new view record");
+            // 3. If doesn't exist, insert a new record
+            const { error: insertError } = await supabase
+              .from('listings_views')
+              .insert([{ listing_id: numericId, views: 1 }]);
+            
+            console.log("Insert error:", insertError);
+          }
+          
+          // 4. Get updated count
+          const { data: viewData, error: viewDataError } = await supabase
+            .from('listings_views')
+            .select('views')
+            .eq('listing_id', numericId)
+            .single();
+          
+          console.log("Final view data:", viewData, "Error:", viewDataError);
+            
+          if (viewData) {
+            console.log("Setting view count to:", viewData.views);
+            setViewCount(viewData.views);
+          } else {
+            console.log("No view data found after update/insert");
+          }
+        } catch (viewErr) {
+          console.error("View count error:", viewErr);
+        }
+
+        console.log({data})
+
+        let { data: users_favorites, error } = await supabase
+        .from('users_favorites')
+        .select('count')
+        .eq('listing_id', listingId)
+        .single();
+        console.log(users_favorites)
+
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to load listing";
@@ -120,6 +184,30 @@ const ListingPage = () => {
     };
 
     fetchListing();
+
+    const channel = supabase
+      .channel('views')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'listings_views',
+        filter: `listing_id=eq.${parseInt(listingId) || 0}`
+      }, (payload) => {
+        console.log("Realtime update received:", payload);
+        if (payload.new && typeof payload.new === 'object' && 'views' in payload.new) {
+          console.log("Updating view count via realtime to:", payload.new.views);
+          setViewCount(payload.new.views);
+        } else {
+          console.log("Realtime payload missing view count:", payload);
+        }
+      })
+      .subscribe((status) => {
+        console.log("Realtime subscription status:", status);
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [listingId]);
 
   if (isLoading) {
@@ -153,8 +241,7 @@ const ListingPage = () => {
   };
 
   return (
-    // Removed mobile margin here. Can add again with more precise measures!
-    <div className="w-full"> 
+    <div className="w-full relative"> 
       <Suspense>
         <Listing
           data={{
@@ -162,7 +249,7 @@ const ListingPage = () => {
             title: listing.title,
             distance: `${listing.distance} miles`,
             start_date: listing.start_date,
-            end_date: listing.end_date, // Use the new format
+            end_date: listing.end_date,
             price: listing.price,
             location: listing.address,
             isFavorited: isFavoritedValue,
@@ -173,6 +260,7 @@ const ListingPage = () => {
             durationNotes: listing.duration_notes,
             priceNotes: listing.price_notes,
             captions: captions,
+            viewCount: viewCount,
             user: listing.user
               ? {
                   fullName: listing.user.name,
@@ -183,6 +271,7 @@ const ListingPage = () => {
               : null,
           }}
         />
+
         <div className="flex flex-col lg:flex-row w-full mt-4 justify-between mb-10 gap-10">
           <div className="lg:w-1/2 xl:w-2/3">
             <ListingDescription

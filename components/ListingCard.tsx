@@ -8,6 +8,7 @@ import { useRouter } from "@bprogress/next";
 import { IconContext } from "react-icons";
 import { MdEdit, MdOutlineArchive } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
+import { FiEye } from "react-icons/fi";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,6 +51,7 @@ const ListingCard: React.FC<CardProps> = ({
   onArchive,
 }) => {
   const [favorite, setFavorite] = useState(isFavorited);
+  const [viewCount, setViewCount] = useState<number>(0);
   const router = useRouter();
 
   const [archived, setArchived] = useState<boolean>(false);
@@ -57,11 +59,7 @@ const ListingCard: React.FC<CardProps> = ({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    // Gabe - this is sussy, especially since we have isArchived as a prop (which is unused),
-    // but we can let it go for now since this was already pushed to main.
-    // Also, archiving removes a record from someone's favorites... I'm not
-    // sure why this happens since we shouldn't be editing that table, and
-    // I'm not sure if that's the desired behavior.
+    // Fetch archived status
     const fetchArchivedStatus = async () => {
       const supabase = createClient();
       const { data, error } = await supabase
@@ -76,6 +74,59 @@ const ListingCard: React.FC<CardProps> = ({
     };
   
     fetchArchivedStatus();
+
+    // Simplified view count handling
+    const fetchViewCount = async () => {
+      try {
+        const supabase = createClient();
+        const numericId = parseInt(postId);
+        
+        console.log("Fetching view count for listing ID:", numericId);
+
+        const { data, error } = await supabase
+          .from("listings_views")
+          .select("views")
+          .eq("listing_id", numericId)
+          .maybeSingle();
+          
+        console.log("View count data:", data, "Error:", error);
+
+        // Set view count, make sure it defaults to 0 only if data is null
+        if (data && data.views !== undefined) {
+          console.log("Setting view count to:", data.views);
+          setViewCount(data.views);
+        } else {
+          console.log("No view data found, defaulting to 0");
+          setViewCount(0);
+        }
+      } catch (err) {
+        console.error("Error fetching view count:", err);
+      }
+    };
+
+    fetchViewCount();
+
+    // Simplified real-time listener
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`card_views`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'listings_views',
+        filter: `listing_id=eq.${parseInt(postId) || 0}`
+      }, (payload) => {
+        // @ts-ignore - Ignore type checking here
+        if (payload.new?.views) {
+          // @ts-ignore - Ignore type checking here
+          setViewCount(payload.new.views);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [postId]);
   
 
@@ -287,6 +338,12 @@ const ListingCard: React.FC<CardProps> = ({
               )}
             </IconContext.Provider>
           </Button>
+          
+          {/* View count indicator */}
+          <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-2 py-1 rounded-full flex items-center space-x-1">
+            <FiEye className="w-4 h-4" />
+            <span className="text-sm">{viewCount}</span>
+          </div>
         </div>
 
         {/* Content */}

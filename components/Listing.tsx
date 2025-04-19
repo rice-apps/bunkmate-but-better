@@ -39,6 +39,7 @@ interface ListingProps {
       email: string;
       isRiceStudent: boolean;
     } | null;
+    viewCount?: number;
   };
   isPreview?: boolean;
 }
@@ -213,6 +214,10 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
               onClick={toggleFavorite}
             />
           </motion.div>
+          <div className="bg-orange-100 text-orange-500 rounded-full px-4 py-1 flex items-center">
+            <span>{data.viewCount} {data.viewCount === 1 ? 'view' : 'views'}</span>
+          </div>
+
 
           {isPreview && (
             <div className="flex-1 flex justify-end gap-2 pl-4">
