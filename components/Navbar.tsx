@@ -139,6 +139,12 @@ const Navbar = ({
     if (searchParams && searchParams.get("distance")) {
       setDistance(searchParams.get("distance")!);
     }
+    if (searchParams && searchParams.get("minPrice")) {
+      setMinPrice(Number.parseInt(searchParams.get("minPrice")!))
+    }
+    if (searchParams && searchParams.get("maxPrice")) {
+      setMinPrice(Number.parseInt(searchParams.get("maxPrice")!))
+    }
   }, []);
 
   const handleFilterChange = () => {
@@ -149,8 +155,13 @@ const Navbar = ({
     if (!startDate) queryParams.delete("startDate");
     if (endDate) queryParams.set("endDate", endDate.toISOString());
     if (!endDate) queryParams.delete("endDate");
+    if (minPrice) queryParams.set("minPrice", minPrice.toString());
+    if (minPrice == 0) queryParams.delete("minPrice");
+    if (maxPrice) queryParams.set("maxPrice", maxPrice.toString());
+    if (maxPrice == 0) queryParams.delete("maxPrice");
 
     const queryString = queryParams.toString();
+
     router.push(`/?${queryString}`);
   };
 
@@ -183,6 +194,115 @@ const Navbar = ({
     setSearchQuery(query);
   };
 
+  const setFilters = (localSearchQuery: {[key: string]: string}) => {
+    const queryParams = new URLSearchParams(window.location.search);
+
+    const localSearch = localSearchQuery["search"];
+    const localBedNum = localSearchQuery["bedNum"];
+    const localBathNum = localSearchQuery["bathNum"];
+    const localLeaseDuration = localSearchQuery["leaseDurationOption"];
+    const localStartDate = localSearchQuery["startDate"];
+    const localEndDate = localSearchQuery["endDate"];
+    const localSelectedLocation = localSearchQuery["selectedLocation"];
+
+    // Location and Search
+    if (localSelectedLocation) {
+      queryParams.set('search', localSelectedLocation)  
+    } else {
+      if (localSearch) {
+        queryParams.set('search', localSearch)
+      } else {
+        queryParams.delete('search')
+      }
+    }
+
+    // Beds
+    if (Number.parseInt(localBedNum) > 0) {
+      queryParams.set('bedNum', localBedNum)
+    } else if (Number.parseInt(localBedNum) == 0) {
+      queryParams.delete('bedNum')
+    }
+
+    // Baths
+    if (Number.parseInt(localBathNum) > 0) {
+      queryParams.set('bathNum', localBathNum)
+    } else if (Number.parseInt(localBathNum) == 0) {
+      queryParams.delete('bathNum')
+    }
+
+    // Min Price
+    if (minPrice > 0) {
+        queryParams.set("minPrice", minPrice.toString())
+    } else {
+      queryParams.delete("minPrice")
+    }
+
+    // Max Price
+    if (maxPrice > 0) {
+      queryParams.set("maxPrice", maxPrice.toString());
+    } else {
+      queryParams.delete("maxPrice")
+    }
+
+    // Lease Duration + dates
+    if (localLeaseDuration) {
+      queryParams.set("startDate", localStartDate);
+      setStartDate(new Date(localStartDate));
+      queryParams.set("endDate", localEndDate);
+      setEndDate(new Date(localEndDate));
+    } else {
+      if (startDate) {
+        queryParams.set("startDate", startDate?.toISOString());
+      } else {
+        queryParams.delete("startDate")
+      }
+      
+      if (endDate) {
+      queryParams.set("endDate", endDate?.toISOString());
+      } else {
+        queryParams.delete("endDate")
+      }
+    }
+
+    // Distance
+    if (distance !== distanceTitle) {
+      queryParams.set("distance", distance);
+    } else {
+      queryParams.delete("distance")
+    }
+
+    const queryString = queryParams.toString();
+    router.push(`/?${queryString}`);
+  }
+
+  const clearNavbar = () => {
+    setMinPrice(0);
+    setMaxPrice(0);
+    setDistance(distanceTitle);
+    setStartDate(undefined);
+    setEndDate(undefined);
+  }
+
+  const applyPriceFilter = () => {
+    const queryParams = new URLSearchParams(window.location.search);
+    // Min Price
+    if (minPrice > 0) {
+        queryParams.set("minPrice", minPrice.toString())
+    } else {
+      queryParams.delete("minPrice")
+    }
+
+    // Max Price
+    if (maxPrice > 0) {
+      queryParams.set("maxPrice", maxPrice.toString());
+    } else {
+      queryParams.delete("maxPrice")
+    }
+
+    const queryString = queryParams.toString();
+    router.push(`/?${queryString}`);
+  }
+
   // Update the applyFilters function to use the current searchQuery state
   const applyFilters = () => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -205,7 +325,7 @@ const Navbar = ({
     if (bathNum === 0) queryParams.delete("bathNum");
 
     if (selectedLeaseDuration) {
-      queryParams.set('leaseDuration', selectedLeaseDuration);
+      // queryParams.set('leaseDuration', selectedLeaseDuration);
       const duration = leaseDurationOptions.find(d => d.value === selectedLeaseDuration);
       if (duration) {
         if (duration.startDate) {
@@ -227,9 +347,9 @@ const Navbar = ({
       setEndDate(undefined);
     }
 
-    if (selectedLocation) {
-      queryParams.set('location', selectedLocation);
-    }
+    // if (selectedLocation) {
+    //   queryParams.set('location', selectedLocation);
+    // }
 
     const queryString = queryParams.toString();
     router.push(`/?${queryString}`);
@@ -239,14 +359,15 @@ const Navbar = ({
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       applyFilters(); 
-      setShowSearch(false);
+      // setShowSearch(false);
     }
   };
 
   const handleClearSearch = () => {
     setSearchQuery("");
     applyFilters(); 
-    setShowSearch(false);
+    // setShowSearch(false);
+    router.push("/");
   };
 
   const getCurrentYear = () => {
@@ -442,7 +563,7 @@ const Navbar = ({
         {includeFilter && (
           <div className="hidden max-w-[780px] lg:flex h-[78px] border-[2px] border-[#D9D9D9] rounded-[50px] shadow-lg flex flex-row place-items-center justify-between whitespace-nowrap mx-3 relative">
             <AnimatePresence>
-              {showSearch ? (
+              {/* {showSearch ? (
                 <motion.div
                   initial={{ opacity: 0, width: 0 }}
                   animate={{ opacity: 1, width: "100%" }}
@@ -467,7 +588,7 @@ const Navbar = ({
                     <FaTimes className="w-5 h-5" />
                   </button>
                 </motion.div>
-              ) : null}
+              ) : null} */}
             </AnimatePresence>
 
             {/* Updated filter options with new order and interactions */}
@@ -535,7 +656,7 @@ const Navbar = ({
                           />
                         </div>
                         <button
-                          onClick={() => applyFilters()}
+                          onClick={() => applyPriceFilter()}
                           className="w-full py-2 bg-[#FF7439] text-white rounded-md hover:bg-[#BB5529]"
                         >
                           Apply
@@ -750,7 +871,7 @@ const Navbar = ({
         setSelectedLeaseDuration={setSelectedLeaseDuration}
         selectedLocation={selectedLocation}
         setSelectedLocation={setSelectedLocation}
-        applyFilters={applyFilters}
+        applyFilters={setFilters}
         startDate={startDate}
         endDate={endDate}
         setStartDate={setStartDate}
@@ -758,6 +879,7 @@ const Navbar = ({
         leaseDurationOptions={leaseDurationOptions}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
+        clearNavbar={clearNavbar}
       />
     </div>
   );

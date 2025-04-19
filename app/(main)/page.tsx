@@ -317,6 +317,8 @@ export default function Index() {
           isFavorited={listing.id in favorites}
           imagePaths={listing.image_paths}
           isArchived={false}
+          onArchive={() => setReload(!reload)}
+          onDelete={() => setReload(!reload)}
         />
       </motion.div>
     ));
