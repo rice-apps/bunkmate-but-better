@@ -48,6 +48,7 @@ const ListingPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [viewCount, setViewCount] = useState<number>(0);
+  const [favoriteCount, setFavoriteCount] = useState<number>(0);
   const supabase = createClient();
 
   // Grabbing the isFavorited value & converting from the URL of Listing.
@@ -154,14 +155,12 @@ const ListingPage = () => {
           console.error("View count error:", viewErr);
         }
 
-        console.log({data})
-
-        let { data: users_favorites, error } = await supabase
+        let { data: listing_favorites, error } = await supabase
         .from('users_favorites')
         .select('count')
         .eq('listing_id', listingId)
         .single();
-        console.log(users_favorites)
+        setFavoriteCount(listing_favorites?.count ?? 0)
 
       } catch (err) {
         const errorMessage =
@@ -261,6 +260,7 @@ const ListingPage = () => {
             priceNotes: listing.price_notes,
             captions: captions,
             viewCount: viewCount,
+            favoriteCount: favoriteCount,
             user: listing.user
               ? {
                   fullName: listing.user.name,

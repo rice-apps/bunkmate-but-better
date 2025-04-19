@@ -40,6 +40,7 @@ interface ListingProps {
       isRiceStudent: boolean;
     } | null;
     viewCount?: number;
+    favoriteCount?: number;
   };
   isPreview?: boolean;
 }
@@ -214,8 +215,11 @@ const Listing: React.FC<ListingProps> = ({data, isPreview = false}: ListingProps
               onClick={toggleFavorite}
             />
           </motion.div>
-          <div className="bg-orange-100 text-orange-500 rounded-full px-4 py-1 flex items-center">
-            <span>{data.viewCount} {data.viewCount === 1 ? 'view' : 'views'}</span>
+          <div className="bg-[#FF743921] text-orange-500 font-semibold border border-orange-500 rounded-full px-4 py-1 flex items-center">
+            <span>{data.viewCount} viewed</span>
+          </div>
+          <div className="bg-[#FF743921] text-orange-500 font-semibold border border-orange-500 rounded-full px-4 py-1 flex items-center">
+            <span>{data.favoriteCount} favorited</span>
           </div>
 
 
