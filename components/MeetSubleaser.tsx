@@ -46,7 +46,7 @@ const MeetSubleaser: React.FC<MeetSubleaserProps> = ({ data }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className='flex flex-col gap-[20px] w-full h-full justify-center items-center'
+      className='sticky top-[calc(50vh-200px)] flex flex-col gap-[20px] items-center'
     >
       <motion.h1 
         initial={{ opacity: 0 }}
