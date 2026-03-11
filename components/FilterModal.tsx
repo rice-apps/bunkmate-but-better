@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, SetStateAction, Dispatch } from "react";
 import { FaTimes, FaMinus, FaPlus } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { motion } from "framer-motion";
@@ -19,7 +19,7 @@ interface FilterModalProps {
   setMaxPrice: (price: number) => void;
   setBedNum: (num: number) => void;
   setBathNum: (num: number) => void;
-  applyFilters: () => void;
+  applyFilters: (localSearchQuery: {[key: string]: string}) => void;
   distance: string;
   setDistance: (distance: string) => void;
   selectedLeaseDuration: string | null;
@@ -37,7 +37,8 @@ interface FilterModalProps {
     endDate: Date;
   }>;
   searchQuery?: string;
-  setSearchQuery?: (query: string) => void;
+  setSearchQuery?: Dispatch<SetStateAction<string>>;
+  clearNavbar?: () => void;
 }
 
 const FilterModal: React.FC<FilterModalProps> = ({
@@ -63,18 +64,23 @@ const FilterModal: React.FC<FilterModalProps> = ({
   setStartDate,
   setEndDate,
   leaseDurationOptions,
-  searchQuery = "",
+  searchQuery = {},
   setSearchQuery,
+  clearNavbar
 }) => {
-  const router = useRouter();
-  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
-  // const [distance, setDistance] = useState("");
   const distanceTitle = "Search properties";
+  const router = useRouter();
+  const [localSearchQuery, setLocalSearchQuery] = useState<{[key: string]: string}>({
+    bathNum: "0",
+    bedNum: "0",
+  });
+  // const [distance, setDistance] = useState("");
+  
   
   // Update local state when prop changes
-  useEffect(() => {
-    setLocalSearchQuery(searchQuery);
-  }, [searchQuery]);
+  // useEffect(() => {
+  //   setLocalSearchQuery(searchQuery);
+  // }, [searchQuery]);
   
   if (!isOpen) return null;
 
@@ -90,17 +96,27 @@ const FilterModal: React.FC<FilterModalProps> = ({
   };
 
   const handleLeaseDurationChange = (option: { value: string, startDate: Date, endDate: Date }) => {
-    const newDuration = selectedLeaseDuration === option.value ? null : option.value;
-    setSelectedLeaseDuration(newDuration);
+    const newDuration = localSearchQuery["leaseDurationOption"] === option.value ? null : option.value;
+    // setSelectedLeaseDuration(newDuration);
     
     // Update start and end dates when lease duration changes
+    // if (newDuration) {
+      // setStartDate(option.startDate);
+      // setEndDate(option.endDate);
+
     if (newDuration) {
-      setStartDate(option.startDate);
-      setEndDate(option.endDate);
+      setLocalSearchQuery(prevState => ({...prevState, leaseDurationOption: option.value}))
+      handleStartDateChange(option.startDate);
+      handleEndDateChange(option.endDate);
     } else {
-      setStartDate(undefined);
-      setEndDate(undefined);
+      setLocalSearchQuery(prevState => ({...prevState, leaseDurationOption: ""}))
+      handleStartDateChange(undefined);
+      handleEndDateChange(undefined)
     }
+    // } else {
+    //   setStartDate(undefined);
+    //   setEndDate(undefined);
+    // }
   };
 
   const getCurrentYear = () => {
@@ -119,113 +135,140 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
   const clearAllFilters = () => {
     // Reset all state values
-    setBedNum(0);
-    setBathNum(0);
-    setMinPrice(0);
-    setMaxPrice(0);
-    setDistance(distanceTitle);
-    setSelectedLeaseDuration(null);
-    setSelectedLocation(null);
-    setStartDate(undefined);
-    setEndDate(undefined);
-    setLocalSearchQuery("");
-    if (setSearchQuery) {
-      setSearchQuery("");
-    }
+    // setBedNum(0);
+    // setBathNum(0);
+    // setMinPrice(0);
+    // setMaxPrice(0);
+    // setDistance(distanceTitle);
+    // setSelectedLeaseDuration(null);
+    // setSelectedLocation(null);
+    // setStartDate(undefined);
+    // setEndDate(undefined);
+    setLocalSearchQuery({bathNum: "0", bedNum: "0"});
+    clearNavbar && clearNavbar();
+    // if (setSearchQuery) {
+    //   setSearchQuery({});
+    // }
     
     // Clear URL parameters
-    router.push("/");
+    // applyFilters({});
 
+    router.push(`/`);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalSearchQuery(e.target.value);
+    setLocalSearchQuery(prevState => ({...prevState, search: e.target.value}));
   };
 
-  const handleSearchSubmit = () => {
-    if (setSearchQuery) {
-      setSearchQuery(localSearchQuery);
-    }
-  };
+  const handleBedChange = (value: number) => {
+    setLocalSearchQuery(prevState => ({...prevState, bedNum: value.toString()}))
+  }
+
+  const handleBathChange = (value: number) => {
+    setLocalSearchQuery(prevState => ({...prevState, bathNum: value.toString()}));
+  }
+
+  const handleSelectedLocationChange = (value: string) => {
+    if (value == localSearchQuery["selectedLocation"])
+      setLocalSearchQuery(prevState => ({...prevState, selectedLocation: ""}));
+    else
+      setLocalSearchQuery(prevState => ({...prevState, selectedLocation: value}));
+  }
+
+  const handleStartDateChange = (value: Date | undefined) => {
+    setLocalSearchQuery(prevState => ({...prevState, startDate: value ? value.toISOString() : ""}))
+  }
+
+  const handleEndDateChange = (value: Date | undefined) => {
+    setLocalSearchQuery(prevState => ({...prevState, endDate: value ? value.toISOString() : ""}))
+  }
+   
+  // const handleSearchSubmit = () => {
+  //   if (setSearchQuery) {
+  //     setSearchQuery(localSearchQuery);
+  //   }
+  // };
 
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && setSearchQuery) {
-      setSearchQuery(localSearchQuery);
-      applyFilters();
+    if (e.key === 'Enter' && applyFilters) {
+      applyFilters(localSearchQuery);
       onClose();
     }
   };
 
   const clearSearch = () => {
-    setLocalSearchQuery("");
-    if (setSearchQuery) {
-      setSearchQuery("");
-    }
+    setLocalSearchQuery(prevState => ({...prevState, search: ""}));
   };
 
   const handleApplyFilters = () => {
     // If a location is selected, use it as the search query
     // This takes precedence over any manual search query
-    let finalSearchQuery = localSearchQuery;
-    if (selectedLocation) {
-      finalSearchQuery = selectedLocation;
-    }
+    // let finalSearchQuery = localSearchQuery;
+    // if (selectedLocation) {
+    //   finalSearchQuery = selectedLocation;
+    // }
     
-    if (setSearchQuery) {
-      setSearchQuery(finalSearchQuery);
-    }
+    // if (setSearchQuery) {
+    //   setSearchQuery(finalSearchQuery);
+    // }
     
-    const queryParams = new URLSearchParams(window.location.search);
+    // const queryParams = new URLSearchParams(window.location.search);
     
-    if (finalSearchQuery.trim()) {
-      queryParams.set('search', finalSearchQuery);
-    } else {
-      queryParams.delete('search');
-    }
+    // if (finalSearchQuery.trim()) {
+    //   queryParams.set('search', finalSearchQuery);
+    // } else {
+    //   queryParams.delete('search');
+    // }
+
+    // // if (selectedLocation) {
+    // //   queryParams.set('location', selectedLocation);
+    // // }
     
-    if (minPrice > 0) queryParams.set("minPrice", minPrice.toString());
-    if (maxPrice > 0) queryParams.set("maxPrice", maxPrice.toString());
-    if (bedNum > 0) queryParams.set("bedNum", bedNum.toString());
-    if (bathNum > 0) queryParams.set("bathNum", bathNum.toString());
+    // if (minPrice > 0) queryParams.set("minPrice", minPrice.toString());
+    // if (maxPrice > 0) queryParams.set("maxPrice", maxPrice.toString());
+    // if (bedNum > 0) queryParams.set("bedNum", bedNum.toString());
+    // if (bathNum > 0) queryParams.set("bathNum", bathNum.toString());
     
-    // Set lease duration parameter
-    if (selectedLeaseDuration) {
-      queryParams.set("leaseDuration", selectedLeaseDuration);
-    } else {
-      queryParams.delete("leaseDuration");
-    }
+    // // Set lease duration parameter
+    // // if (selectedLeaseDuration) {
+    // //   queryParams.set("leaseDuration", selectedLeaseDuration);
+    // // } else {
+    // //   queryParams.delete("leaseDuration");
+    // // }
     
-    // Always set start and end dates based on current values
-    if (startDate) {
-      queryParams.set("startDate", startDate.toISOString());
-    } else {
-      queryParams.delete("startDate");
-    }
+    // // Always set start and end dates based on current values
+    // if (startDate) {
+    //   queryParams.set("startDate", startDate.toISOString());
+    // } else {
+    //   queryParams.delete("startDate");
+    // }
     
-    if (endDate) {
-      queryParams.set("endDate", endDate.toISOString());
-    } else {
-      queryParams.delete("endDate");
-    }
+    // if (endDate) {
+    //   queryParams.set("endDate", endDate.toISOString());
+    // } else {
+    //   queryParams.delete("endDate");
+    // }
     
-    // Add distance parameter if it's set and not the default title
-    if (distance && distance !== distanceTitle) {
-      queryParams.set("distance", distance);
-    } else {
-      queryParams.delete("distance");
-    }
+    // // Add distance parameter if it's set and not the default title
+    // if (distance && distance !== distanceTitle) {
+    //   queryParams.set("distance", distance);
+    // } else {
+    //   queryParams.delete("distance");
+    // }
     
-    // We don't need to set selectedLocation separately since we're using it as the search query
-    // But we'll keep it for reference in case you want to filter by both search and location separately later
-    if (selectedLocation) {
-      queryParams.set("selectedLocation", selectedLocation);
-    } else {
-      queryParams.delete("selectedLocation");
-    }
+    // // // We don't need to set selectedLocation separately since we're using it as the search query
+    // // // But we'll keep it for reference in case you want to filter by both search and location separately later
+    // // if (selectedLocation) {
+    // //   queryParams.set("selectedLocation", selectedLocation);
+    // // } else {
+    // //   queryParams.delete("selectedLocation");
+    // // }
     
-    const queryString = queryParams.toString();
-    router.push(`/?${queryString}`);
+    // const queryString = queryParams.toString();
+    // router.push(`/?${queryString}`);
     
+    // onClose();
+    applyFilters(localSearchQuery);
     onClose();
   };
 
@@ -263,7 +306,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             <FaMagnifyingGlass className="absolute left-3 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              value={localSearchQuery}
+              value={localSearchQuery["search"]}
               onChange={handleSearchChange}
               onKeyDown={handleSearchKeyDown}
               placeholder="Search by name or location..."
@@ -321,20 +364,24 @@ const FilterModal: React.FC<FilterModalProps> = ({
               <label className="text-neutral-500 text-sm mb-2 block">Min Price ($)</label>
               <input
                 type="number"
-                value={minPrice || ''}
-                onChange={(e) => setMinPrice(Number(e.target.value))}
+                value={minPrice}
+                onChange={(e) => setMinPrice(Number.parseInt(e.target.value))}
                 className="w-full p-3 border bg-white rounded-lg focus:outline-none focus:border-[#FF7439]"
                 placeholder="0"
+                min={0}
+                pattern="[0-9]"
               />
             </div>
             <div className="flex-1">
               <label className="text-neutral-500 text-sm mb-2 block">Max Price ($)</label>
               <input
                 type="number"
-                value={maxPrice || ''}
-                onChange={(e) => setMaxPrice(Number(e.target.value))}
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(Number.parseInt(e.target.value))}
                 className="w-full p-3 border bg-white rounded-lg focus:outline-none focus:border-[#FF7439]"
                 placeholder="No max"
+                min={0}
+                pattern="[0-9]"
               />
             </div>
           </div>
@@ -416,16 +463,16 @@ const FilterModal: React.FC<FilterModalProps> = ({
               <label className="text-neutral-500">Bedrooms</label>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => handleNumberChange(setBedNum, bedNum - 1, 0, 10)}
+                  onClick={() => handleNumberChange(handleBedChange, Number.parseInt(localSearchQuery["bedNum"]) - 1, 0, 10)}
                   className="p-2 rounded-full hover:bg-gray-100"
                 >
                   <FaMinus className="text-[#FF7439]" />
                 </button>
                 <span className="font-medium w-8 text-center">
-                  {bedNum}
+                  {localSearchQuery["bedNum"] || 0}
                 </span>
                 <button
-                  onClick={() => handleNumberChange(setBedNum, bedNum + 1, 0, 10)}
+                  onClick={() => handleNumberChange(handleBedChange, Number.parseInt(localSearchQuery["bedNum"]) + 1, 0, 10)}
                   className="p-2 rounded-full hover:bg-gray-100"
                 >
                   <FaPlus className="text-[#FF7439]" />
@@ -438,16 +485,16 @@ const FilterModal: React.FC<FilterModalProps> = ({
               <label className="text-neutral-500">Bathrooms</label>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => handleNumberChange(setBathNum, bathNum - 1, 0, 10)}
+                  onClick={() => handleNumberChange(handleBathChange, Number.parseInt(localSearchQuery["bathNum"]) - 1, 0, 10)}
                   className="p-2 rounded-full hover:bg-gray-100"
                 >
                   <FaMinus className="text-[#FF7439]" />
                 </button>
                 <span className="font-medium w-8 text-center">
-                  {bathNum}
+                  {localSearchQuery["bathNum"]}
                 </span>
                 <button
-                  onClick={() => handleNumberChange(setBathNum, bathNum + 1, 0, 10)}
+                  onClick={() => handleNumberChange(handleBathChange, Number.parseInt(localSearchQuery["bathNum"]) + 1, 0, 10)}
                   className="p-2 rounded-full hover:bg-gray-100"
                 >
                   <FaPlus className="text-[#FF7439]" />
@@ -469,7 +516,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                 <button
                   key={option.value}
                   className={`p-3 text-sm rounded-lg border transition-colors ${
-                    selectedLeaseDuration === option.value
+                    localSearchQuery["leaseDurationOption"] === option.value
                       ? "bg-[#FFE3D7] text-[#FF7439] font-semibold border-[#FF7439]"
                       : "bg-white text-neutral-700 hover:bg-gray-200"
                   }`}
@@ -489,14 +536,15 @@ const FilterModal: React.FC<FilterModalProps> = ({
                 <button
                   key={location.value}
                   className={`p-3 text-sm rounded-lg border transition-colors ${
-                    selectedLocation === location.value
+                    localSearchQuery["selectedLocation"] === location.value
                       ? "bg-[#FFE3D7] text-[#FF7439] font-semibold border-[#FF7439]"
                       : "bg-white text-neutral-700 hover:bg-gray-200"
                   }`}
                   onClick={() => {
-                    setSelectedLocation(
-                      selectedLocation === location.value ? null : location.value
-                    );
+                    handleSelectedLocationChange(location.value)
+                    // setSelectedLocation(
+                    //   selectedLocation === location.value ? null : location.value
+                    // );
                   }}
                 >
                   {location.label}
